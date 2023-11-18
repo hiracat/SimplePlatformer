@@ -4,16 +4,25 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include <vulkan/vulkan_core.h>
-#define GLFW_INCLUDE_VULKAN
+
 #include <GLFW/glfw3.h>
+#include <vulkan/vk_enum_string_helper.h>
+#include <vulkan/vulkan.h>
 
-int main() {
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwInit();
+#include "ansiescapecodes.h"
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "bruh", nullptr, nullptr);
+bool checkExtensionSupported(const std::vector<VkExtensionProperties>& supportedExtensionProperties, const char* extensionName) {
+    bool supported = false;
+    for (const VkExtensionProperties& extension : supportedExtensionProperties) {
+        if (strcmp(extensionName, extension.extensionName) == 0) {
+            supported = true;
+            break;
+        }
+    }
+    return supported;
+}
+
+void createVkInstance(VkInstance* instance) {
 
     VkApplicationInfo appInfo{
         .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
@@ -38,48 +47,61 @@ int main() {
 
     createInfo.ppEnabledExtensionNames = glfwGetRequiredInstanceExtensions(&createInfo.enabledExtensionCount);
 
-    {
-        uint32_t supportedExtensionCount;
-        std::vector<VkExtensionProperties> supportedExtensionProperties;
+    uint32_t supportedExtensionCount;
+    std::vector<VkExtensionProperties> supportedExtensionProperties;
 
-        vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensionCount, nullptr);
-        supportedExtensionProperties.resize(supportedExtensionCount);
-        vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensionCount, supportedExtensionProperties.data());
-        for (const VkExtensionProperties& extension : supportedExtensionProperties) {
-            std::cout << "Available Extension: " << extension.extensionName << std::endl;
-        }
+    vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensionCount, nullptr);
+    supportedExtensionProperties.resize(supportedExtensionCount);
+    vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensionCount, supportedExtensionProperties.data());
 
-        for (uint32_t i = 0; i < createInfo.enabledExtensionCount; i++) {
-            const auto& extensionName = createInfo.ppEnabledExtensionNames[i];
-            bool supported = false;
+    for (const VkExtensionProperties& extension : supportedExtensionProperties) {
+        std::cout << "Available Extension: " << extension.extensionName << std::endl;
+    }
 
-            for (const VkExtensionProperties& extension : supportedExtensionProperties) {
-                if (strcmp(extensionName, extension.extensionName) == 0) {
-                    supported = true;
-                    break;
-                }
-            }
-            if (!supported) {
-                std::string message("an extension was requested but not available called: ");
-                message.append(extensionName);
-                throw std::runtime_error(message);
-            }
+    for (uint32_t i = 0; i < createInfo.enabledExtensionCount; i++) {
+        if (!checkExtensionSupported(supportedExtensionProperties, createInfo.ppEnabledExtensionNames[i])) {
+            std::string message("an extension was requested but not available called: ");
+            message.append(createInfo.ppEnabledExtensionNames[i]);
+            throw std::runtime_error(message);
         }
     }
-    VkInstance instance{};
+
     VkResult result;
 
-    if ((result = vkCreateInstance(&createInfo, nullptr, &instance)) != VK_SUCCESS) {
-        std::cout << "result is: " << result << std::endl;
+    if ((result = vkCreateInstance(&createInfo, nullptr, instance)) != VK_SUCCESS) {
+        std::cout << "result is: " << string_VkResult(result) << std::endl;
         throw std::runtime_error("failed to create instance!");
     }
+}
 
-    while (!glfwWindowShouldClose(window)) {
+struct AppData {
+    GLFWwindow* window;
+    VkInstance instance;
+};
+
+void cleanup(AppData appdata) {
+    vkDestroyInstance(appdata.instance, nullptr);
+
+    glfwDestroyWindow(appdata.window);
+    glfwTerminate();
+}
+
+int main() {
+    AppData appdata;
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwInit();
+
+    appdata.window = glfwCreateWindow(800, 600, "bruh", nullptr, nullptr);
+    if (!appdata.window) {
+        glfwTerminate();
+        throw std::runtime_error("failed to create window");
+    }
+    createVkInstance(&appdata.instance);
+
+    while (!glfwWindowShouldClose(appdata.window)) {
         glfwPollEvents();
     }
 
-    vkDestroyInstance(instance, nullptr);
-
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    cleanup(appdata);
 }
