@@ -54,9 +54,11 @@ void createVkInstance(VkInstance* instance) {
     supportedExtensionProperties.resize(supportedExtensionCount);
     vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensionCount, supportedExtensionProperties.data());
 
+#ifdef DEBUG_MODE
     for (const VkExtensionProperties& extension : supportedExtensionProperties) {
         std::cout << "Available Extension: " << extension.extensionName << std::endl;
     }
+#endif
 
     for (uint32_t i = 0; i < createInfo.enabledExtensionCount; i++) {
         if (!checkExtensionSupported(supportedExtensionProperties, createInfo.ppEnabledExtensionNames[i])) {
