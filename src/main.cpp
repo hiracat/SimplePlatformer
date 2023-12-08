@@ -79,6 +79,11 @@ void createVkInstance(VkInstance* instance) {
 struct AppData {
     GLFWwindow* window;
     VkInstance instance;
+#ifdef DEBUG_MODE
+    static constexpr bool enableValidationLayers = false;
+#else
+    static constexpr bool enableValidationLayers = false;
+#endif
 };
 
 void cleanup(AppData appdata) {
