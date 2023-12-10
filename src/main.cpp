@@ -7,9 +7,24 @@
 
 #include <GLFW/glfw3.h>
 #include <vulkan/vk_enum_string_helper.h>
+#include <vulkan/vk_platform.h>
 #include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
 #include "ansiescapecodes.h"
+
+#define DEBUG_MODE
+
+#ifdef DEBUG_MODE
+#define ENABLE_VALIDATION_LAYERS
+#endif
+
+VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+                                             VkDebugUtilsMessageTypeFlagsEXT messageType,
+                                             const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
+    std::cerr << ANSI_COLOR_RED << "validation layer says: " << pCallbackData->pMessage << std::endl;
+    return VK_FALSE;
+}
 
 bool checkExtensionSupported(const std::vector<VkExtensionProperties>& supportedExtensionProperties, const char* extensionName) {
     bool supported = false;
@@ -22,7 +37,44 @@ bool checkExtensionSupported(const std::vector<VkExtensionProperties>& supported
     return supported;
 }
 
-void createVkInstance(VkInstance* instance) {
+bool checkValidationLayerSupported(const std::vector<const char*>& validationLayers) {
+    uint32_t layerCount;
+    vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+
+    std::vector<VkLayerProperties> availableLayers(layerCount);
+    vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+
+    for (const char* layerName : validationLayers) {
+        bool layerFound = false;
+        for (const VkLayerProperties& layerProperties : availableLayers) {
+            if (strcmp(layerName, layerProperties.layerName) == 0) {
+                layerFound = true;
+                break;
+            }
+        }
+        if (!layerFound) {
+            std::cout << ANSI_COLOR_RED << "requested layer: " << layerName << " not available" << ANSI_RESET << std::endl;
+            return false;
+        }
+    }
+
+    return true;
+}
+
+std::vector<const char*> getRequredExtensions() {
+    uint32_t glfwExtensionCount;
+    const char** glfwExtensionNames = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+    uint32_t requiredExtensionCount;
+    std::vector<const char*> requiredExtensions(glfwExtensionNames, glfwExtensionNames + glfwExtensionCount);
+
+#ifdef ENABLE_VALIDATION_LAYERS
+    requiredExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+#endif
+    return requiredExtensions;
+}
+
+void createVkInstance(VkInstance* instance, std::vector<const char*> validationLayers) {
 
     VkApplicationInfo appInfo{
         .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
@@ -34,30 +86,37 @@ void createVkInstance(VkInstance* instance) {
         .apiVersion = VK_MAKE_VERSION(1, 3, 269),
     };
 
+    std::vector<const char*> requiredExtensions = getRequredExtensions();
+
     VkInstanceCreateInfo createInfo{
         .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
         .pNext = nullptr,
         .flags = 0,
         .pApplicationInfo = &appInfo,
+        // conditionally enable the vaildation layers later
         .enabledLayerCount = 0,
         .ppEnabledLayerNames = nullptr,
-        .enabledExtensionCount = 0,
-        .ppEnabledExtensionNames = nullptr,
+        .enabledExtensionCount = static_cast<uint32_t>(requiredExtensions.size()),
+        .ppEnabledExtensionNames = requiredExtensions.data(),
     };
 
-    createInfo.ppEnabledExtensionNames = glfwGetRequiredInstanceExtensions(&createInfo.enabledExtensionCount);
-
-    uint32_t supportedExtensionCount;
-    std::vector<VkExtensionProperties> supportedExtensionProperties;
-
-    vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensionCount, nullptr);
-    supportedExtensionProperties.resize(supportedExtensionCount);
-    vkEnumerateInstanceExtensionProperties(nullptr, &supportedExtensionCount, supportedExtensionProperties.data());
+    uint32_t extensionCount;
+    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+    std::vector<VkExtensionProperties> supportedExtensionProperties(extensionCount);
+    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, supportedExtensionProperties.data());
 
 #ifdef DEBUG_MODE
     for (const VkExtensionProperties& extension : supportedExtensionProperties) {
         std::cout << "Available Extension: " << extension.extensionName << std::endl;
     }
+#endif
+
+#ifdef ENABLE_VALIDATION_LAYERS
+    if (!checkValidationLayerSupported(validationLayers)) {
+        throw std::runtime_error("validation layers not supported");
+    };
+    createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+    createInfo.ppEnabledLayerNames = validationLayers.data();
 #endif
 
     for (uint32_t i = 0; i < createInfo.enabledExtensionCount; i++) {
@@ -76,20 +135,26 @@ void createVkInstance(VkInstance* instance) {
     }
 }
 
+void setupDebugMessanger() {
+}
+
+struct Window {
+    const uint32_t WIDTH = 800;
+    const uint32_t HEIGHT = 800;
+    GLFWwindow* windowPointer;
+};
+
 struct AppData {
-    GLFWwindow* window;
-    VkInstance instance;
-#ifdef DEBUG_MODE
-    static constexpr bool enableValidationLayers = false;
-#else
-    static constexpr bool enableValidationLayers = false;
-#endif
+    const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
+    Window window{};
+    VkInstance instance{};
+    VkDebugUtilsMessengerEXT debugMessenger;
 };
 
 void cleanup(AppData appdata) {
     vkDestroyInstance(appdata.instance, nullptr);
 
-    glfwDestroyWindow(appdata.window);
+    glfwDestroyWindow(appdata.window.windowPointer);
     glfwTerminate();
 }
 
@@ -99,14 +164,17 @@ int main() {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwInit();
 
-    appdata.window = glfwCreateWindow(800, 600, "bruh", nullptr, nullptr);
-    if (!appdata.window) {
+    appdata.window.windowPointer = glfwCreateWindow(appdata.window.WIDTH, appdata.window.HEIGHT, "bruh", nullptr, nullptr);
+    if (!appdata.window.windowPointer) {
         glfwTerminate();
         throw std::runtime_error("failed to create window");
     }
-    createVkInstance(&appdata.instance);
+    createVkInstance(&appdata.instance, appdata.validationLayers);
+#ifdef ENABLE_VALIDATION_LAYERS
+    setupDebugMessanger();
+#endif
 
-    while (!glfwWindowShouldClose(appdata.window)) {
+    while (!glfwWindowShouldClose(appdata.window.windowPointer)) {
         glfwPollEvents();
     }
 
