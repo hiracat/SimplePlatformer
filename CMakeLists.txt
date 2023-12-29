@@ -10,7 +10,8 @@ endif()
 add_executable(${PROJECT_NAME} "src/main.cpp")
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE DEBUG_MODE)
+else()
+    target_compile_definitions(${PROJECT_NAME} PRIVATE NDEBUG)
 endif()
 
 target_link_libraries(${PROJECT_NAME}  PRIVATE glfw vulkan)
