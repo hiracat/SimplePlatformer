@@ -13,9 +13,7 @@
 
 #include "ansiescapecodes.h"
 
-#define DEBUG_MODE
-
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
 #define ENABLE_VALIDATION_LAYERS
 #endif
 
@@ -105,7 +103,7 @@ void createVkInstance(VkInstance* instance, std::vector<const char*> validationL
     std::vector<VkExtensionProperties> supportedExtensionProperties(extensionCount);
     vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, supportedExtensionProperties.data());
 
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
     for (const VkExtensionProperties& extension : supportedExtensionProperties) {
         std::cout << "Available Extension: " << extension.extensionName << std::endl;
     }
