@@ -12,6 +12,7 @@
 #include <vulkan/vulkan_core.h>
 
 #include "ansiescapecodes.h"
+#include "window.h"
 
 #ifndef NDEBUG
 #define ENABLE_VALIDATION_LAYERS
@@ -155,12 +156,6 @@ void createVkInstance(VkInstance* instance, std::vector<const char*> validationL
     }
 }
 
-struct Window {
-    const uint32_t WIDTH = 800;
-    const uint32_t HEIGHT = 800;
-    GLFWwindow* windowPointer;
-};
-
 struct AppData {
     const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
     Window window{};
@@ -209,15 +204,7 @@ void cleanup(AppData appdata) {
 
 int main() {
     AppData appdata;
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwInit();
-
-    appdata.window.windowPointer = glfwCreateWindow(appdata.window.WIDTH, appdata.window.HEIGHT, "bruh", nullptr, nullptr);
-    if (!appdata.window.windowPointer) {
-        glfwTerminate();
-        throw std::runtime_error("failed to create window");
-    }
+    initializeWindow(appdata.window);
     createVkInstance(&appdata.instance, appdata.validationLayers);
 #ifdef ENABLE_VALIDATION_LAYERS
     setupDebugMessanger(appdata.instance, &appdata.debugMessenger);
