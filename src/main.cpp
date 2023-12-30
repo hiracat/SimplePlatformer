@@ -18,9 +18,11 @@
 #define ENABLE_VALIDATION_LAYERS
 #endif
 
-VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-                                             VkDebugUtilsMessageTypeFlagsEXT messageType,
-                                             const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
+VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT      messageSeverity,
+                                             VkDebugUtilsMessageTypeFlagsEXT             messageType,
+                                             const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+                                             void*                                       pUserData) {
+
     std::cerr << ANSI_COLOR_RED << "validation layer says: " << pCallbackData->pMessage << std::endl;
     return VK_FALSE;
 }
@@ -61,10 +63,10 @@ bool checkValidationLayerSupported(const std::vector<const char*>& validationLay
 }
 
 std::vector<const char*> getRequredExtensions() {
-    uint32_t glfwExtensionCount;
+    uint32_t     glfwExtensionCount;
     const char** glfwExtensionNames = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
-    uint32_t requiredExtensionCount;
+    uint32_t                 requiredExtensionCount;
     std::vector<const char*> requiredExtensions(glfwExtensionNames, glfwExtensionNames + glfwExtensionCount);
 
 #ifdef ENABLE_VALIDATION_LAYERS
@@ -93,26 +95,26 @@ void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& create
 void createVkInstance(VkInstance* instance, std::vector<const char*> validationLayers) {
 
     VkApplicationInfo appInfo{
-        .sType = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-        .pNext = nullptr,
-        .pApplicationName = "simple platformer",
+        .sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+        .pNext              = nullptr,
+        .pApplicationName   = "simple platformer",
         .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
-        .pEngineName = "no engine",
-        .engineVersion = VK_MAKE_VERSION(0, 0, 0),
-        .apiVersion = VK_MAKE_VERSION(1, 3, 269),
+        .pEngineName        = "no engine",
+        .engineVersion      = VK_MAKE_VERSION(0, 0, 0),
+        .apiVersion         = VK_MAKE_VERSION(1, 3, 269),
     };
 
     std::vector<const char*> requiredExtensions = getRequredExtensions();
 
     VkInstanceCreateInfo createInfo{
-        .sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-        .pNext = nullptr,
-        .flags = 0,
+        .sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+        .pNext            = nullptr,
+        .flags            = 0,
         .pApplicationInfo = &appInfo,
         // conditionally enable the vaildation layers later
-        .enabledLayerCount = 0,
-        .ppEnabledLayerNames = nullptr,
-        .enabledExtensionCount = static_cast<uint32_t>(requiredExtensions.size()),
+        .enabledLayerCount       = 0,
+        .ppEnabledLayerNames     = nullptr,
+        .enabledExtensionCount   = static_cast<uint32_t>(requiredExtensions.size()),
         .ppEnabledExtensionNames = requiredExtensions.data(),
     };
 
@@ -135,9 +137,9 @@ void createVkInstance(VkInstance* instance, std::vector<const char*> validationL
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
     PopulateDebugMessengerCreateInfo(debugCreateInfo);
 
-    createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+    createInfo.enabledLayerCount   = static_cast<uint32_t>(validationLayers.size());
     createInfo.ppEnabledLayerNames = validationLayers.data();
-    createInfo.pNext = &debugCreateInfo;
+    createInfo.pNext               = &debugCreateInfo;
 #endif
 
     for (uint32_t i = 0; i < createInfo.enabledExtensionCount; i++) {
@@ -158,13 +160,15 @@ void createVkInstance(VkInstance* instance, std::vector<const char*> validationL
 
 struct AppData {
     const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
-    Window window{};
-    VkInstance instance{};
-    VkDebugUtilsMessengerEXT debugMessenger;
+    Window                         window{};
+    VkInstance                     instance{};
+    VkDebugUtilsMessengerEXT       debugMessenger;
 };
 
-VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
-                                      const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pMessenger) {
+VkResult CreateDebugUtilsMessengerEXT(VkInstance                                instance,
+                                      const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+                                      const VkAllocationCallbacks*              pAllocator,
+                                      VkDebugUtilsMessengerEXT*                 pMessenger) {
     auto func =
         reinterpret_cast<PFN_vkCreateDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT"));
     if (func != nullptr) {
@@ -173,7 +177,8 @@ VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMes
         return VK_ERROR_EXTENSION_NOT_PRESENT;
     }
 }
-void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT pMessenger,
+void DestroyDebugUtilsMessengerEXT(VkInstance                   instance,
+                                   VkDebugUtilsMessengerEXT     pMessenger,
                                    const VkAllocationCallbacks* pAllocator) {
     auto func =
         reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT"));
