@@ -12,6 +12,7 @@
 #include <vulkan/vulkan_core.h>
 
 #include "ansiescapecodes.h"
+#include "physicaldevice.h"
 #include "window.h"
 
 #ifndef NDEBUG
@@ -162,6 +163,7 @@ struct AppData {
     const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
     Window                         window{};
     VkInstance                     instance{};
+    VkPhysicalDevice               physicalDevice = VK_NULL_HANDLE;
     VkDebugUtilsMessengerEXT       debugMessenger;
 };
 
@@ -214,6 +216,7 @@ int main() {
 #ifdef ENABLE_VALIDATION_LAYERS
     setupDebugMessanger(appdata.instance, &appdata.debugMessenger);
 #endif
+    pickPhysicalDevice(appdata.instance, appdata.physicalDevice);
 
     while (!glfwWindowShouldClose(appdata.window.windowPointer)) {
         glfwPollEvents();
