@@ -6,8 +6,9 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
+file(GLOB_RECURSE SOURCES "src/*.cpp")
 
-add_executable(${PROJECT_NAME} "src/main.cpp")
+add_executable(${PROJECT_NAME} ${SOURCES})
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
 else()
