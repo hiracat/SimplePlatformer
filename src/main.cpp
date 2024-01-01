@@ -161,10 +161,12 @@ void createVkInstance(VkInstance* instance, std::vector<const char*> validationL
 
 struct AppData {
     const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
+    VkDebugUtilsMessengerEXT       debugMessenger;
     Window                         window{};
     VkInstance                     instance{};
+    VkDevice                       device;
     VkPhysicalDevice               physicalDevice = VK_NULL_HANDLE;
-    VkDebugUtilsMessengerEXT       debugMessenger;
+    VkQueue                        graphicsQueue;
 };
 
 VkResult CreateDebugUtilsMessengerEXT(VkInstance                                instance,
@@ -200,6 +202,7 @@ void setupDebugMessanger(VkInstance& instance, VkDebugUtilsMessengerEXT* debugMe
 }
 
 void cleanup(AppData appdata) {
+    vkDestroyDevice(appdata.device, nullptr);
 #ifdef ENABLE_VALIDATION_LAYERS
     DestroyDebugUtilsMessengerEXT(appdata.instance, appdata.debugMessenger, nullptr);
 #endif
@@ -208,19 +211,72 @@ void cleanup(AppData appdata) {
     glfwDestroyWindow(appdata.window.windowPointer);
     glfwTerminate();
 }
+void createLogicalDevice(VkDevice                        device,
+                         VkPhysicalDevice                physicalDevice,
+                         const std::vector<const char*>& validationLayers,
+                         VkQueue                         graphicsQueue) {
+
+    std::cout << "before findQueueFAmilies in createLogicalDevice" << std::endl;
+    QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+    std::cout << "after findQueueFAmilies in createLogicalDevice" << std::endl;
+    float queuePriority = 1.0f;
+
+    VkDeviceQueueCreateInfo queueCreateInfo{
+        .sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
+        .queueFamilyIndex = indices.graphicsFamily.value(),
+        .queueCount       = 1,
+        .pQueuePriorities = &queuePriority,
+    };
+
+    VkPhysicalDeviceFeatures2 deviceFeatures{};
+
+    std::cout << "###########defined all the stuff idk" << std::endl;
+    VkDeviceCreateInfo createInfo{
+        .sType                = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
+        .queueCreateInfoCount = 1,
+        .pQueueCreateInfos    = &queueCreateInfo,
+
+        .enabledExtensionCount = 0,
+        .pEnabledFeatures      = &deviceFeatures.features,
+    };
+
+    std::cout << "###########defined all the stuff idk" << std::endl;
+
+#ifdef ENABLE_VALIDATION_LAYERS
+    createInfo.enabledLayerCount   = static_cast<uint32_t>(validationLayers.size());
+    createInfo.ppEnabledLayerNames = validationLayers.data();
+#else
+    createInfo.enabledLayerCount = 0;
+#endif
+    std::cout << "############defined all the stuff idk" << std::endl;
+
+    if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create logical device");
+    }
+    vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &graphicsQueue);
+}
 
 int main() {
+
     AppData appdata;
     initializeWindow(appdata.window);
+    std::cout << ANSI_COLOR_GREEN << " init window" << ANSI_RESET << std::endl;
     createVkInstance(&appdata.instance, appdata.validationLayers);
+    std::cout << "make vk instance" << std::endl;
 #ifdef ENABLE_VALIDATION_LAYERS
     setupDebugMessanger(appdata.instance, &appdata.debugMessenger);
+    std::cout << "setup debug messenger" << std::endl;
 #endif
     pickPhysicalDevice(appdata.instance, appdata.physicalDevice);
+    std::cout << "pick physical device" << std::endl;
+    createLogicalDevice(appdata.device, appdata.physicalDevice, appdata.validationLayers, appdata.graphicsQueue);
+    std::cout << "created logical device" << std::endl;
 
     while (!glfwWindowShouldClose(appdata.window.windowPointer)) {
         glfwPollEvents();
     }
 
+    std::cout << "window loop ended" << std::endl;
     cleanup(appdata);
+    std::cout << "all cleaned up" << std::endl;
 }
