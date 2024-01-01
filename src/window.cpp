@@ -1,16 +1,17 @@
+#include <cstdint>
+#include <iostream>
 #include <stdexcept>
 
 #include <GLFW/glfw3.h>
 
 #include "window.h"
 
-void initializeWindow(Window& window) {
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+void initializeWindow(GLFWwindow*& window, uint32_t width, uint32_t height, const char* name) {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwInit();
-    window.windowPointer = glfwCreateWindow(window.WIDTH, window.HEIGHT, "bruh", nullptr, nullptr);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    window = glfwCreateWindow(width, height, name, nullptr, nullptr);
 
-    if (!window.windowPointer) {
+    if (!window) {
         glfwTerminate();
         throw std::runtime_error("failed to create window");
     }

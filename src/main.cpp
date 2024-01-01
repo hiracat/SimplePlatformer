@@ -4,12 +4,11 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <vulkan/vulkan_core.h>
 
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <vulkan/vk_enum_string_helper.h>
-#include <vulkan/vk_platform.h>
-#include <vulkan/vulkan.h>
-#include <vulkan/vulkan_core.h>
 
 #include "ansiescapecodes.h"
 #include "physicaldevice.h"
@@ -201,25 +200,27 @@ void setupDebugMessanger(VkInstance& instance, VkDebugUtilsMessengerEXT* debugMe
     }
 }
 
-void cleanup(AppData appdata) {
-    vkDestroyDevice(appdata.device, nullptr);
+void cleanup(AppData& appdata) {
+
 #ifdef ENABLE_VALIDATION_LAYERS
     DestroyDebugUtilsMessengerEXT(appdata.instance, appdata.debugMessenger, nullptr);
 #endif
+    vkDestroyDevice(appdata.device, nullptr);
+    vkDestroySurfaceKHR(appdata.instance, appdata.window.surface, nullptr);
     vkDestroyInstance(appdata.instance, nullptr);
 
     glfwDestroyWindow(appdata.window.windowPointer);
     glfwTerminate();
 }
-void createLogicalDevice(VkDevice                        device,
-                         VkPhysicalDevice                physicalDevice,
-                         const std::vector<const char*>& validationLayers,
-                         VkQueue                         graphicsQueue) {
 
-    std::cout << "before findQueueFAmilies in createLogicalDevice" << std::endl;
-    QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
-    std::cout << "after findQueueFAmilies in createLogicalDevice" << std::endl;
-    float queuePriority = 1.0f;
+void createLogicalDevice(VkDevice                        device,
+                         const VkPhysicalDevice&         physicalDevice,
+                         const std::vector<const char*>& validationLayers,
+                         VkQueue                         graphicsQueue,
+                         const VkSurfaceKHR&             surface) {
+
+    QueueFamilyIndices indices       = findQueueFamilies(physicalDevice, surface);
+    float              queuePriority = 1.0f;
 
     VkDeviceQueueCreateInfo queueCreateInfo{
         .sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
@@ -230,7 +231,6 @@ void createLogicalDevice(VkDevice                        device,
 
     VkPhysicalDeviceFeatures2 deviceFeatures{};
 
-    std::cout << "###########defined all the stuff idk" << std::endl;
     VkDeviceCreateInfo createInfo{
         .sType                = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
         .queueCreateInfoCount = 1,
@@ -240,43 +240,45 @@ void createLogicalDevice(VkDevice                        device,
         .pEnabledFeatures      = &deviceFeatures.features,
     };
 
-    std::cout << "###########defined all the stuff idk" << std::endl;
-
 #ifdef ENABLE_VALIDATION_LAYERS
     createInfo.enabledLayerCount   = static_cast<uint32_t>(validationLayers.size());
     createInfo.ppEnabledLayerNames = validationLayers.data();
 #else
     createInfo.enabledLayerCount = 0;
 #endif
-    std::cout << "############defined all the stuff idk" << std::endl;
 
     if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device) != VK_SUCCESS) {
         throw std::runtime_error("failed to create logical device");
     }
     vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &graphicsQueue);
 }
+void createSurface(VkInstance instance, GLFWwindow* window, VkSurfaceKHR* surface) {
+
+    VkResult result = glfwCreateWindowSurface(instance, window, nullptr, surface);
+
+    if (result != VK_SUCCESS) {
+        std::cout << string_VkResult(result) << std::endl;
+        throw std::runtime_error("failed to create window surface");
+    }
+};
 
 int main() {
+    glfwInit();
 
-    AppData appdata;
-    initializeWindow(appdata.window);
-    std::cout << ANSI_COLOR_GREEN << " init window" << ANSI_RESET << std::endl;
+    AppData appdata{};
+    initializeWindow(appdata.window.windowPointer, 800, 600, "window");
     createVkInstance(&appdata.instance, appdata.validationLayers);
-    std::cout << "make vk instance" << std::endl;
 #ifdef ENABLE_VALIDATION_LAYERS
     setupDebugMessanger(appdata.instance, &appdata.debugMessenger);
-    std::cout << "setup debug messenger" << std::endl;
 #endif
-    pickPhysicalDevice(appdata.instance, appdata.physicalDevice);
-    std::cout << "pick physical device" << std::endl;
-    createLogicalDevice(appdata.device, appdata.physicalDevice, appdata.validationLayers, appdata.graphicsQueue);
-    std::cout << "created logical device" << std::endl;
+    createSurface(appdata.instance, appdata.window.windowPointer, &appdata.window.surface);
+    pickPhysicalDevice(appdata.instance, appdata.physicalDevice, appdata.window.surface);
+    createLogicalDevice(
+        appdata.device, appdata.physicalDevice, appdata.validationLayers, appdata.graphicsQueue, appdata.window.surface);
 
     while (!glfwWindowShouldClose(appdata.window.windowPointer)) {
         glfwPollEvents();
     }
 
-    std::cout << "window loop ended" << std::endl;
     cleanup(appdata);
-    std::cout << "all cleaned up" << std::endl;
 }

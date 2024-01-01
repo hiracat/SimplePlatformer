@@ -6,10 +6,11 @@
 
 struct QueueFamilyIndices {
     std::optional<uint32_t> graphicsFamily;
+    std::optional<uint32_t> presentFamily;
 
     bool isComplete();
 };
 
-void pickPhysicalDevice(VkInstance, VkPhysicalDevice&);
+void pickPhysicalDevice(VkInstance, VkPhysicalDevice&, const VkSurfaceKHR&);
 
-QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice&, const VkSurfaceKHR&);

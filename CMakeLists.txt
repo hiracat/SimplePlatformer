@@ -18,4 +18,4 @@ endif()
 find_package(glfw3 REQUIRED)
 find_package(Vulkan REQUIRED)
 
-target_link_libraries(${PROJECT_NAME}  PRIVATE glfw vulkan)
+target_link_libraries(${PROJECT_NAME}  PRIVATE vulkan glfw)

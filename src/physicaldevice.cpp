@@ -13,55 +13,54 @@
 #include "physicaldevice.h"
 
 bool QueueFamilyIndices::isComplete() {
-    return graphicsFamily.has_value();
+    return graphicsFamily.has_value() && presentFamily.has_value();
 }
 
-QueueFamilyIndices findQueueFamilies(VkPhysicalDevice physicalDevice) {
-    std::cout << "how the fuck did i get into find queue families" << std::endl;
+QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice& physicalDevice, const VkSurfaceKHR& surface) {
     QueueFamilyIndices indices;
 
     uint32_t queueFamilyCount{};
     vkGetPhysicalDeviceQueueFamilyProperties2(physicalDevice, &queueFamilyCount, nullptr);
-    std::cout << "if you see this im not dying of vkGet physicalDeviceProperties" << std::endl;
-
     std::vector<VkQueueFamilyProperties2> queueFamilies(queueFamilyCount);
+
     for (auto& queueFamily : queueFamilies) {
         queueFamily.sType = VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2;
         queueFamily.pNext = nullptr;
     }
     vkGetPhysicalDeviceQueueFamilyProperties2(physicalDevice, &queueFamilyCount, queueFamilies.data());
-    std::cout << ANSI_BG_COLOR_CYAN << "3##############before loop" << ANSI_RESET << std::endl;
 
     int i = 0;
     for (const auto& queueFamily : queueFamilies) {
+
+        VkBool32 presentSupport = false;
+        vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, i, surface, &presentSupport);
+        if (presentSupport) {
+            indices.presentFamily = i;
+        }
         if (queueFamily.queueFamilyProperties.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
             indices.graphicsFamily = i;
         }
-        std::cout << "4##############before loop" << std::endl;
         if (indices.isComplete()) {
             break;
         }
-        std::cout << "5##############before loop" << std::endl;
         i++;
     }
 
     return indices;
 }
 
-uint32_t scorePhysicalDevice(const VkPhysicalDevice& device) {
+uint32_t scorePhysicalDevice(const VkPhysicalDevice& device, const VkSurfaceKHR& surface) {
     VkPhysicalDeviceProperties2 deviceProperties{.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2, .pNext = nullptr};
     VkPhysicalDeviceFeatures2   deviceFeatures{.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2, .pNext = nullptr};
     vkGetPhysicalDeviceProperties2(device, &deviceProperties);
     vkGetPhysicalDeviceFeatures2(device, &deviceFeatures);
 
-    std::cout << "before find queueFamilies in score physical device" << std::endl;
-    QueueFamilyIndices indices = findQueueFamilies(device);
-    std::cout << "after find queueFamilies in score physical device" << std::endl;
+    QueueFamilyIndices indices = findQueueFamilies(device, surface);
 
     return indices.isComplete();
 }
 
-void pickPhysicalDevice(VkInstance instance, VkPhysicalDevice& physicalDevice) {
+void pickPhysicalDevice(VkInstance instance, VkPhysicalDevice& physicalDevice, const VkSurfaceKHR& surface) {
     uint32_t physicalDeviceCount{};
 
     vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, nullptr);
@@ -74,7 +73,7 @@ void pickPhysicalDevice(VkInstance instance, VkPhysicalDevice& physicalDevice) {
 
     std::multimap<uint32_t, VkPhysicalDevice> deviceScores;
     for (const auto& device : devices) {
-        deviceScores.insert(std::make_pair(scorePhysicalDevice(device), device));
+        deviceScores.insert(std::make_pair(scorePhysicalDevice(device, surface), device));
     }
     if (deviceScores.rbegin()->first > 0) {
         physicalDevice = deviceScores.rbegin()->second;
