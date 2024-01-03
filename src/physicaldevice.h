@@ -2,6 +2,7 @@
 
 #include <optional>
 
+#include <vector>
 #include <vulkan/vulkan_core.h>
 
 struct QueueFamilyIndices {
@@ -11,6 +12,12 @@ struct QueueFamilyIndices {
     bool isComplete();
 };
 
-void pickPhysicalDevice(VkInstance, VkPhysicalDevice&, const VkSurfaceKHR&);
+struct SwapChainSupportDetails {
+    VkSurfaceCapabilitiesKHR        capabilities;
+    std::vector<VkSurfaceFormatKHR> formats;
+    std::vector<VkPresentModeKHR>   presentModes;
+};
+
+void pickPhysicalDevice(VkInstance, VkPhysicalDevice&, const VkSurfaceKHR&, const std::vector<const char*>&);
 
 QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice&, const VkSurfaceKHR&);

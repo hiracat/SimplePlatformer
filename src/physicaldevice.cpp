@@ -3,7 +3,9 @@
 #include <map>
 #include <optional>
 #include <ostream>
+#include <set>
 #include <stdexcept>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -14,6 +16,26 @@
 
 bool QueueFamilyIndices::isComplete() {
     return graphicsFamily.has_value() && presentFamily.has_value();
+}
+
+SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface) {
+    SwapChainSupportDetails details;
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
+
+    uint32_t formatCount{};
+    vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
+    if (formatCount) {
+        details.formats.resize(formatCount);
+        vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
+    }
+
+    uint32_t presentModesCount{};
+    vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModesCount, nullptr);
+    if (presentModesCount) {
+        details.presentModes.resize(presentModesCount);
+        vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModesCount, details.presentModes.data());
+    }
+    return details;
 }
 
 QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice& physicalDevice, const VkSurfaceKHR& surface) {
@@ -49,18 +71,54 @@ QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice& physicalDevice, con
     return indices;
 }
 
-uint32_t scorePhysicalDevice(const VkPhysicalDevice& device, const VkSurfaceKHR& surface) {
+bool checkDeviceExtensionSupport(VkPhysicalDevice device, std::vector<const char*> deviceExtensions) {
+    uint32_t extensionCount;
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
+
+    std::vector<VkExtensionProperties> availableExtensions(extensionCount);
+    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
+
+    std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+    for (const auto& extensions : availableExtensions) {
+        requiredExtensions.erase(extensions.extensionName);
+    }
+    return requiredExtensions.empty();
+}
+
+uint32_t scorePhysicalDevice(const VkPhysicalDevice&         device,
+                             const VkSurfaceKHR&             surface,
+                             const std::vector<const char*>& deviceExtensions) {
+    uint32_t                    score = 1;
     VkPhysicalDeviceProperties2 deviceProperties{.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2, .pNext = nullptr};
     VkPhysicalDeviceFeatures2   deviceFeatures{.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2, .pNext = nullptr};
     vkGetPhysicalDeviceProperties2(device, &deviceProperties);
     vkGetPhysicalDeviceFeatures2(device, &deviceFeatures);
 
+    // keep this in the front so that function calls that need an extension from here dont crash it
+    if (!checkDeviceExtensionSupport(device, deviceExtensions)) {
+        return 0;
+    }
     QueueFamilyIndices indices = findQueueFamilies(device, surface);
+    if (indices.presentFamily != indices.graphicsFamily) {
+        score += 50;
+    }
+    if (!indices.isComplete()) {
+        return 0;
+    }
 
-    return indices.isComplete();
+    SwapChainSupportDetails swapChainSupport  = querySwapChainSupport(device, surface);
+    bool                    swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+    if (!swapChainAdequate) {
+        return 0;
+    }
+
+    return score;
 }
 
-void pickPhysicalDevice(VkInstance instance, VkPhysicalDevice& physicalDevice, const VkSurfaceKHR& surface) {
+void pickPhysicalDevice(VkInstance                      instance,
+                        VkPhysicalDevice&               physicalDevice,
+                        const VkSurfaceKHR&             surface,
+                        const std::vector<const char*>& deviceExtensions) {
     uint32_t physicalDeviceCount{};
 
     vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, nullptr);
@@ -73,7 +131,7 @@ void pickPhysicalDevice(VkInstance instance, VkPhysicalDevice& physicalDevice, c
 
     std::multimap<uint32_t, VkPhysicalDevice> deviceScores;
     for (const auto& device : devices) {
-        deviceScores.insert(std::make_pair(scorePhysicalDevice(device, surface), device));
+        deviceScores.insert(std::make_pair(scorePhysicalDevice(device, surface, deviceExtensions), device));
     }
     if (deviceScores.rbegin()->first > 0) {
         physicalDevice = deviceScores.rbegin()->second;

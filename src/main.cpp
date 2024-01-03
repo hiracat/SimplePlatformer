@@ -1,6 +1,7 @@
 #include <cstdint>
 #include <cstring>
 #include <iostream>
+#include <set>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -160,12 +161,14 @@ void createVkInstance(VkInstance* instance, std::vector<const char*> validationL
 
 struct AppData {
     const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
+    const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
     VkDebugUtilsMessengerEXT       debugMessenger;
     Window                         window{};
     VkInstance                     instance{};
     VkDevice                       device;
     VkPhysicalDevice               physicalDevice = VK_NULL_HANDLE;
     VkQueue                        graphicsQueue;
+    VkQueue                        presentQueue;
 };
 
 VkResult CreateDebugUtilsMessengerEXT(VkInstance                                instance,
@@ -203,28 +206,36 @@ void setupDebugMessanger(VkInstance& instance, VkDebugUtilsMessengerEXT* debugMe
 void createLogicalDevice(VkDevice&                       device,
                          const VkPhysicalDevice&         physicalDevice,
                          const std::vector<const char*>& validationLayers,
+                         const std::vector<const char*>& deviceExtensions,
                          VkQueue                         graphicsQueue,
+                         VkQueue                         presentQueue,
                          const VkSurfaceKHR&             surface) {
 
-    QueueFamilyIndices indices       = findQueueFamilies(physicalDevice, surface);
-    float              queuePriority = 1.0f;
+    QueueFamilyIndices                   indices = findQueueFamilies(physicalDevice, surface);
+    std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+    std::set<uint32_t>                   uniqueQueueFamilies = {indices.graphicsFamily.value(), indices.presentFamily.value()};
 
-    VkDeviceQueueCreateInfo queueCreateInfo{
-        .sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO,
-        .queueFamilyIndex = indices.graphicsFamily.value(),
-        .queueCount       = 1,
-        .pQueuePriorities = &queuePriority,
-    };
+    float queuePriority = 1.0f;
+    for (uint32_t queueFamily : uniqueQueueFamilies) {
+        VkDeviceQueueCreateInfo queueCreateInfo{};
+        queueCreateInfo.sType            = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+        queueCreateInfo.queueFamilyIndex = queueFamily;
+        queueCreateInfo.queueCount       = 1;
+        queueCreateInfo.pQueuePriorities = &queuePriority;
+
+        queueCreateInfos.push_back(queueCreateInfo);
+    }
 
     VkPhysicalDeviceFeatures2 deviceFeatures{};
 
     VkDeviceCreateInfo createInfo{
         .sType                = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-        .queueCreateInfoCount = 1,
-        .pQueueCreateInfos    = &queueCreateInfo,
+        .queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size()),
+        .pQueueCreateInfos    = queueCreateInfos.data(),
 
-        .enabledExtensionCount = 0,
-        .pEnabledFeatures      = &deviceFeatures.features,
+        .enabledExtensionCount   = static_cast<uint32_t>(deviceExtensions.size()),
+        .ppEnabledExtensionNames = deviceExtensions.data(),
+        .pEnabledFeatures        = &deviceFeatures.features,
     };
 
 #ifdef ENABLE_VALIDATION_LAYERS
@@ -238,6 +249,7 @@ void createLogicalDevice(VkDevice&                       device,
         throw std::runtime_error("failed to create logical device");
     }
     vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &graphicsQueue);
+    vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &presentQueue);
 }
 void createSurface(VkInstance instance, GLFWwindow* window, VkSurfaceKHR* surface) {
 
@@ -272,9 +284,16 @@ int main() {
     setupDebugMessanger(appdata.instance, &appdata.debugMessenger);
 #endif
     createSurface(appdata.instance, appdata.window.windowPointer, &appdata.window.surface);
-    pickPhysicalDevice(appdata.instance, appdata.physicalDevice, appdata.window.surface);
-    createLogicalDevice(
-        appdata.device, appdata.physicalDevice, appdata.validationLayers, appdata.graphicsQueue, appdata.window.surface);
+    pickPhysicalDevice(appdata.instance, appdata.physicalDevice, appdata.window.surface, appdata.deviceExtensions);
+    createLogicalDevice(appdata.device,
+                        appdata.physicalDevice,
+                        appdata.validationLayers,
+                        appdata.deviceExtensions,
+                        appdata.graphicsQueue,
+                        appdata.presentQueue,
+                        appdata.window.surface);
+    std::cout << "graphics queue: " << appdata.graphicsQueue << std::endl;
+    std::cout << "present  queue: " << appdata.presentQueue << std::endl;
 
     while (!glfwWindowShouldClose(appdata.window.windowPointer)) {
         glfwPollEvents();
