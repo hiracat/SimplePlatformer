@@ -249,7 +249,17 @@ void createSurface(VkInstance instance, GLFWwindow* window, VkSurfaceKHR* surfac
     }
 };
 
-void cleanup(AppData* appdata) {
+void cleanup(AppData& appdata) {
+    vkDestroyDevice(appdata.device, nullptr);
+    vkDestroySurfaceKHR(appdata.instance, appdata.window.surface, nullptr);
+
+#ifdef ENABLE_VALIDATION_LAYERS
+    DestroyDebugUtilsMessengerEXT(appdata.instance, appdata.debugMessenger, nullptr);
+#endif
+    vkDestroyInstance(appdata.instance, nullptr);
+
+    glfwDestroyWindow(appdata.window.windowPointer);
+    glfwTerminate();
 }
 
 int main() {
@@ -269,15 +279,5 @@ int main() {
     while (!glfwWindowShouldClose(appdata.window.windowPointer)) {
         glfwPollEvents();
     }
-
-    vkDestroyDevice(appdata.device, nullptr);
-    vkDestroySurfaceKHR(appdata.instance, appdata.window.surface, nullptr);
-
-#ifdef ENABLE_VALIDATION_LAYERS
-    DestroyDebugUtilsMessengerEXT(appdata.instance, appdata.debugMessenger, nullptr);
-#endif
-    vkDestroyInstance(appdata.instance, nullptr);
-
-    glfwDestroyWindow(appdata.window.windowPointer);
-    glfwTerminate();
+    cleanup(appdata);
 }
