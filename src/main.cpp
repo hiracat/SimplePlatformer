@@ -200,20 +200,7 @@ void setupDebugMessanger(VkInstance& instance, VkDebugUtilsMessengerEXT* debugMe
     }
 }
 
-void cleanup(AppData& appdata) {
-
-#ifdef ENABLE_VALIDATION_LAYERS
-    DestroyDebugUtilsMessengerEXT(appdata.instance, appdata.debugMessenger, nullptr);
-#endif
-    vkDestroyDevice(appdata.device, nullptr);
-    vkDestroySurfaceKHR(appdata.instance, appdata.window.surface, nullptr);
-    vkDestroyInstance(appdata.instance, nullptr);
-
-    glfwDestroyWindow(appdata.window.windowPointer);
-    glfwTerminate();
-}
-
-void createLogicalDevice(VkDevice                        device,
+void createLogicalDevice(VkDevice&                       device,
                          const VkPhysicalDevice&         physicalDevice,
                          const std::vector<const char*>& validationLayers,
                          VkQueue                         graphicsQueue,
@@ -262,6 +249,9 @@ void createSurface(VkInstance instance, GLFWwindow* window, VkSurfaceKHR* surfac
     }
 };
 
+void cleanup(AppData* appdata) {
+}
+
 int main() {
     glfwInit();
 
@@ -280,5 +270,14 @@ int main() {
         glfwPollEvents();
     }
 
-    cleanup(appdata);
+    vkDestroyDevice(appdata.device, nullptr);
+    vkDestroySurfaceKHR(appdata.instance, appdata.window.surface, nullptr);
+
+#ifdef ENABLE_VALIDATION_LAYERS
+    DestroyDebugUtilsMessengerEXT(appdata.instance, appdata.debugMessenger, nullptr);
+#endif
+    vkDestroyInstance(appdata.instance, nullptr);
+
+    glfwDestroyWindow(appdata.window.windowPointer);
+    glfwTerminate();
 }
