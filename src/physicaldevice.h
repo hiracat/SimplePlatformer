@@ -1,5 +1,6 @@
 #pragma once
 
+#include "window.h"
 #include <optional>
 
 #include <vector>
@@ -18,6 +19,6 @@ struct SwapChainSupportDetails {
     std::vector<VkPresentModeKHR>   presentModes;
 };
 
-void pickPhysicalDevice(VkInstance, VkPhysicalDevice&, const VkSurfaceKHR&, const std::vector<const char*>&);
-
+void               pickPhysicalDevice(VkInstance, VkPhysicalDevice&, const VkSurfaceKHR&, const std::vector<const char*>&);
 QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice&, const VkSurfaceKHR&);
+VkExtent2D         chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capiblilies, const Window& window);
