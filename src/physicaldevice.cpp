@@ -1,4 +1,7 @@
+#include <GLFW/glfw3.h>
+#include <algorithm>
 #include <cstdint>
+#include <limits>
 #include <map>
 #include <optional>
 #include <set>
@@ -10,6 +13,7 @@
 #include <vulkan/vulkan_core.h>
 
 #include "physicaldevice.h"
+#include "window.h"
 
 bool QueueFamilyIndices::isComplete() {
     return graphicsFamily.has_value() && presentFamily.has_value();
@@ -144,4 +148,31 @@ VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>
         }
     }
     return availableFormats[0];
+}
+
+VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& presentModes) {
+    for (const auto& presentMode : presentModes) {
+        if (presentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+            return presentMode;
+        }
+    }
+    return VK_PRESENT_MODE_FIFO_KHR; // this is the only present mode that is guaranteed
+}
+
+VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capiblilies, const Window& window) {
+    if (capiblilies.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
+        return capiblilies.currentExtent;
+    } else { // special case, where widow size does not have to match swapchain resolution in certian window managers
+        int width, height;
+        glfwGetFramebufferSize(window.windowPointer, &width, &height);
+
+        VkExtent2D actualExtent = {
+            static_cast<uint32_t>(width),
+            static_cast<uint32_t>(height),
+        };
+        actualExtent.width = std::clamp(actualExtent.width, capiblilies.minImageExtent.width, capiblilies.maxImageExtent.width);
+        actualExtent.height =
+            std::clamp(actualExtent.height, capiblilies.minImageExtent.height, capiblilies.maxImageExtent.height);
+        return actualExtent;
+    }
 }
