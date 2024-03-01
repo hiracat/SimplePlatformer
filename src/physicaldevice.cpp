@@ -1,8 +1,6 @@
 #include <cstdint>
-#include <iostream>
 #include <map>
 #include <optional>
-#include <ostream>
 #include <set>
 #include <stdexcept>
 #include <string>
@@ -11,7 +9,6 @@
 
 #include <vulkan/vulkan_core.h>
 
-#include "ansiescapecodes.h"
 #include "physicaldevice.h"
 
 bool QueueFamilyIndices::isComplete() {

@@ -11,7 +11,7 @@
 #include <GLFW/glfw3.h>
 #include <vulkan/vk_enum_string_helper.h>
 
-#include "ansiescapecodes.h"
+#include "debugprint.h"
 #include "physicaldevice.h"
 #include "window.h"
 
@@ -24,7 +24,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBits
                                              const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
                                              void*                                       pUserData) {
 
-    std::cerr << ANSI_COLOR_RED << "validation layer says: " << pCallbackData->pMessage << std::endl;
+    debugunknown("Validation layer says: " << pCallbackData->pMessage);
     return VK_FALSE;
 }
 
@@ -55,7 +55,7 @@ bool checkValidationLayerSupported(const std::vector<const char*>& validationLay
             }
         }
         if (!layerFound) {
-            std::cout << ANSI_COLOR_RED << "requested layer: " << layerName << " not available" << ANSI_RESET << std::endl;
+            debugerror("requested layer " << layerName << " not available");
             return false;
         }
     }
@@ -126,7 +126,7 @@ void createVkInstance(VkInstance* instance, std::vector<const char*> validationL
 
 #ifndef NDEBUG
     for (const VkExtensionProperties& extension : supportedExtensionProperties) {
-        std::cout << "Available Extension: " << extension.extensionName << std::endl;
+        debugnote("Available Extension: " << extension.extensionName);
     }
 #endif
 
@@ -154,7 +154,7 @@ void createVkInstance(VkInstance* instance, std::vector<const char*> validationL
     VkResult result;
 
     if ((result = vkCreateInstance(&createInfo, nullptr, instance)) != VK_SUCCESS) {
-        std::cerr << "result is: " << string_VkResult(result) << std::endl;
+        debugerror("creating instance failed with the error: " << string_VkResult(result));
         throw std::runtime_error("failed to create instance!");
     }
 }
@@ -256,7 +256,7 @@ void createSurface(VkInstance instance, GLFWwindow* window, VkSurfaceKHR* surfac
     VkResult result = glfwCreateWindowSurface(instance, window, nullptr, surface);
 
     if (result != VK_SUCCESS) {
-        std::cout << string_VkResult(result) << std::endl;
+        debugerror("creating window failed with the error: " << string_VkResult(result));
         throw std::runtime_error("failed to create window surface");
     }
 };
@@ -275,6 +275,7 @@ void cleanup(AppData& appdata) {
 }
 
 int main() {
+    debugnote("hello world this is kinda weird");
     glfwInit();
 
     AppData appdata{};
@@ -292,8 +293,8 @@ int main() {
                         appdata.graphicsQueue,
                         appdata.presentQueue,
                         appdata.window.surface);
-    std::cout << "graphics queue: " << appdata.graphicsQueue << std::endl;
-    std::cout << "present  queue: " << appdata.presentQueue << std::endl;
+    debugnote("graphics queue: " << appdata.graphicsQueue);
+    debugnote("present queue: " << appdata.presentQueue);
 
     while (!glfwWindowShouldClose(appdata.window.windowPointer)) {
         glfwPollEvents();
