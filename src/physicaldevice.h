@@ -19,6 +19,13 @@ struct SwapChainSupportDetails {
     std::vector<VkPresentModeKHR>   presentModes;
 };
 
-void               pickPhysicalDevice(VkInstance, VkPhysicalDevice&, const VkSurfaceKHR&, const std::vector<const char*>&);
-QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice&, const VkSurfaceKHR&);
-VkExtent2D         chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capiblilies, const Window& window);
+QueueFamilyIndices      findQueueFamilies(const VkPhysicalDevice&, const VkSurfaceKHR&);
+VkExtent2D              chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capiblilies, const Window& window);
+SwapChainSupportDetails querySwapChainSupport(const VkPhysicalDevice& physicalDevice, const VkSurfaceKHR& surface);
+VkSurfaceFormatKHR      chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+VkPresentModeKHR        chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& presentModes);
+VkExtent2D              chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capiblilies, const Window& window);
+void                    pickPhysicalDevice(VkInstance                      instance,
+                                           VkPhysicalDevice&               physicalDevice,
+                                           const VkSurfaceKHR&             surface,
+                                           const std::vector<const char*>& deviceExtensions);

@@ -8,4 +8,5 @@ fi
 pushd build
 make
 popd
+source compileshaders.sh
 ./build/SimplePlatformer

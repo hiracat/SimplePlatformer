@@ -1,5 +1,7 @@
+#include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <fstream>
 #include <iostream>
 #include <set>
 #include <stdexcept>
@@ -18,6 +20,24 @@
 #ifndef NDEBUG
 #define ENABLE_VALIDATION_LAYERS
 #endif
+
+std::vector<char> readFile(const std::string& filename) {
+    std::ifstream file(filename, std::ios::ate | std::ios::binary);
+
+    if (!file.is_open()) {
+        throw std::runtime_error("failed to open file!");
+    }
+
+    size_t fileSize = (size_t)file.tellg();
+
+    std::vector<char> buffer(fileSize);
+
+    file.seekg(0);
+    file.read(buffer.data(), fileSize);
+    file.close();
+
+    return buffer;
+}
 
 VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT      messageSeverity,
                                              VkDebugUtilsMessageTypeFlagsEXT             messageType,
@@ -158,6 +178,13 @@ void createVkInstance(VkInstance* instance, std::vector<const char*> validationL
         throw std::runtime_error("failed to create instance!");
     }
 }
+struct Swapchain {
+    VkSwapchainKHR           swapchain;
+    std::vector<VkImage>     images;
+    VkFormat                 format;
+    VkExtent2D               extent;
+    std::vector<VkImageView> imageViews;
+};
 
 struct AppData {
     const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
@@ -169,6 +196,7 @@ struct AppData {
     VkPhysicalDevice               physicalDevice = VK_NULL_HANDLE;
     VkQueue                        graphicsQueue;
     VkQueue                        presentQueue;
+    Swapchain                      swapchain;
 };
 
 VkResult CreateDebugUtilsMessengerEXT(VkInstance                                instance,
@@ -260,8 +288,121 @@ void createSurface(VkInstance instance, GLFWwindow* window, VkSurfaceKHR* surfac
         throw std::runtime_error("failed to create window surface");
     }
 };
+void createSwapChain(const VkPhysicalDevice& physicalDevice,
+                     const VkSurfaceKHR&     surface,
+                     const Window&           window,
+                     Swapchain&              swapchain,
+                     const VkDevice&         device) {
+
+    SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice, surface);
+    VkSurfaceFormatKHR      surfaceFormat    = chooseSwapSurfaceFormat(swapChainSupport.formats);
+    VkPresentModeKHR        presentMode      = chooseSwapPresentMode(swapChainSupport.presentModes);
+    VkExtent2D              extent           = chooseSwapExtent(swapChainSupport.capabilities, window);
+    uint32_t                imageCount       = swapChainSupport.capabilities.minImageCount + 1;
+
+    if (imageCount > swapChainSupport.capabilities.maxImageCount && swapChainSupport.capabilities.maxImageCount != 0) {
+        imageCount = swapChainSupport.capabilities.maxImageCount;
+    }
+
+    VkSwapchainCreateInfoKHR createInfo{};
+    createInfo.sType   = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+    createInfo.surface = surface;
+
+    createInfo.minImageCount    = imageCount;
+    createInfo.minImageCount    = 5;
+    createInfo.imageFormat      = surfaceFormat.format;
+    createInfo.imageColorSpace  = surfaceFormat.colorSpace;
+    createInfo.imageExtent      = extent;
+    createInfo.imageArrayLayers = 1;
+    createInfo.imageUsage       = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+    QueueFamilyIndices indices              = findQueueFamilies(physicalDevice, surface);
+    uint32_t           queueFamilyIndices[] = {indices.graphicsFamily.value(), indices.presentFamily.value()};
+
+    if (indices.presentFamily.value() == indices.graphicsFamily.value()) {
+        createInfo.imageSharingMode      = VK_SHARING_MODE_EXCLUSIVE;
+        createInfo.queueFamilyIndexCount = 0;
+        createInfo.pQueueFamilyIndices   = nullptr;
+        debugnote("graphics and presentation queus are the same");
+    } else {
+        createInfo.imageSharingMode      = VK_SHARING_MODE_CONCURRENT;
+        createInfo.queueFamilyIndexCount = 2;
+        createInfo.pQueueFamilyIndices   = queueFamilyIndices;
+        debugnote("graphics and presentation queus are different");
+    }
+    createInfo.preTransform   = swapChainSupport.capabilities.currentTransform;
+    createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+    createInfo.presentMode    = presentMode;
+    createInfo.clipped        = VK_TRUE;
+    createInfo.oldSwapchain   = VK_NULL_HANDLE;
+
+    if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapchain.swapchain) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create swapchain");
+    }
+
+    vkGetSwapchainImagesKHR(device, swapchain.swapchain, &imageCount, nullptr);
+    swapchain.images.resize(imageCount);
+    vkGetSwapchainImagesKHR(device, swapchain.swapchain, &imageCount, swapchain.images.data());
+
+    swapchain.format = surfaceFormat.format;
+    swapchain.extent = extent;
+}
+
+void createImageViews(Swapchain& swapchain, const VkDevice& device) {
+    swapchain.imageViews.resize(swapchain.images.size());
+    for (size_t i = 0; i < swapchain.images.size(); i++) {
+        VkImageViewCreateInfo createInfo{};
+        createInfo.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+        createInfo.image                           = swapchain.images[i];
+        createInfo.viewType                        = VK_IMAGE_VIEW_TYPE_2D;
+        createInfo.format                          = swapchain.format;
+        createInfo.components.r                    = VK_COMPONENT_SWIZZLE_IDENTITY;
+        createInfo.components.g                    = VK_COMPONENT_SWIZZLE_IDENTITY;
+        createInfo.components.b                    = VK_COMPONENT_SWIZZLE_IDENTITY;
+        createInfo.components.a                    = VK_COMPONENT_SWIZZLE_IDENTITY;
+        createInfo.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+        createInfo.subresourceRange.baseMipLevel   = 0;
+        createInfo.subresourceRange.levelCount     = 1;
+        createInfo.subresourceRange.baseArrayLayer = 0;
+        createInfo.subresourceRange.layerCount     = 1;
+        if (vkCreateImageView(device, &createInfo, nullptr, &swapchain.imageViews[i]) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create image views");
+        }
+    }
+}
+
+VkShaderModule createShaderModule(const VkDevice& device, const std::vector<char>& code) {
+    VkShaderModuleCreateInfo createInfo{};
+    createInfo.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    createInfo.codeSize = code.size();
+    createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data()); // bc this is a vector the allocator makes sure the pointer
+                                                                       // already satisfies the worst case allignment requirements
+    VkShaderModule shaderModule;
+    if (vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create shader module");
+    }
+    return shaderModule;
+}
+
+void createGraphicsPipeline(const VkDevice& device) {
+    auto vertShaderCode = readFile("build/shaders/vert.spv");
+    auto fragShaderCode = readFile("build/shaders/frag.spv");
+
+    // these are used when graphics pipeline is created, so we can destroy them right after we finish creation in this function
+    VkShaderModule vertShaderModule = createShaderModule(device, vertShaderCode);
+    VkShaderModule fragShaderModule = createShaderModule(device, fragShaderCode);
+
+    vkDestroyShaderModule(device, fragShaderModule, nullptr);
+    vkDestroyShaderModule(device, vertShaderModule, nullptr);
+}
 
 void cleanup(AppData& appdata) {
+    for (auto& imageView : appdata.swapchain.imageViews) {
+        vkDestroyImageView(appdata.device, imageView, nullptr);
+    }
+
+    vkDestroySwapchainKHR(appdata.device, appdata.swapchain.swapchain, nullptr);
+
     vkDestroyDevice(appdata.device, nullptr);
     vkDestroySurfaceKHR(appdata.instance, appdata.window.surface, nullptr);
 
@@ -293,6 +434,11 @@ int main() {
                         appdata.graphicsQueue,
                         appdata.presentQueue,
                         appdata.window.surface);
+
+    createSwapChain(appdata.physicalDevice, appdata.window.surface, appdata.window, appdata.swapchain, appdata.device);
+    createImageViews(appdata.swapchain, appdata.device);
+    createGraphicsPipeline();
+
     debugnote("graphics queue: " << appdata.graphicsQueue);
     debugnote("present queue: " << appdata.presentQueue);
 
