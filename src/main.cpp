@@ -392,6 +392,29 @@ void createGraphicsPipeline(const VkDevice& device) {
     VkShaderModule vertShaderModule = createShaderModule(device, vertShaderCode);
     VkShaderModule fragShaderModule = createShaderModule(device, fragShaderCode);
 
+    VkPipelineShaderStageCreateInfo vertShaderStageCreateInfo{};
+    vertShaderStageCreateInfo.sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    vertShaderStageCreateInfo.stage  = VK_SHADER_STAGE_VERTEX_BIT;
+    vertShaderStageCreateInfo.module = vertShaderModule;
+    vertShaderStageCreateInfo.pName  = "main";
+
+    VkPipelineShaderStageCreateInfo fragShaderStageCreateInfo{};
+    fragShaderStageCreateInfo.sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    fragShaderStageCreateInfo.stage  = VK_SHADER_STAGE_VERTEX_BIT;
+    fragShaderStageCreateInfo.module = fragShaderModule;
+    fragShaderStageCreateInfo.pName  = "main";
+
+    VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageCreateInfo, fragShaderStageCreateInfo};
+
+    std::vector<VkDynamicState> dynamicStates = {
+        VK_DYNAMIC_STATE_SCISSOR,
+        VK_DYNAMIC_STATE_VIEWPORT,
+    };
+    VkPipelineDynamicStateCreateInfo dynamicState{};
+    dynamicState.sType             = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+    dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
+    dynamicState.pDynamicStates    = dynamicStates.data();
+
     vkDestroyShaderModule(device, fragShaderModule, nullptr);
     vkDestroyShaderModule(device, vertShaderModule, nullptr);
 }
