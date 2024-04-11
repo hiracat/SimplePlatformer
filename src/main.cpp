@@ -541,13 +541,23 @@ int main() {
 
     createSwapChain(appdata.physicalDevice, appdata.window.surface, appdata.window, appdata.swapchain, appdata.device);
     createImageViews(appdata.swapchain, appdata.device);
-    createGraphicsPipeline();
+    createGraphicsPipeline(appdata.device, appdata.swapchain, appdata.pipelineLayout);
 
     debugnote("graphics queue: " << appdata.graphicsQueue);
     debugnote("present queue: " << appdata.presentQueue);
 
-    while (!glfwWindowShouldClose(appdata.window.windowPointer)) {
+    bool windowShouldClose = false;
+
+    while (!glfwWindowShouldClose(appdata.window.windowPointer) && !windowShouldClose) {
         glfwPollEvents();
+        std::string input;
+        std::getline(std::cin, input);
+        if (input == "quit") {
+            windowShouldClose = true;
+            debugnote("quitting");
+        } else {
+            debugwarn("unknown command: " << input);
+        }
     }
     cleanup(appdata);
 }
