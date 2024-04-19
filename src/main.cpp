@@ -84,10 +84,9 @@ bool checkValidationLayerSupported(const std::vector<const char*>& validationLay
 }
 
 std::vector<const char*> getRequredExtensions() {
-    uint32_t     glfwExtensionCount;
-    const char** glfwExtensionNames = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-    uint32_t                 requiredExtensionCount;
+    // NOTE: get the required extensions by glfw
+    uint32_t                 glfwExtensionCount;
+    const char**             glfwExtensionNames = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
     std::vector<const char*> requiredExtensions(glfwExtensionNames, glfwExtensionNames + glfwExtensionCount);
 
 #ifdef ENABLE_VALIDATION_LAYERS
@@ -200,6 +199,7 @@ struct AppData {
     VkPipelineLayout               pipelineLayout;
 };
 
+// this function is not automatically loaded so it needs to be manually loaded
 VkResult CreateDebugUtilsMessengerEXT(VkInstance                                instance,
                                       const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
                                       const VkAllocationCallbacks*              pAllocator,
@@ -520,10 +520,10 @@ void cleanup(AppData& appdata) {
 }
 
 int main() {
-    debugnote("hello world this is kinda weird");
+    debugnote("ig we're at it again yay have fun");
     glfwInit();
 
-    AppData appdata{};
+    AppData appdata{}; // this struct holds all the stuff that has to be global
     initializeWindow(appdata.window.windowPointer, 800, 600, "window");
     createVkInstance(&appdata.instance, appdata.validationLayers);
 #ifdef ENABLE_VALIDATION_LAYERS
