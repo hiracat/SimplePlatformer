@@ -199,6 +199,8 @@ struct AppData {
     VkPipelineLayout               pipelineLayout;
     VkRenderPass                   renderPass;
     VkPipeline                     graphicsPipeline;
+    std::vector<VkFramebuffer>     swapChainFramebuffers;
+    VkCommandPool                  commandPool;
 };
 
 // this function is not automatically loaded so it needs to be manually loaded
@@ -312,7 +314,6 @@ void createSwapChain(const VkPhysicalDevice& physicalDevice,
     createInfo.surface = surface;
 
     createInfo.minImageCount    = imageCount;
-    createInfo.minImageCount    = 5;
     createInfo.imageFormat      = surfaceFormat.format;
     createInfo.imageColorSpace  = surfaceFormat.colorSpace;
     createInfo.imageExtent      = extent;
@@ -533,6 +534,11 @@ void createGraphicsPipeline(const VkDevice&   device,
 }
 
 void cleanup(AppData& appdata) {
+    vkDestroyCommandPool(appdata.device, appdata.commandPool, nullptr);
+    for (auto framebuffer : appdata.swapChainFramebuffers) {
+        vkDestroyFramebuffer(appdata.device, framebuffer, nullptr);
+    }
+
     vkDestroyPipeline(appdata.device, appdata.graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(appdata.device, appdata.pipelineLayout, nullptr);
     vkDestroyRenderPass(appdata.device, appdata.renderPass, nullptr);
@@ -588,6 +594,42 @@ void createRenderPass(const VkFormat& swapchainFormat, VkRenderPass& renderPass,
     }
 }
 
+void createFramebuffers(std::vector<VkFramebuffer>&     swapchainFrameBuffers,
+                        const std::vector<VkImageView>& swapchainImageViews,
+                        const VkRenderPass&             renderPass,
+                        const VkExtent2D&               swapchainExtent,
+                        const VkDevice&                 device) {
+    swapchainFrameBuffers.resize(swapchainImageViews.size());
+
+    for (size_t i = 0; i < swapchainImageViews.size(); i++) {
+        VkImageView             attachments[] = {swapchainImageViews[i]}; // as an array because there can be multiple attachments
+        VkFramebufferCreateInfo framebufferInfo{};
+        framebufferInfo.sType           = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+        framebufferInfo.renderPass      = renderPass;
+        framebufferInfo.attachmentCount = 1;
+        framebufferInfo.pAttachments    = attachments;
+        framebufferInfo.width           = swapchainExtent.width;
+        framebufferInfo.height          = swapchainExtent.height;
+        framebufferInfo.layers          = 1;
+        if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &swapchainFrameBuffers[i]) != VK_SUCCESS) {
+            throw std::runtime_error("failed to create framebuffer");
+        }
+    }
+}
+void createCommandPool(const VkPhysicalDevice& physicalDevice,
+                       const VkSurfaceKHR&     surface,
+                       VkCommandPool&          commandPool,
+                       const VkDevice&         device) {
+    QueueFamilyIndices      queueFamilyIndices = findQueueFamilies(physicalDevice, surface);
+    VkCommandPoolCreateInfo poolInfo{};
+    poolInfo.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+    poolInfo.flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
+    poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
+    if (vkCreateCommandPool(device, &poolInfo, nullptr, &commandPool) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create command pool!");
+    }
+}
+
 int main() {
     debugnote("ig we're at it again yay have fun");
     glfwInit();
@@ -613,6 +655,12 @@ int main() {
     createRenderPass(appdata.swapchain.format, appdata.renderPass, appdata.device);
     createGraphicsPipeline(
         appdata.device, appdata.swapchain, appdata.pipelineLayout, appdata.renderPass, appdata.graphicsPipeline);
+    createFramebuffers(appdata.swapChainFramebuffers,
+                       appdata.swapchain.imageViews,
+                       appdata.renderPass,
+                       appdata.swapchain.extent,
+                       appdata.device);
+    createCommandPool(appdata.physicalDevice, appdata.window.surface, appdata.commandPool, appdata.device);
 
     debugnote("graphics queue: " << appdata.graphicsQueue);
     debugnote("present queue: " << appdata.presentQueue);

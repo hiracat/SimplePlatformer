@@ -41,6 +41,7 @@ SwapChainSupportDetails querySwapChainSupport(const VkPhysicalDevice& physicalDe
     return details;
 }
 
+// requires vksurface to determine if a queue family supports presentation to a given surface
 QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice& physicalDevice, const VkSurfaceKHR& surface) {
     QueueFamilyIndices indices;
 
