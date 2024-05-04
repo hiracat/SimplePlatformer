@@ -185,6 +185,11 @@ struct Swapchain {
     std::vector<VkImageView> imageViews;
 };
 
+struct SyncObjects {
+    VkSemaphore imageAvailableSemaphore, renderFininshedSemaphore;
+    VkFence     inFlightFence;
+};
+
 struct AppData {
     const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
     const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
@@ -202,6 +207,7 @@ struct AppData {
     std::vector<VkFramebuffer>     swapChainFramebuffers;
     VkCommandPool                  commandPool;
     VkCommandBuffer                commandBuffer;
+    SyncObjects                    syncObjects;
 };
 
 // this function is not automatically loaded so it needs to be manually loaded
@@ -699,6 +705,17 @@ void recordCommandBuffer(VkCommandBuffer      commandBuffer,
 void drawFrame() {
 }
 
+void createSyncObjects(SyncObjects& syncObjects, const VkDevice& device) {
+    VkSemaphoreCreateInfo semaphoreInfo;
+    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+    VkFenceCreateInfo fenceInfo{};
+    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+
+    if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &syncObjects.imageAvailableSemaphore)) {
+    }
+}
+
 int main() {
     debugnote("ig we're at it again yay have fun");
     glfwInit();
@@ -731,6 +748,7 @@ int main() {
                        appdata.device);
     createCommandPool(appdata.physicalDevice, appdata.window.surface, appdata.commandPool, appdata.device);
     createCommandBuffer(appdata.device, appdata.commandPool, appdata.commandBuffer);
+    createSyncObjects(appdata.syncObjects, appdata.device);
 
     debugnote("graphics queue: " << appdata.graphicsQueue);
     debugnote("present queue: " << appdata.presentQueue);
