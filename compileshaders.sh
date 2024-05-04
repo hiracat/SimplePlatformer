@@ -1,5 +1,5 @@
 #!/bin/bash
 
-glslc -fshader-stage=vertex src/shaders/vertex.glsl -o build/shaders/vert.spv
-glslc -fshader-stage=fragment src/shaders/fragment.glsl -o build/shaders/frag.spv
+glslc -fshader-stage=vertex src/game/shaders/vertex.glsl -o build/shaders/vert.spv
+glslc -fshader-stage=fragment src/game/shaders/fragment.glsl -o build/shaders/frag.spv
 echo "built shaders"

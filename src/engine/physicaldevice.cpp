@@ -12,7 +12,7 @@
 
 #include <vulkan/vulkan_core.h>
 
-#include "debugprint.h"
+#include "../utils/debugprint.h"
 #include "physicaldevice.h"
 #include "window.h"
 
