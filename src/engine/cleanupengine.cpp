@@ -2,13 +2,10 @@
 #include <vulkan/vulkan_core.h>
 
 #include "../compilesettings.h"
-#include "../game/main.h"
+#include "enginedata.h"
 
-void DestroyDebugUtilsMessengerEXT(VkInstance                   instance,
-                                   VkDebugUtilsMessengerEXT     pMessenger,
-                                   const VkAllocationCallbacks* pAllocator) {
-    auto func =
-        reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT"));
+void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT pMessenger, const VkAllocationCallbacks* pAllocator) {
+    auto func = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT"));
     if (func != nullptr) {
         return func(instance, pMessenger, pAllocator);
     }

@@ -1,4 +1,4 @@
 #pragma once
-#include "../game/main.h"
+#include "enginedata.h"
 
 void cleanup(EngineData& enginedata);

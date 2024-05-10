@@ -1,15 +1,13 @@
 #include <cstring>
 #include <vulkan/vulkan_core.h>
 
-#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <vulkan/vk_enum_string_helper.h>
 
 #include "../engine/cleanupengine.h"
+#include "../engine/enginedata.h"
 #include "../engine/initengine.h"
 #include "../engine/vulkan/rendering.h"
-#include "../engine/window.h"
-#include "main.h"
 
 int main() {
     EngineData enginedata{}; // this struct holds all the stuff that has to be global
