@@ -4,8 +4,7 @@
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
-// FIX: remove this when a possibility
-#define ENABLE_VALIDATION_LAYERS
+#include "../../compilesettings.h"
 
 void createLogicalDevice(VkDevice&                       device,
                          const VkPhysicalDevice          physicalDevice,

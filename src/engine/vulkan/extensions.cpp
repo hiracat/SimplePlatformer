@@ -3,6 +3,8 @@
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
+#include "../../compilesettings.h"
+
 bool checkExtensionSupported(const std::vector<VkExtensionProperties>& supportedExtensionProperties, const char* extensionName) {
     bool supported = false;
     for (const VkExtensionProperties& extension : supportedExtensionProperties) {

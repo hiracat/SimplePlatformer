@@ -11,10 +11,6 @@
 #include "../engine/window.h"
 #include "main.h"
 
-#ifndef NDEBUG
-#define ENABLE_VALIDATION_LAYERS
-#endif
-
 int main() {
     AppData appdata{}; // this struct holds all the stuff that has to be global
     initEngine(appdata);

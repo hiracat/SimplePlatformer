@@ -51,7 +51,7 @@ void setupDebugMessanger(VkInstance instance, VkDebugUtilsMessengerEXT* debugMes
 
     VkResult result;
 
-    if ((result = CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, debugMessenger)) == VK_SUCCESS) {
+    if ((result = CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, debugMessenger)) != VK_SUCCESS) {
         debugerror(string_VkResult(result));
         throw std::runtime_error("failed to set up debug messeneger");
     }

@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 #include <vulkan/vk_enum_string_helper.h>
 
+#include "../compilesettings.h"
 #include "../engine/vulkan/physicaldevice.h"
 #include "../engine/window.h"
 #include "../game/main.h"
@@ -17,10 +18,6 @@
 #include "vulkan/renderpass.h"
 #include "vulkan/syncronization.h"
 #include "vulkan/validationlayers.h"
-
-#ifndef NDEBUG
-#define ENABLE_VALIDATION_LAYERS
-#endif
 
 void initEngine(AppData& appdata) {
     debugnote("ig we're at it again yay have fun");

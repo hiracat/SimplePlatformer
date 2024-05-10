@@ -1,6 +1,7 @@
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan_core.h>
 
+#include "../compilesettings.h"
 #include "../game/main.h"
 
 void DestroyDebugUtilsMessengerEXT(VkInstance                   instance,

@@ -2,8 +2,10 @@
 #include <vulkan/vk_enum_string_helper.h>
 #include <vulkan/vulkan_core.h>
 
+#include "../../compilesettings.h"
 #include "../../utils/debugprint.h"
 #include "extensions.h"
+#include "validationlayers.h"
 
 void createVkInstance(VkInstance& instance, const std::vector<const char*>& validationLayers) {
 
