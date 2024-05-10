@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <limits>
 #include <map>
-#include <optional>
 #include <set>
 #include <stdexcept>
 #include <string>
@@ -12,33 +11,11 @@
 
 #include <vulkan/vulkan_core.h>
 
-#include "../utils/debugprint.h"
+#include "../window.h"
 #include "physicaldevice.h"
-#include "window.h"
 
 bool QueueFamilyIndices::isComplete() {
     return graphicsFamily.has_value() && presentFamily.has_value();
-}
-
-SwapChainSupportDetails querySwapChainSupport(const VkPhysicalDevice& physicalDevice, const VkSurfaceKHR& surface) {
-    SwapChainSupportDetails details;
-    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(physicalDevice, surface, &details.capabilities);
-
-    uint32_t formatCount{};
-    vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, nullptr);
-    if (formatCount) {
-        details.formats.resize(formatCount);
-        vkGetPhysicalDeviceSurfaceFormatsKHR(physicalDevice, surface, &formatCount, details.formats.data());
-    }
-
-    uint32_t presentModesCount{};
-    vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModesCount, nullptr);
-    if (presentModesCount) {
-        details.presentModes.resize(presentModesCount);
-        vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModesCount, details.presentModes.data());
-    }
-    debugnote("swapchain min images from in query swapchain support: " << details.capabilities.minImageCount);
-    return details;
 }
 
 // requires vksurface to determine if a queue family supports presentation to a given surface
@@ -119,9 +96,9 @@ uint32_t scorePhysicalDevice(const VkPhysicalDevice&         device,
     return score;
 }
 
-void pickPhysicalDevice(VkInstance                      instance,
+void pickPhysicalDevice(const VkInstance                instance,
                         VkPhysicalDevice&               physicalDevice,
-                        const VkSurfaceKHR&             surface,
+                        const VkSurfaceKHR              surface,
                         const std::vector<const char*>& deviceExtensions) {
     uint32_t physicalDeviceCount{};
 
