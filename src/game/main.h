@@ -7,7 +7,7 @@
 #include "../engine/vulkan/syncronization.h"
 #include "../engine/window.h"
 
-struct AppData {
+struct EngineData {
     const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
     const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
     VkDebugUtilsMessengerEXT       debugMessenger;

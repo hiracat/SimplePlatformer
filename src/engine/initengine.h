@@ -3,4 +3,4 @@
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
-void initEngine(AppData& appdata);
+void initEngine(EngineData& enginedata);

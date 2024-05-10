@@ -19,39 +19,39 @@
 #include "vulkan/syncronization.h"
 #include "vulkan/validationlayers.h"
 
-void initEngine(AppData& appdata) {
+void initEngine(EngineData& enginedata) {
     debugnote("ig we're at it again yay have fun");
     glfwInit();
 
-    initializeWindow(appdata.window.windowPointer, 800, 600, "window");
-    createVkInstance(appdata.instance, appdata.validationLayers);
+    initializeWindow(enginedata.window.windowPointer, 800, 600, "window");
+    createVkInstance(enginedata.instance, enginedata.validationLayers);
 #ifdef ENABLE_VALIDATION_LAYERS
-    setupDebugMessanger(appdata.instance, &appdata.debugMessenger);
+    setupDebugMessanger(enginedata.instance, &enginedata.debugMessenger);
 #endif
-    createSurface(appdata.instance, appdata.window.windowPointer, &appdata.window.surface);
-    pickPhysicalDevice(appdata.instance, appdata.physicalDevice, appdata.window.surface, appdata.deviceExtensions);
+    createSurface(enginedata.instance, enginedata.window.windowPointer, &enginedata.window.surface);
+    pickPhysicalDevice(enginedata.instance, enginedata.physicalDevice, enginedata.window.surface, enginedata.deviceExtensions);
 
-    createLogicalDevice(appdata.device,
-                        appdata.physicalDevice,
-                        appdata.validationLayers,
-                        appdata.deviceExtensions,
-                        appdata.graphicsQueue,
-                        appdata.presentQueue,
-                        appdata.window.surface);
+    createLogicalDevice(enginedata.device,
+                        enginedata.physicalDevice,
+                        enginedata.validationLayers,
+                        enginedata.deviceExtensions,
+                        enginedata.graphicsQueue,
+                        enginedata.presentQueue,
+                        enginedata.window.surface);
 
-    createSwapChain(appdata.physicalDevice, appdata.window.surface, appdata.window, appdata.swapchain, appdata.device);
-    createRenderPass(appdata.swapchain.format, appdata.renderPass, appdata.device);
+    createSwapChain(enginedata.physicalDevice, enginedata.window.surface, enginedata.window, enginedata.swapchain, enginedata.device);
+    createRenderPass(enginedata.swapchain.format, enginedata.renderPass, enginedata.device);
     createGraphicsPipeline(
-        appdata.device, appdata.swapchain, appdata.pipelineLayout, appdata.renderPass, appdata.graphicsPipeline);
-    createFramebuffers(appdata.swapchainFramebuffers,
-                       appdata.swapchain.imageViews,
-                       appdata.renderPass,
-                       appdata.swapchain.extent,
-                       appdata.device);
-    createCommandPool(appdata.physicalDevice, appdata.window.surface, appdata.commandPool, appdata.device);
-    createCommandBuffer(appdata.device, appdata.commandPool, appdata.commandBuffer);
-    createSyncObjects(appdata.syncObjects, appdata.device);
+        enginedata.device, enginedata.swapchain, enginedata.pipelineLayout, enginedata.renderPass, enginedata.graphicsPipeline);
+    createFramebuffers(enginedata.swapchainFramebuffers,
+                       enginedata.swapchain.imageViews,
+                       enginedata.renderPass,
+                       enginedata.swapchain.extent,
+                       enginedata.device);
+    createCommandPool(enginedata.physicalDevice, enginedata.window.surface, enginedata.commandPool, enginedata.device);
+    createCommandBuffer(enginedata.device, enginedata.commandPool, enginedata.commandBuffer);
+    createSyncObjects(enginedata.syncObjects, enginedata.device);
 
-    debugnote("graphics queue: " << appdata.graphicsQueue);
-    debugnote("present queue: " << appdata.presentQueue);
+    debugnote("graphics queue: " << enginedata.graphicsQueue);
+    debugnote("present queue: " << enginedata.presentQueue);
 }

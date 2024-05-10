@@ -12,23 +12,23 @@
 #include "main.h"
 
 int main() {
-    AppData appdata{}; // this struct holds all the stuff that has to be global
-    initEngine(appdata);
+    EngineData enginedata{}; // this struct holds all the stuff that has to be global
+    initEngine(enginedata);
 
     bool windowShouldClose = false;
 
-    while (!glfwWindowShouldClose(appdata.window.windowPointer)) {
+    while (!glfwWindowShouldClose(enginedata.window.windowPointer)) {
         glfwPollEvents();
-        drawFrame(appdata.device,
-                  appdata.syncObjects,
-                  appdata.swapchain.swapchain,
-                  appdata.commandBuffer,
-                  appdata.swapchain.extent,
-                  appdata.renderPass,
-                  appdata.swapchainFramebuffers,
-                  appdata.graphicsPipeline,
-                  appdata.graphicsQueue,
-                  appdata.presentQueue);
+        drawFrame(enginedata.device,
+                  enginedata.syncObjects,
+                  enginedata.swapchain.swapchain,
+                  enginedata.commandBuffer,
+                  enginedata.swapchain.extent,
+                  enginedata.renderPass,
+                  enginedata.swapchainFramebuffers,
+                  enginedata.graphicsPipeline,
+                  enginedata.graphicsQueue,
+                  enginedata.presentQueue);
     }
-    cleanup(appdata);
+    cleanup(enginedata);
 }
