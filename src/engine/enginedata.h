@@ -4,9 +4,9 @@
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
-#include "../engine/vulkan/swapchain.h"
-#include "../engine/vulkan/syncronization.h"
-#include "../engine/window.h"
+#include "vulkan/swapchain.h"
+#include "vulkan/syncronization.h"
+#include "window.h"
 
 struct EngineData {
     const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
