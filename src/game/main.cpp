@@ -1,3 +1,4 @@
+#include <chrono>
 #include <cstring>
 #include <vulkan/vulkan_core.h>
 
@@ -8,15 +9,21 @@
 #include "../engine/enginedata.h"
 #include "../engine/initengine.h"
 #include "../engine/vulkan/rendering.h"
+#include "../utils/debugprint.h"
 
 int main() {
     EngineData enginedata{}; // this struct holds all the stuff that has to be global
     initEngine(enginedata);
 
     bool windowShouldClose = false;
+    auto startTime         = std::chrono::high_resolution_clock::now();
 
     while (!glfwWindowShouldClose(enginedata.window.windowPointer)) {
         glfwPollEvents();
+        auto endTime  = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
+        debugnote("microseconds per frame: " << duration);
+        startTime = endTime;
         drawFrame(enginedata.device,
                   enginedata.syncObjects,
                   enginedata.swapchain,
