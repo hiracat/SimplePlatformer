@@ -16,6 +16,7 @@
 #include "vulkan/graphicspipeline.h"
 #include "vulkan/instance.h"
 #include "vulkan/renderpass.h"
+#include "vulkan/swapchain.h"
 #include "vulkan/syncronization.h"
 #include "vulkan/validationlayers.h"
 
@@ -39,10 +40,13 @@ void initEngine(EngineData& enginedata) {
                         enginedata.presentQueue,
                         enginedata.window.surface);
 
-    createSwapChain(enginedata.physicalDevice, enginedata.window.surface, enginedata.window, enginedata.swapchain, enginedata.device);
+    VkSwapchainKHR oldSwapChain = VK_NULL_HANDLE;
+    createSwapChain(
+        enginedata.physicalDevice, enginedata.window.surface, enginedata.window, enginedata.swapchain, enginedata.device, oldSwapChain);
     createRenderPass(enginedata.swapchain.format, enginedata.renderPass, enginedata.device);
     createGraphicsPipeline(
         enginedata.device, enginedata.swapchain, enginedata.pipelineLayout, enginedata.renderPass, enginedata.graphicsPipeline);
+    createImageViews(enginedata.swapchain.imageViews, enginedata.swapchain.images, enginedata.swapchain.format, enginedata.device);
     createFramebuffers(enginedata.swapchainFramebuffers,
                        enginedata.swapchain.imageViews,
                        enginedata.renderPass,

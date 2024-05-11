@@ -17,7 +17,7 @@ void cleanup(EngineData& enginedata) {
 
     vkDeviceWaitIdle(enginedata.device);
 
-    cleanupSwapChain(enginedata.swapchain, enginedata.swapchainFramebuffers, enginedata.device);
+    cleanupSwapChain(enginedata.swapchain.swapchain, enginedata.swapchain.imageViews, enginedata.swapchainFramebuffers, enginedata.device);
 
     vkDestroyPipeline(enginedata.device, enginedata.graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(enginedata.device, enginedata.pipelineLayout, nullptr);
