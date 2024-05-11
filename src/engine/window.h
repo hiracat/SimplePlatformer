@@ -11,5 +11,5 @@ struct Window {
     VkSurfaceKHR   surface;
 };
 
-void initializeWindow(GLFWwindow*& window, const uint32_t width, const uint32_t height, const char* name);
+void initializeWindow(GLFWwindow*& window, const uint32_t width, const uint32_t height, const char* name, bool* windowResized);
 void createSurface(const VkInstance instance, GLFWwindow* window, VkSurfaceKHR* surface);

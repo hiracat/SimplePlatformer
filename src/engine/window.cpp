@@ -8,12 +8,17 @@
 #include "../utils/debugprint.h"
 #include "window.h"
 
-void initializeWindow(GLFWwindow*& window, const uint32_t width, const uint32_t height, const char* name) {
+void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
+    auto windowResized = reinterpret_cast<bool*>(glfwGetWindowUserPointer(window));
+    *windowResized     = true;
+}
+
+void initializeWindow(GLFWwindow*& window, const uint32_t width, const uint32_t height, const char* name, bool* windowResized) {
     // disables the automatic opengl context creation
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    // resizing has to be done specially so we disable it here
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
     window = glfwCreateWindow(width, height, name, nullptr, nullptr);
+    glfwSetWindowUserPointer(window, windowResized);
+    glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 
     if (!window) {
         glfwTerminate();

@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <stdexcept>
 #include <vulkan/vulkan_core.h>
 
@@ -56,14 +57,19 @@ void recordCommandBuffer(VkCommandBuffer      commandBuffer,
     }
 }
 
-void createCommandBuffer(const VkDevice& device, const VkCommandPool& commandPool, VkCommandBuffer& commandBuffer) {
+void createCommandBuffers(const VkDevice&               device,
+                          const VkCommandPool&          commandPool,
+                          std::vector<VkCommandBuffer>& commandBuffers,
+                          const uint32_t                maxFramesInFlight) {
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.commandPool        = commandPool;
     allocInfo.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandBufferCount = 1;
+    allocInfo.commandBufferCount = maxFramesInFlight;
 
-    if (vkAllocateCommandBuffers(device, &allocInfo, &commandBuffer)) {
+    commandBuffers.resize(maxFramesInFlight);
+
+    if (vkAllocateCommandBuffers(device, &allocInfo, commandBuffers.data())) {
         throw std::runtime_error("failed to allocate command buffers");
     }
 }

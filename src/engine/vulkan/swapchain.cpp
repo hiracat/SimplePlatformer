@@ -3,12 +3,13 @@
 #include "../window.h"
 #include "physicaldevice.h"
 #include <vector>
+#include <vulkan/vk_enum_string_helper.h>
 #include <vulkan/vulkan_core.h>
 
-void createImageViews(std::vector<VkImageView>&   imageViews,
-                      const std::vector<VkImage>& images,
-                      VkFormat                    swapchainFormat,
-                      const VkDevice&             device) {
+static void createImageViews(std::vector<VkImageView>&   imageViews,
+                             const std::vector<VkImage>& images,
+                             VkFormat                    swapchainFormat,
+                             const VkDevice&             device) {
     imageViews.resize(images.size());
     for (size_t i = 0; i < images.size(); i++) {
         VkImageViewCreateInfo createInfo{};
@@ -29,6 +30,40 @@ void createImageViews(std::vector<VkImageView>&   imageViews,
             throw std::runtime_error("failed to create image views");
         }
     }
+}
+
+void cleanupSwapChain(Swapchain& swapchain, std::vector<VkFramebuffer>& swapchainFramebuffers, const VkDevice device) {
+    for (auto framebuffer : swapchainFramebuffers) {
+        vkDestroyFramebuffer(device, framebuffer, nullptr);
+    }
+    for (auto& imageView : swapchain.imageViews) {
+        vkDestroyImageView(device, imageView, nullptr);
+    }
+
+    vkDestroySwapchainKHR(device, swapchain.swapchain, nullptr);
+}
+
+void recreateSwapChain(const VkPhysicalDevice      physicalDevice,
+                       const VkSurfaceKHR          surface,
+                       const Window&               window,
+                       Swapchain&                  swapchain,
+                       const VkDevice              device,
+                       const VkRenderPass          renderpass,
+                       std::vector<VkFramebuffer>& swapchainFrameBuffers) {
+
+    int width = 0, height = 0;
+    glfwGetFramebufferSize(window.windowPointer, &width, &height);
+    while (width == 0 || height == 0) {
+        glfwGetFramebufferSize(window.windowPointer, &width, &height);
+        glfwWaitEvents();
+    }
+
+    vkDeviceWaitIdle(device);
+
+    cleanupSwapChain(swapchain, swapchainFrameBuffers, device);
+
+    createSwapChain(physicalDevice, surface, window, swapchain, device);
+    createFramebuffers(swapchainFrameBuffers, swapchain.imageViews, renderpass, swapchain.extent, device);
 }
 
 void createFramebuffers(std::vector<VkFramebuffer>&     swapchainFrameBuffers,
@@ -62,11 +97,12 @@ void createSwapChain(const VkPhysicalDevice physicalDevice,
                      const VkDevice         device) {
 
     SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice, surface);
-    VkSurfaceFormatKHR      surfaceFormat    = chooseSwapSurfaceFormat(swapChainSupport.formats);
-    VkPresentModeKHR        presentMode      = chooseSwapPresentMode(swapChainSupport.presentModes);
-    VkExtent2D              extent           = chooseSwapExtent(swapChainSupport.capabilities, window);
-    uint32_t                imageCount       = swapChainSupport.capabilities.minImageCount + 1;
 
+    VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
+    VkPresentModeKHR   presentMode   = chooseSwapPresentMode(swapChainSupport.presentModes);
+    VkExtent2D         extent        = chooseSwapExtent(swapChainSupport.capabilities, window);
+
+    uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
     if (imageCount > swapChainSupport.capabilities.maxImageCount && swapChainSupport.capabilities.maxImageCount != 0) {
         imageCount = swapChainSupport.capabilities.maxImageCount;
     }
@@ -86,9 +122,7 @@ void createSwapChain(const VkPhysicalDevice physicalDevice,
     uint32_t           queueFamilyIndices[] = {indices.graphicsFamily.value(), indices.presentFamily.value()};
 
     if (indices.presentFamily.value() == indices.graphicsFamily.value()) {
-        createInfo.imageSharingMode      = VK_SHARING_MODE_EXCLUSIVE;
-        createInfo.queueFamilyIndexCount = 0;
-        createInfo.pQueueFamilyIndices   = nullptr;
+        createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
         debugnote("graphics and presentation queus are the same");
     } else {
         createInfo.imageSharingMode      = VK_SHARING_MODE_CONCURRENT;
@@ -102,7 +136,10 @@ void createSwapChain(const VkPhysicalDevice physicalDevice,
     createInfo.clipped        = VK_TRUE;
     createInfo.oldSwapchain   = VK_NULL_HANDLE;
 
-    if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapchain.swapchain) != VK_SUCCESS) {
+    VkResult result = VK_SUCCESS;
+
+    if ((result = vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapchain.swapchain)) != VK_SUCCESS) {
+        debugerror(string_VkResult(result));
         throw std::runtime_error("failed to create swapchain");
     }
 

@@ -23,7 +23,7 @@ void initEngine(EngineData& enginedata) {
     debugnote("ig we're at it again yay have fun");
     glfwInit();
 
-    initializeWindow(enginedata.window.windowPointer, 800, 600, "window");
+    initializeWindow(enginedata.window.windowPointer, 800, 600, "window", &enginedata.framebufferResized);
     createVkInstance(enginedata.instance, enginedata.validationLayers);
 #ifdef ENABLE_VALIDATION_LAYERS
     setupDebugMessanger(enginedata.instance, &enginedata.debugMessenger);
@@ -49,9 +49,10 @@ void initEngine(EngineData& enginedata) {
                        enginedata.swapchain.extent,
                        enginedata.device);
     createCommandPool(enginedata.physicalDevice, enginedata.window.surface, enginedata.commandPool, enginedata.device);
-    createCommandBuffer(enginedata.device, enginedata.commandPool, enginedata.commandBuffer);
-    createSyncObjects(enginedata.syncObjects, enginedata.device);
+    createCommandBuffers(enginedata.device, enginedata.commandPool, enginedata.commandBuffers, enginedata.MAX_FRAMES_IN_FLIGHT);
+    createSyncObjects(enginedata.syncObjects, enginedata.device, enginedata.MAX_FRAMES_IN_FLIGHT);
 
     debugnote("graphics queue: " << enginedata.graphicsQueue);
     debugnote("present queue: " << enginedata.presentQueue);
+    debugnote("swapchain: " << enginedata.swapchain.swapchain);
 }

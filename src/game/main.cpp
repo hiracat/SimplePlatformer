@@ -19,14 +19,22 @@ int main() {
         glfwPollEvents();
         drawFrame(enginedata.device,
                   enginedata.syncObjects,
-                  enginedata.swapchain.swapchain,
-                  enginedata.commandBuffer,
+                  enginedata.swapchain,
+                  enginedata.commandBuffers,
                   enginedata.swapchain.extent,
                   enginedata.renderPass,
                   enginedata.swapchainFramebuffers,
                   enginedata.graphicsPipeline,
                   enginedata.graphicsQueue,
-                  enginedata.presentQueue);
+                  enginedata.presentQueue,
+                  enginedata.currentFrame,
+                  enginedata.MAX_FRAMES_IN_FLIGHT,
+                  enginedata.window,
+                  enginedata.physicalDevice,
+                  enginedata.window.surface,
+                  enginedata.framebufferResized
+
+        );
     }
     cleanup(enginedata);
 }

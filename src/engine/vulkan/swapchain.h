@@ -28,3 +28,11 @@ void createSwapChain(const VkPhysicalDevice physicalDevice,
                      const Window           window,
                      Swapchain&             swapchain,
                      const VkDevice         device);
+void cleanupSwapChain(Swapchain& swapchain, std::vector<VkFramebuffer>& swapchainFramebuffers, const VkDevice device);
+void recreateSwapChain(const VkPhysicalDevice      physicalDevice,
+                       const VkSurfaceKHR          surface,
+                       const Window&               window,
+                       Swapchain&                  swapchain,
+                       const VkDevice              device,
+                       const VkRenderPass          renderpass,
+                       std::vector<VkFramebuffer>& swapchainFrameBuffers);
