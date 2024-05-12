@@ -1,5 +1,6 @@
 #include <cstring>
 #include <iostream>
+#include <vector>
 #include <vulkan/vulkan_core.h>
 
 #define GLFW_INCLUDE_VULKAN
@@ -11,6 +12,8 @@
 #include "../engine/window.h"
 #include "../utils/debugprint.h"
 #include "enginedata.h"
+#include "vertex.h"
+#include "vulkan/buffers.h"
 #include "vulkan/commandobjects.h"
 #include "vulkan/device.h"
 #include "vulkan/graphicspipeline.h"
@@ -20,7 +23,7 @@
 #include "vulkan/syncronization.h"
 #include "vulkan/validationlayers.h"
 
-void initEngine(EngineData& enginedata) {
+void initEngine(EngineData& enginedata, const std::vector<Vertex>& renderData) {
     debugnote("ig we're at it again yay have fun");
     glfwInit();
 
@@ -53,6 +56,7 @@ void initEngine(EngineData& enginedata) {
                        enginedata.swapchain.extent,
                        enginedata.device);
     createCommandPool(enginedata.physicalDevice, enginedata.window.surface, enginedata.commandPool, enginedata.device);
+    createVertexBuffer(renderData, enginedata.device, enginedata.physicalDevice, enginedata.vertexBuffer, enginedata.vertexBufferMemory);
     createCommandBuffers(enginedata.device, enginedata.commandPool, enginedata.commandBuffers, enginedata.MAX_FRAMES_IN_FLIGHT);
     createSyncObjects(enginedata.syncObjects, enginedata.device, enginedata.MAX_FRAMES_IN_FLIGHT);
 

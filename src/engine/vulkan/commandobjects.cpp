@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <stdexcept>
+#include <vector>
 #include <vulkan/vulkan_core.h>
 
 #include "physicaldevice.h"
@@ -8,7 +9,9 @@ void recordCommandBuffer(VkCommandBuffer      commandBuffer,
                          const VkExtent2D&    swapChainExtent,
                          const VkRenderPass&  renderPass,
                          const VkFramebuffer& swapchainFrameBuffer,
-                         const VkPipeline&    graphicsPipeline) {
+                         const VkPipeline&    graphicsPipeline,
+                         const VkBuffer       vertexBuffer,
+                         const uint32_t       verticesCount) {
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags            = 0;
@@ -31,8 +34,9 @@ void recordCommandBuffer(VkCommandBuffer      commandBuffer,
     renderPassInfo.clearValueCount = 1;
     renderPassInfo.pClearValues    = &clearColor;
 
-    vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     // inline if primary command buffer, other option if secondary
+    vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
     VkViewport viewport{};
@@ -49,7 +53,11 @@ void recordCommandBuffer(VkCommandBuffer      commandBuffer,
     scissor.extent = swapChainExtent;
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-    vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+    VkBuffer     vertexBuffers[] = {vertexBuffer};
+    VkDeviceSize offsets[]       = {0};
+    vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+
+    vkCmdDraw(commandBuffer, verticesCount, 1, 0, 0);
     vkCmdEndRenderPass(commandBuffer);
 
     if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {

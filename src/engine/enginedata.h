@@ -30,4 +30,6 @@ struct EngineData {
     VkCommandPool                  commandPool;
     std::vector<VkCommandBuffer>   commandBuffers;
     SyncObjects                    syncObjects;
+    VkBuffer                       vertexBuffer;
+    VkDeviceMemory                 vertexBufferMemory;
 };

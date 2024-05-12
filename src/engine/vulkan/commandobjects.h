@@ -14,4 +14,6 @@ void recordCommandBuffer(VkCommandBuffer      commandBuffer,
                          const VkExtent2D&    swapChainExtent,
                          const VkRenderPass&  renderPass,
                          const VkFramebuffer& swapchainFrameBuffer,
-                         const VkPipeline&    graphicsPipeline);
+                         const VkPipeline&    graphicsPipeline,
+                         const VkBuffer       vertexBuffer,
+                         const uint32_t       verticesCount);

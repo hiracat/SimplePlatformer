@@ -19,4 +19,6 @@ void drawFrame(const VkDevice                      device,
                const Window&                       window,
                const VkPhysicalDevice              physicalDevice,
                const VkSurfaceKHR                  surface,
-               bool&                               frameBufferResized);
+               bool&                               frameBufferResized,
+               const VkBuffer                      vertexBuffer,
+               const uint32_t                      verticesCount);

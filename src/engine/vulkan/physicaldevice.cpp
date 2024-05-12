@@ -66,9 +66,8 @@ bool checkDeviceExtensionSupport(VkPhysicalDevice device, std::vector<const char
     return requiredExtensions.empty();
 }
 
-uint32_t scorePhysicalDevice(const VkPhysicalDevice&         device,
-                             const VkSurfaceKHR&             surface,
-                             const std::vector<const char*>& deviceExtensions) {
+uint32_t
+scorePhysicalDevice(const VkPhysicalDevice& device, const VkSurfaceKHR& surface, const std::vector<const char*>& deviceExtensions) {
     uint32_t                    score = 1;
     VkPhysicalDeviceProperties2 deviceProperties{.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2, .pNext = nullptr};
     VkPhysicalDeviceFeatures2   deviceFeatures{.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2, .pNext = nullptr};
@@ -150,9 +149,8 @@ VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capiblilies, const W
             static_cast<uint32_t>(width),
             static_cast<uint32_t>(height),
         };
-        actualExtent.width = std::clamp(actualExtent.width, capiblilies.minImageExtent.width, capiblilies.maxImageExtent.width);
-        actualExtent.height =
-            std::clamp(actualExtent.height, capiblilies.minImageExtent.height, capiblilies.maxImageExtent.height);
+        actualExtent.width  = std::clamp(actualExtent.width, capiblilies.minImageExtent.width, capiblilies.maxImageExtent.width);
+        actualExtent.height = std::clamp(actualExtent.height, capiblilies.minImageExtent.height, capiblilies.maxImageExtent.height);
         return actualExtent;
     }
 }

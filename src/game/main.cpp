@@ -1,4 +1,5 @@
 #include <chrono>
+#include <cstdint>
 #include <cstring>
 #include <vulkan/vulkan_core.h>
 
@@ -8,12 +9,25 @@
 #include "../engine/cleanupengine.h"
 #include "../engine/enginedata.h"
 #include "../engine/initengine.h"
+#include "../engine/vertex.h"
 #include "../engine/vulkan/rendering.h"
-#include "../utils/debugprint.h"
 
 int main() {
+    const std::vector<Vertex> vertices = {{
+                                              {0.0f, -0.5f},
+                                              {1.0f, 1.0f, 1.0f},
+                                          },
+                                          {
+                                              {0.5f, 0.5f},
+                                              {0.0f, 1.0f, 0.0f},
+                                          },
+                                          {
+                                              {-0.5f, 0.5f},
+                                              {0.0f, 0.0f, 1.0f},
+                                          }};
+
     EngineData enginedata{}; // this struct holds all the stuff that has to be global
-    initEngine(enginedata);
+    initEngine(enginedata, vertices);
 
     bool windowShouldClose = false;
     auto startTime         = std::chrono::high_resolution_clock::now();
@@ -22,7 +36,7 @@ int main() {
         glfwPollEvents();
         auto endTime  = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
-        debugnote("microseconds per frame: " << duration);
+        // debugnote("microseconds per frame: " << duration);
         startTime = endTime;
         drawFrame(enginedata.device,
                   enginedata.syncObjects,
@@ -39,7 +53,9 @@ int main() {
                   enginedata.window,
                   enginedata.physicalDevice,
                   enginedata.window.surface,
-                  enginedata.framebufferResized
+                  enginedata.framebufferResized,
+                  enginedata.vertexBuffer,
+                  static_cast<uint32_t>(vertices.size())
 
         );
     }
