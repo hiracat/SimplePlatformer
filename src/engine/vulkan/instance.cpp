@@ -1,5 +1,5 @@
 #include <vector>
-#include <vulkan/vk_enum_string_helper.h>
+// #include <vulkan/vk_enum_string_helper.h>
 #include <vulkan/vulkan_core.h>
 
 #include "../../compilesettings.h"
@@ -68,7 +68,7 @@ void createVkInstance(VkInstance& instance, const std::vector<const char*>& vali
     VkResult result;
 
     if ((result = vkCreateInstance(&createInfo, nullptr, &instance)) != VK_SUCCESS) {
-        debugerror("creating instance failed with the error: " << string_VkResult(result));
+        // debugerror("creating instance failed with the error: " << string_VkResult(result));
         throw std::runtime_error("failed to create instance!");
     }
 }

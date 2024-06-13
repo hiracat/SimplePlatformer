@@ -3,7 +3,7 @@
 #include "../window.h"
 #include "physicaldevice.h"
 #include <vector>
-#include <vulkan/vk_enum_string_helper.h>
+// #include <vulkan/vk_enum_string_helper.h>
 #include <vulkan/vulkan_core.h>
 
 void createImageViews(std::vector<VkImageView>&   imageViews,
@@ -144,7 +144,7 @@ void createSwapChain(const VkPhysicalDevice physicalDevice,
     VkResult result = VK_SUCCESS;
 
     if ((result = vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapchain.swapchain)) != VK_SUCCESS) {
-        debugerror(string_VkResult(result));
+        // debugerror(string_VkResult(result));
         throw std::runtime_error("failed to create swapchain");
     }
 

@@ -2,7 +2,7 @@
 #include <cstring>
 #include <stdexcept>
 #include <vector>
-#include <vulkan/vk_enum_string_helper.h>
+// #include <vulkan/vk_enum_string_helper.h>
 #include <vulkan/vulkan_core.h>
 
 // this function is not automatically loaded so it needs to be manually loaded
@@ -52,7 +52,7 @@ void setupDebugMessanger(VkInstance instance, VkDebugUtilsMessengerEXT* debugMes
     VkResult result;
 
     if ((result = CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, debugMessenger)) != VK_SUCCESS) {
-        debugerror(string_VkResult(result));
+        // debugerror(string_VkResult(result));
         throw std::runtime_error("failed to set up debug messeneger");
     }
 }

@@ -1,10 +1,9 @@
 #include <chrono>
 #include <cstdint>
-#include <cstring>
 #include <vulkan/vulkan_core.h>
 
 #include <GLFW/glfw3.h>
-#include <vulkan/vk_enum_string_helper.h>
+// #include <vulkan/vk_enum_string_helper.h>
 
 #include "../engine/cleanupengine.h"
 #include "../engine/enginedata.h"

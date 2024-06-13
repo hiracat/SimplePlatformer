@@ -3,9 +3,8 @@
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-#include <vulkan/vk_enum_string_helper.h>
+// #include <vulkan/vk_enum_string_helper.h>
 
-#include "../utils/debugprint.h"
 #include "window.h"
 
 void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
@@ -31,7 +30,6 @@ void createSurface(const VkInstance instance, GLFWwindow* window, VkSurfaceKHR* 
     VkResult result = glfwCreateWindowSurface(instance, window, nullptr, surface);
 
     if (result != VK_SUCCESS) {
-        debugerror("creating window failed with the error: " << string_VkResult(result));
         throw std::runtime_error("failed to create window surface");
     }
 };
