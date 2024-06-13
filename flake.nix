@@ -22,8 +22,13 @@
           vulkan-loader
           vulkan-tools
           vulkan-validation-layers
+
+          glm
+          shaderc
         ];
+        VK_LAYER_PATH = "${pkgs.vulkan-validation-layers}/share/vulkan/explicit_layer.d";
         shellHook = "zsh";
+
       };
     };
 }
