@@ -1,5 +1,5 @@
-#!/bin/bash
-
+#!/etc/profiles/per-user/forest/bin/zsh
+#
 if [ "$1" = "release" ]; then
     cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
 else
