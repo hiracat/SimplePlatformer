@@ -7,9 +7,10 @@
 struct Window {
     const uint32_t WIDTH  = 800;
     const uint32_t HEIGHT = 600;
-    GLFWwindow*    windowPointer;
-    VkSurfaceKHR   surface;
+    GLFWwindow*    windowPointer{};
+    VkSurfaceKHR   surface{};
+    const char* name = "slidy thing";
 };
 
-void initializeWindow(GLFWwindow*& window, const uint32_t width, const uint32_t height, const char* name, bool* windowResized);
-void createSurface(const VkInstance instance, GLFWwindow* window, VkSurfaceKHR* surface);
+void initializeWindow(Window& window, bool* frameBufferResized);
+void createSurface(const VkInstance instance, Window& window);

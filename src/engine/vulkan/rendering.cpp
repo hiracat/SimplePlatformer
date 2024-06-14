@@ -1,4 +1,6 @@
 #include <cstdint>
+#include <iostream>
+#include <ostream>
 #include <stdexcept>
 #include <vector>
 #include <vulkan/vulkan_core.h>
@@ -41,6 +43,8 @@ void drawFrame(const VkDevice                      device,
         throw std::runtime_error("failed to acquire swap chain image!");
     }
 
+    VkResult fenceStatus = vkGetFenceStatus( device,syncObjects.inFlightFences[currentFrame]);
+    std::cout << fenceStatus << std::endl;
     // only reset fences when we know we are submitting work
     vkResetFences(device, 1, &syncObjects.inFlightFences[currentFrame]);
 

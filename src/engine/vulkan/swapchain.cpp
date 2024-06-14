@@ -139,7 +139,7 @@ void createSwapChain(const VkPhysicalDevice physicalDevice,
     createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
     createInfo.presentMode    = presentMode;
     createInfo.clipped        = VK_TRUE;
-    createInfo.oldSwapchain   = oldSwapChain == VK_NULL_HANDLE ? VK_NULL_HANDLE : oldSwapChain;
+    createInfo.oldSwapchain   = oldSwapChain;
 
     VkResult result = VK_SUCCESS;
 

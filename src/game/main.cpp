@@ -1,5 +1,6 @@
 #include <chrono>
 #include <cstdint>
+#include <iostream>
 #include <vulkan/vulkan_core.h>
 
 #include <GLFW/glfw3.h>
@@ -23,7 +24,7 @@ int main() {
                                           {
                                               {-0.5f, 0.5f},
                                               {0.0f, 0.0f, 1.0f},
-                                          }};
+                                         }};
 
     EngineData enginedata{}; // this struct holds all the stuff that has to be global
     initEngine(enginedata, vertices);
@@ -31,11 +32,12 @@ int main() {
     bool windowShouldClose = false;
     auto startTime         = std::chrono::high_resolution_clock::now();
 
-    while (!glfwWindowShouldClose(enginedata.window.windowPointer)) {
+   // while (!glfwWindowShouldClose(enginedata.window.windowPointer)) {
+   while (true){
         glfwPollEvents();
+        // std::cout << "window should close? " << glfwWindowShouldClose(enginedata.window.windowPointer) << std::endl;
         auto endTime  = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
-        // debugnote("microseconds per frame: " << duration);
         startTime = endTime;
         drawFrame(enginedata.device,
                   enginedata.syncObjects,

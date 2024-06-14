@@ -1,4 +1,3 @@
-#include <cstdint>
 #include <stdexcept>
 
 #define GLFW_INCLUDE_VULKAN
@@ -8,25 +7,24 @@
 #include "window.h"
 
 void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
-    auto windowResized = reinterpret_cast<bool*>(glfwGetWindowUserPointer(window));
-    *windowResized     = true;
+    auto frameBufferResized = reinterpret_cast<bool*>(glfwGetWindowUserPointer(window));
+    *frameBufferResized     = true;
 }
 
-void initializeWindow(GLFWwindow*& window, const uint32_t width, const uint32_t height, const char* name, bool* windowResized) {
+void initializeWindow(Window& windowData, bool* frameBufferResized) {
     // disables the automatic opengl context creation
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    window = glfwCreateWindow(width, height, name, nullptr, nullptr);
-    glfwSetWindowUserPointer(window, windowResized);
-    glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
+    windowData.windowPointer = glfwCreateWindow(windowData.WIDTH, windowData.HEIGHT, windowData.name, nullptr, nullptr);
+    glfwSetWindowUserPointer(windowData.windowPointer, frameBufferResized);
+    glfwSetFramebufferSizeCallback(windowData.windowPointer, framebufferResizeCallback);
 
-    if (!window) {
+    if (!windowData.windowPointer) {
         glfwTerminate();
         throw std::runtime_error("failed to create window");
     }
 }
 
 void createSurface(const VkInstance instance, GLFWwindow* window, VkSurfaceKHR* surface) {
-
     VkResult result = glfwCreateWindowSurface(instance, window, nullptr, surface);
 
     if (result != VK_SUCCESS) {
