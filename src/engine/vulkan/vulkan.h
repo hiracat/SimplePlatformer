@@ -2,4 +2,5 @@
 #include <vector>
 #include "../enginedata.h"
 
-void initVulkan(EngineData& enginedata, const std::vector<Vertex>& renderData);
+void initVulkan(VulkanObjects& vulkanObjects, Window& window);
+void createRenderingObjects(RenderingObjects& renderingObjects, RenderingResources& resources, const VkDevice device, const VkPhysicalDevice physicalDevice, const Window& window);

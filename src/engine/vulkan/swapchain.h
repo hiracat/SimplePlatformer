@@ -6,10 +6,9 @@
 
 struct Swapchain {
     VkSwapchainKHR           swapchain;
-    std::vector<VkImage>     images;
     VkFormat                 format;
     VkExtent2D               extent;
-    std::vector<VkImageView> imageViews;
+
 };
 
 struct SwapChainSupportDetails {
@@ -17,6 +16,7 @@ struct SwapChainSupportDetails {
     std::vector<VkSurfaceFormatKHR> formats;
     std::vector<VkPresentModeKHR>   presentModes;
 };
+
 void createImageViews(std::vector<VkImageView>&   imageViews,
                       const std::vector<VkImage>& images,
                       VkFormat                    swapchainFormat,
@@ -32,14 +32,19 @@ void createSwapChain(const VkPhysicalDevice physicalDevice,
                      const Window           window,
                      Swapchain&             swapchain,
                      const VkDevice         device,
-                     VkSwapchainKHR&        oldSwapChain);
+                     VkSwapchainKHR&        oldSwapChain,
+                     std::vector<VkImage> images,
+                     std::vector<VkImageView> imageViews);
+
 void recreateSwapChain(const VkPhysicalDevice      physicalDevice,
-                       const VkSurfaceKHR          surface,
                        const Window&               window,
                        Swapchain&                  swapchain,
                        const VkDevice              device,
                        const VkRenderPass          renderpass,
-                       std::vector<VkFramebuffer>& swapchainFrameBuffers);
+                       std::vector<VkFramebuffer>& swapchainFrameBuffers,
+                       std::vector<VkImage> images,
+                       std::vector<VkImageView> imageViews
+                       );
 void cleanupSwapChain(VkSwapchainKHR&             swapchain,
                       std::vector<VkImageView>&   imageViews,
                       std::vector<VkFramebuffer>& swapchainFramebuffers,

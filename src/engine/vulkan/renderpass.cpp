@@ -1,7 +1,7 @@
 #include <stdexcept>
 #include <vulkan/vulkan_core.h>
 
-void createRenderPass(const VkFormat& swapchainFormat, VkRenderPass& renderPass, VkDevice& device) {
+void createRenderPass(const VkFormat& swapchainFormat, VkRenderPass& renderPass, const VkDevice& device) {
     VkAttachmentDescription colorAttachment{};
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
     colorAttachment.format  = swapchainFormat;

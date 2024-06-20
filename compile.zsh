@@ -12,5 +12,5 @@ fi
 
 pushd build
 make
-./SimplePlatformer
 popd
+./build/SimplePlatformer

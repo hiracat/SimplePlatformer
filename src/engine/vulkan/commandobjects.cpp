@@ -2,13 +2,14 @@
 #include <stdexcept>
 #include <vector>
 #include <vulkan/vulkan_core.h>
+#include "../../utils/debugprint.h"
 
 #include "physicaldevice.h"
 
 void recordCommandBuffer(VkCommandBuffer      commandBuffer,
                          const VkExtent2D&    swapChainExtent,
                          const VkRenderPass&  renderPass,
-                         const VkFramebuffer& swapchainFrameBuffer,
+                         VkFramebuffer& swapchainFrameBuffer,
                          const VkPipeline&    graphicsPipeline,
                          const VkBuffer       vertexBuffer,
                          const uint32_t       verticesCount) {
@@ -21,11 +22,13 @@ void recordCommandBuffer(VkCommandBuffer      commandBuffer,
     if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
         throw std::runtime_error("failed to being command buffer");
     }
+    debugnote("after begin command buffer");
 
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType       = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass  = renderPass;
     renderPassInfo.framebuffer = swapchainFrameBuffer;
+    debugnote("after first assignment");
 
     renderPassInfo.renderArea.offset = {0, 0};
     renderPassInfo.renderArea.extent = swapChainExtent;

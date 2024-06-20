@@ -4,4 +4,4 @@
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
-void initEngine(EngineData& enginedata, const std::vector<Vertex>& renderData);
+void initEngine(Data& enginedata);

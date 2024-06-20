@@ -5,31 +5,64 @@
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
+#include "vertex.h"
 #include "vulkan/swapchain.h"
 #include "vulkan/syncronization.h"
 #include "window.h"
 
-struct EngineData {
-    const std::vector<const char*> validationLayers     = {"VK_LAYER_KHRONOS_validation"};
-    const std::vector<const char*> deviceExtensions     = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
-    const int                      MAX_FRAMES_IN_FLIGHT = 2;
-    bool                           framebufferResized   = false;
-    uint32_t                       currentFrame         = 0;
-    VkDebugUtilsMessengerEXT       debugMessenger{};
-    Window                         window{};
+struct VulkanObjects {
     VkInstance                     instance{};
-    VkDevice                       device{};
+    const std::vector<const char*> validationLayers     = {"VK_LAYER_KHRONOS_validation"};
+    VkDebugUtilsMessengerEXT       debugMessenger{};
     VkPhysicalDevice               physicalDevice = VK_NULL_HANDLE;
+    const std::vector<const char*> deviceExtensions     = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
     VkQueue                        graphicsQueue{};
     VkQueue                        presentQueue{};
+    VkDevice                       device{};
+};
+
+struct RenderingObjects {
     Swapchain                      swapchain{};
-    VkPipelineLayout               pipelineLayout{};
+    VkSwapchainKHR                 oldSwapChain{};
     VkRenderPass                   renderPass{};
     VkPipeline                     graphicsPipeline{};
-    std::vector<VkFramebuffer>     swapchainFramebuffers{};
     VkCommandPool                  commandPool{};
-    std::vector<VkCommandBuffer>   commandBuffers{};
-    SyncObjects                    syncObjects{};
+    VkPipelineLayout               pipelineLayout{};
+
+};
+
+struct RenderingResources{
+    std::vector<VkImage>     images;
+    std::vector<VkImageView> imageViews;
+    std::vector<VkFramebuffer>     swapchainFramebuffers{};
     VkBuffer                       vertexBuffer{};
     VkDeviceMemory                 vertexBufferMemory{};
+    std::vector<VkCommandBuffer>   commandBuffers{};
+    SyncObjects                    syncObjects{};
+    const std::vector<Vertex> renderData = {{
+        {0.0f, -0.5f},
+            {1.0f, 1.0f, 1.0f},
+    },
+          {
+              {0.5f, 0.5f},
+              {0.0f, 1.0f, 0.0f},
+          },
+          {
+              {-0.5f, 0.5f},
+              {0.0f, 0.0f, 1.0f},
+          }};
+
+    const int                      MAX_FRAMES_IN_FLIGHT = 2;
+};
+
+struct Data {
+
+    VulkanObjects vulkanObjects;
+    RenderingObjects renderingObjects;
+    RenderingResources resources;
+
+    Window                         window{};
+    uint32_t                       currentFrame         = 0;
+    bool                           framebufferResized   = false;
+
 };

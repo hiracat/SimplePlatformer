@@ -13,35 +13,35 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
     }
 }
 
-void cleanup(EngineData& enginedata) {
+void cleanup(Data& data) {
 
-    vkDeviceWaitIdle(enginedata.device);
+    vkDeviceWaitIdle(data.vulkanObjects.device);
 
-    cleanupSwapChain(enginedata.swapchain.swapchain, enginedata.swapchain.imageViews, enginedata.swapchainFramebuffers, enginedata.device);
-    vkDestroyBuffer(enginedata.device, enginedata.vertexBuffer, nullptr);
-    vkFreeMemory(enginedata.device, enginedata.vertexBufferMemory, nullptr);
+    cleanupSwapChain(data.renderingObjects.swapchain.swapchain, data.resources.imageViews, data.resources.swapchainFramebuffers, data.vulkanObjects.device);
+    vkDestroyBuffer(data.vulkanObjects.device, data.resources.vertexBuffer, nullptr);
+    vkFreeMemory(data.vulkanObjects.device, data.resources.vertexBufferMemory, nullptr);
 
-    vkDestroyPipeline(enginedata.device, enginedata.graphicsPipeline, nullptr);
-    vkDestroyPipelineLayout(enginedata.device, enginedata.pipelineLayout, nullptr);
+    vkDestroyPipeline(data.vulkanObjects.device, data.renderingObjects.graphicsPipeline, nullptr);
+    vkDestroyPipelineLayout(data.vulkanObjects.device, data.renderingObjects.pipelineLayout, nullptr);
 
-    vkDestroyRenderPass(enginedata.device, enginedata.renderPass, nullptr);
+    vkDestroyRenderPass(data.vulkanObjects.device, data.renderingObjects.renderPass, nullptr);
 
-    for (size_t i = 0; i < enginedata.MAX_FRAMES_IN_FLIGHT; i++) {
-        vkDestroySemaphore(enginedata.device, enginedata.syncObjects.imageAvailableSemaphores[i], nullptr);
-        vkDestroySemaphore(enginedata.device, enginedata.syncObjects.renderFinishedSemaphores[i], nullptr);
-        vkDestroyFence(enginedata.device, enginedata.syncObjects.inFlightFences[i], nullptr);
+    for (size_t i = 0; i < data.resources.MAX_FRAMES_IN_FLIGHT; i++) {
+        vkDestroySemaphore(data.vulkanObjects.device, data.resources.syncObjects.imageAvailableSemaphores[i], nullptr);
+        vkDestroySemaphore(data.vulkanObjects.device, data.resources.syncObjects.renderFinishedSemaphores[i], nullptr);
+        vkDestroyFence(data.vulkanObjects.device, data.resources.syncObjects.inFlightFences[i], nullptr);
     }
 
-    vkDestroyCommandPool(enginedata.device, enginedata.commandPool, nullptr);
+    vkDestroyCommandPool(data.vulkanObjects.device, data.renderingObjects.commandPool, nullptr);
 
-    vkDestroyDevice(enginedata.device, nullptr);
+    vkDestroyDevice(data.vulkanObjects.device, nullptr);
 
 #ifdef ENABLE_VALIDATION_LAYERS
-    DestroyDebugUtilsMessengerEXT(enginedata.instance, enginedata.debugMessenger, nullptr);
+    DestroyDebugUtilsMessengerEXT(data.vulkanObjects.instance, data.vulkanObjects.debugMessenger, nullptr);
 #endif
-    vkDestroySurfaceKHR(enginedata.instance, enginedata.window.surface, nullptr);
-    vkDestroyInstance(enginedata.instance, nullptr);
+    vkDestroySurfaceKHR(data.vulkanObjects.instance, data.window.surface, nullptr);
+    vkDestroyInstance(data.vulkanObjects.instance, nullptr);
 
-    glfwDestroyWindow(enginedata.window.windowPointer);
+    glfwDestroyWindow(data.window.windowPointer);
     glfwTerminate();
 }
