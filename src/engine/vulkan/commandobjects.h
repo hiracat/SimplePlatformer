@@ -1,6 +1,7 @@
 #pragma once
+#include <vulkan/vulkan.h>
+
 #include <vector>
-#include <vulkan/vulkan_core.h>
 
 void createCommandBuffers(const VkDevice&               device,
                           const VkCommandPool&          commandPool,
@@ -12,10 +13,10 @@ void createCommandPool(const VkPhysicalDevice& physicalDevice,
                        VkCommandPool&          commandPool,
                        const VkDevice&         device);
 
-void recordCommandBuffer(VkCommandBuffer      commandBuffer,
-                         const VkExtent2D&    swapChainExtent,
-                         const VkRenderPass&  renderPass,
-                         VkFramebuffer& swapchainFrameBuffer,
-                         const VkPipeline&    graphicsPipeline,
-                         const VkBuffer       vertexBuffer,
-                         const uint32_t       verticesCount);
+void recordCommandBuffer(VkCommandBuffer     commandBuffer,
+                         const VkExtent2D&   swapChainExtent,
+                         const VkRenderPass& renderPass,
+                         VkFramebuffer&      swapchainFrameBuffer,
+                         const VkPipeline&   graphicsPipeline,
+                         const VkBuffer      vertexBuffer,
+                         const uint32_t      verticesCount);

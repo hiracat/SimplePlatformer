@@ -1,8 +1,8 @@
 #pragma once
+#include <vulkan/vulkan.h>
 
 #include <optional>
 #include <vector>
-#include <vulkan/vulkan_core.h>
 
 #include "../window.h"
 #include "swapchain.h"

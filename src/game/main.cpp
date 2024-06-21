@@ -1,7 +1,8 @@
-#include <chrono>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 
 #include <GLFW/glfw3.h>
+
+#include <chrono>
 
 #include "../engine/cleanupengine.h"
 #include "../engine/enginedata.h"
@@ -21,7 +22,7 @@ int main() {
         glfwPollEvents();
         auto endTime  = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime).count();
-        startTime = endTime;
+        startTime     = endTime;
         drawFrame(data);
     }
     cleanup(data);

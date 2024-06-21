@@ -1,9 +1,11 @@
-#include "../vertex.h"
-#include "utils.h"
+#include <vulkan/vulkan.h>
+
 #include <cstring>
 #include <stdexcept>
 #include <vector>
-#include <vulkan/vulkan_core.h>
+
+#include "../vertex.h"
+#include "utils.h"
 
 void createVertexBuffer(const std::vector<Vertex>& vertices,
                         const VkDevice             device,

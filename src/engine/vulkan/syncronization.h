@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include <vulkan/vulkan_core.h>
+#include <vulkan/vulkan.h>
 
 struct SyncObjects {
     std::vector<VkSemaphore> imageAvailableSemaphores, renderFinishedSemaphores;

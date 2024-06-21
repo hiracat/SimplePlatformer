@@ -1,14 +1,13 @@
 #pragma once
+#include <vector>
+#include <vulkan/vulkan.h>
 
 #include "../window.h"
-#include <vector>
-#include <vulkan/vulkan_core.h>
 
 struct Swapchain {
-    VkSwapchainKHR           swapchain;
-    VkFormat                 format;
-    VkExtent2D               extent;
-
+    VkSwapchainKHR swapchain;
+    VkFormat       format;
+    VkExtent2D     extent;
 };
 
 struct SwapChainSupportDetails {
@@ -27,13 +26,13 @@ void createFramebuffers(std::vector<VkFramebuffer>&     swapchainFrameBuffers,
                         const VkExtent2D                swapchainExtent,
                         const VkDevice                  device);
 
-void createSwapChain(const VkPhysicalDevice physicalDevice,
-                     const VkSurfaceKHR     surface,
-                     const Window&           window,
-                     Swapchain&             swapchain,
-                     const VkDevice         device,
-                     VkSwapchainKHR&        oldSwapChain,
-                     std::vector<VkImage>& images,
+void createSwapChain(const VkPhysicalDevice    physicalDevice,
+                     const VkSurfaceKHR        surface,
+                     const Window&             window,
+                     Swapchain&                swapchain,
+                     const VkDevice            device,
+                     VkSwapchainKHR&           oldSwapChain,
+                     std::vector<VkImage>&     images,
                      std::vector<VkImageView>& imageViews);
 
 void recreateSwapChain(const VkPhysicalDevice      physicalDevice,
@@ -42,9 +41,8 @@ void recreateSwapChain(const VkPhysicalDevice      physicalDevice,
                        const VkDevice              device,
                        const VkRenderPass          renderpass,
                        std::vector<VkFramebuffer>& swapchainFrameBuffers,
-                       std::vector<VkImage> images,
-                       std::vector<VkImageView> imageViews
-                       );
+                       std::vector<VkImage>        images,
+                       std::vector<VkImageView>    imageViews);
 void cleanupSwapChain(VkSwapchainKHR&             swapchain,
                       std::vector<VkImageView>&   imageViews,
                       std::vector<VkFramebuffer>& swapchainFramebuffers,

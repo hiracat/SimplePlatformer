@@ -1,6 +1,6 @@
+#include <vulkan/vulkan.h>
+
 #include <vector>
-// #include <vulkan/vk_enum_string_helper.h>
-#include <vulkan/vulkan_core.h>
 
 #include "../../compilesettings.h"
 #include "../../utils/debugprint.h"

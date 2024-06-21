@@ -1,17 +1,18 @@
+#include <vulkan/vulkan.h>
+
 #include <cstdint>
 #include <stdexcept>
 #include <vector>
-#include <vulkan/vulkan_core.h>
 
 #include "physicaldevice.h"
 
-void recordCommandBuffer(VkCommandBuffer      commandBuffer,
-                         const VkExtent2D&    swapChainExtent,
-                         const VkRenderPass&  renderPass,
-                         VkFramebuffer& swapchainFrameBuffer,
-                         const VkPipeline&    graphicsPipeline,
-                         const VkBuffer       vertexBuffer,
-                         const uint32_t       verticesCount) {
+void recordCommandBuffer(VkCommandBuffer     commandBuffer,
+                         const VkExtent2D&   swapChainExtent,
+                         const VkRenderPass& renderPass,
+                         VkFramebuffer&      swapchainFrameBuffer,
+                         const VkPipeline&   graphicsPipeline,
+                         const VkBuffer      vertexBuffer,
+                         const uint32_t      verticesCount) {
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags            = 0;

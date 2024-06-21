@@ -1,7 +1,8 @@
 #pragma once
+#include <vulkan/vulkan.h>
 
 #include <vector>
-#include <vulkan/vulkan_core.h>
+
 void createLogicalDevice(VkDevice&                       device,
                          const VkPhysicalDevice          physicalDevice,
                          const std::vector<const char*>& validationLayers,

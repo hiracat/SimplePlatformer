@@ -1,6 +1,8 @@
+#include <vulkan/vulkan.h>
+
 #include <GLFW/glfw3.h>
+
 #include <cstddef>
-#include <vulkan/vulkan_core.h>
 
 #include "../compilesettings.h"
 #include "enginedata.h"
@@ -17,7 +19,10 @@ void cleanup(Data& data) {
 
     vkDeviceWaitIdle(data.vulkanObjects.device);
 
-    cleanupSwapChain(data.renderingObjects.swapchain.swapchain, data.resources.imageViews, data.resources.swapchainFramebuffers, data.vulkanObjects.device);
+    cleanupSwapChain(data.renderingObjects.swapchain.swapchain,
+                     data.resources.imageViews,
+                     data.resources.swapchainFramebuffers,
+                     data.vulkanObjects.device);
     vkDestroyBuffer(data.vulkanObjects.device, data.resources.vertexBuffer, nullptr);
     vkFreeMemory(data.vulkanObjects.device, data.resources.vertexBufferMemory, nullptr);
 

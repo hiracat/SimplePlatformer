@@ -1,14 +1,15 @@
+#include <vulkan/vulkan.h>
+
 #include <cstdint>
 #include <iostream>
 #include <ostream>
 #include <stdexcept>
 #include <vector>
-#include <vulkan/vulkan_core.h>
 
+#include "../../utils/debugprint.h"
+#include "../enginedata.h"
 #include "commandobjects.h"
 #include "swapchain.h"
-#include "../enginedata.h"
-#include "../../utils/debugprint.h"
 #include "syncronization.h"
 
 void drawFrame(Data& data) {
@@ -16,12 +17,23 @@ void drawFrame(Data& data) {
     vkWaitForFences(data.vulkanObjects.device, 1, &data.resources.syncObjects.inFlightFences[data.currentFrame], VK_TRUE, UINT64_MAX);
 
     uint32_t imageIndex;
-    VkResult result = vkAcquireNextImageKHR(
-        data.vulkanObjects.device, data.renderingObjects.swapchain.swapchain, UINT64_MAX, data.resources.syncObjects.imageAvailableSemaphores[data.currentFrame], VK_NULL_HANDLE, &imageIndex);
+    VkResult result = vkAcquireNextImageKHR(data.vulkanObjects.device,
+                                            data.renderingObjects.swapchain.swapchain,
+                                            UINT64_MAX,
+                                            data.resources.syncObjects.imageAvailableSemaphores[data.currentFrame],
+                                            VK_NULL_HANDLE,
+                                            &imageIndex);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || data.framebufferResized) {
         data.framebufferResized = false;
-        recreateSwapChain(data.vulkanObjects.physicalDevice, data.window, data.renderingObjects.swapchain, data.vulkanObjects.device, data.renderingObjects.renderPass, data.resources.swapchainFramebuffers, data.resources.images, data.resources.imageViews);
+        recreateSwapChain(data.vulkanObjects.physicalDevice,
+                          data.window,
+                          data.renderingObjects.swapchain,
+                          data.vulkanObjects.device,
+                          data.renderingObjects.renderPass,
+                          data.resources.swapchainFramebuffers,
+                          data.resources.images,
+                          data.resources.imageViews);
         return;
     } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
         throw std::runtime_error("failed to acquire swap chain image!");
@@ -58,7 +70,8 @@ void drawFrame(Data& data) {
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores    = signalSemaphores;
 
-    if (vkQueueSubmit(data.vulkanObjects.graphicsQueue, 1, &submitInfo, data.resources.syncObjects.inFlightFences[data.currentFrame]) != VK_SUCCESS) {
+    if (vkQueueSubmit(data.vulkanObjects.graphicsQueue, 1, &submitInfo, data.resources.syncObjects.inFlightFences[data.currentFrame]) !=
+        VK_SUCCESS) {
         throw std::runtime_error("failed to submit draw command buffer");
     }
 
@@ -77,7 +90,14 @@ void drawFrame(Data& data) {
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
         data.framebufferResized = false;
-        recreateSwapChain(data.vulkanObjects.physicalDevice, data.window, data.renderingObjects.swapchain, data.vulkanObjects.device, data.renderingObjects.renderPass, data.resources.swapchainFramebuffers, data.resources.images, data.resources.imageViews);
+        recreateSwapChain(data.vulkanObjects.physicalDevice,
+                          data.window,
+                          data.renderingObjects.swapchain,
+                          data.vulkanObjects.device,
+                          data.renderingObjects.renderPass,
+                          data.resources.swapchainFramebuffers,
+                          data.resources.images,
+                          data.resources.imageViews);
     } else if (result != VK_SUCCESS) {
         throw std::runtime_error("failed to present swap chain image!");
     }

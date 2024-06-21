@@ -1,22 +1,22 @@
-#define GLFW_INCLUDE_VULKAN
+#include <vulkan/vulkan.h>
 
 #include <GLFW/glfw3.h>
 
-#include "swapchain.h"
 #include <stdexcept>
-#include <vulkan/vulkan_core.h>
+
+#include "../../compilesettings.h"
 #include "../enginedata.h"
+#include "buffers.h"
 #include "commandobjects.h"
 #include "device.h"
 #include "graphicspipeline.h"
 #include "instance.h"
 #include "physicaldevice.h"
 #include "renderpass.h"
-#include "buffers.h"
-#include "../../compilesettings.h"
+#include "swapchain.h"
 #include "validationlayers.h"
 
-void initVulkan(VulkanObjects& vulkanObjects, Window& window){
+void initVulkan(VulkanObjects& vulkanObjects, Window& window) {
     createVkInstance(vulkanObjects.instance, vulkanObjects.validationLayers);
 
 #ifdef ENABLE_VALIDATION_LAYERS
@@ -34,23 +34,32 @@ void initVulkan(VulkanObjects& vulkanObjects, Window& window){
                         vulkanObjects.graphicsQueue,
                         vulkanObjects.presentQueue,
                         window.surface);
-
 }
 
-void createRenderingObjects(RenderingObjects& renderingObjects, RenderingResources& resources, const VkDevice device, const VkPhysicalDevice physicalDevice, const Window& window){
-    createSwapChain(
-            physicalDevice, window.surface, window, renderingObjects.swapchain, device, renderingObjects.oldSwapChain, resources.images, resources.imageViews);
+void createRenderingObjects(RenderingObjects&      renderingObjects,
+                            RenderingResources&    resources,
+                            const VkDevice         device,
+                            const VkPhysicalDevice physicalDevice,
+                            const Window&          window) {
+    createSwapChain(physicalDevice,
+                    window.surface,
+                    window,
+                    renderingObjects.swapchain,
+                    device,
+                    renderingObjects.oldSwapChain,
+                    resources.images,
+                    resources.imageViews);
     createRenderPass(renderingObjects.swapchain.format, renderingObjects.renderPass, device);
-    createGraphicsPipeline(
-            device, renderingObjects.swapchain, renderingObjects.pipelineLayout, renderingObjects.renderPass, renderingObjects.graphicsPipeline);
+    createGraphicsPipeline(device,
+                           renderingObjects.swapchain,
+                           renderingObjects.pipelineLayout,
+                           renderingObjects.renderPass,
+                           renderingObjects.graphicsPipeline);
 
     createCommandPool(physicalDevice, window.surface, renderingObjects.commandPool, device);
     createImageViews(resources.imageViews, resources.images, renderingObjects.swapchain.format, device);
-    createFramebuffers(resources.swapchainFramebuffers,
-            resources.imageViews,
-            renderingObjects.renderPass,
-            renderingObjects.swapchain.extent,
-            device);
+    createFramebuffers(
+        resources.swapchainFramebuffers, resources.imageViews, renderingObjects.renderPass, renderingObjects.swapchain.extent, device);
 
     createVertexBuffer(resources.renderData, device, physicalDevice, resources.vertexBuffer, resources.vertexBufferMemory);
     createCommandBuffers(device, renderingObjects.commandPool, resources.commandBuffers, resources.MAX_FRAMES_IN_FLIGHT);

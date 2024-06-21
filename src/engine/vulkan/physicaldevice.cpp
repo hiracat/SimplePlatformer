@@ -1,4 +1,7 @@
+#include <vulkan/vulkan.h>
+
 #include <GLFW/glfw3.h>
+
 #include <algorithm>
 #include <cstdint>
 #include <limits>
@@ -8,8 +11,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-
-#include <vulkan/vulkan_core.h>
 
 #include "../window.h"
 #include "physicaldevice.h"

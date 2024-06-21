@@ -1,9 +1,10 @@
+#include <vulkan/vulkan.h>
+
+#include <GLFW/glfw3.h>
+
 #include <stdexcept>
 
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-// #include <vulkan/vk_enum_string_helper.h>
-
+#include "../utils/debugprint.h"
 #include "window.h"
 
 void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
@@ -12,6 +13,7 @@ void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
 }
 
 void initializeWindow(Window& windowData, bool* frameBufferResized) {
+    debugnote("glfwinit says: " << glfwInit());
     // disables the automatic opengl context creation
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     windowData.windowPointer = glfwCreateWindow(windowData.WIDTH, windowData.HEIGHT, windowData.name, nullptr, nullptr);

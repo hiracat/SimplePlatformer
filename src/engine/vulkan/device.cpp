@@ -1,10 +1,11 @@
-#include "physicaldevice.h"
+#include <vulkan/vulkan.h>
+
 #include <set>
 #include <stdexcept>
 #include <vector>
-#include <vulkan/vulkan_core.h>
 
 #include "../../compilesettings.h"
+#include "physicaldevice.h"
 
 void createLogicalDevice(VkDevice&                       device,
                          const VkPhysicalDevice          physicalDevice,

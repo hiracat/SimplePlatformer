@@ -1,10 +1,11 @@
-#include "swapchain.h"
+#include <vulkan/vulkan.h>
+
+#include <vector>
+
 #include "../../utils/debugprint.h"
 #include "../window.h"
 #include "physicaldevice.h"
-#include <vector>
-// #include <vulkan/vk_enum_string_helper.h>
-#include <vulkan/vulkan_core.h>
+#include "swapchain.h"
 
 void createImageViews(std::vector<VkImageView>&   imageViews,
                       const std::vector<VkImage>& images,
@@ -52,9 +53,8 @@ void recreateSwapChain(const VkPhysicalDevice      physicalDevice,
                        const VkDevice              device,
                        const VkRenderPass          renderpass,
                        std::vector<VkFramebuffer>& swapchainFrameBuffers,
-                       std::vector<VkImage> images,
-                       std::vector<VkImageView> imageViews
-                       ) {
+                       std::vector<VkImage>        images,
+                       std::vector<VkImageView>    imageViews) {
 
     int width = 0, height = 0;
     glfwGetFramebufferSize(window.windowPointer, &width, &height);
@@ -96,15 +96,14 @@ void createFramebuffers(std::vector<VkFramebuffer>&     swapchainFrameBuffers,
     }
 }
 
-void createSwapChain(const VkPhysicalDevice physicalDevice,
-                     const VkSurfaceKHR     surface,
-                     const Window&           window,
-                     Swapchain&             swapchain,
-                     const VkDevice         device,
-                     VkSwapchainKHR&        oldSwapChain,
-                     std::vector<VkImage>& images,
-                     std::vector<VkImageView>& imageViews
-                     ) {
+void createSwapChain(const VkPhysicalDevice    physicalDevice,
+                     const VkSurfaceKHR        surface,
+                     const Window&             window,
+                     Swapchain&                swapchain,
+                     const VkDevice            device,
+                     VkSwapchainKHR&           oldSwapChain,
+                     std::vector<VkImage>&     images,
+                     std::vector<VkImageView>& imageViews) {
 
     SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice, surface);
 

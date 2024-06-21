@@ -1,8 +1,10 @@
-#include "syncronization.h"
+#include <vulkan/vulkan.h>
+
 #include <cstddef>
 #include <cstdint>
 #include <stdexcept>
-#include <vulkan/vulkan_core.h>
+
+#include "syncronization.h"
 
 void createSyncObjects(SyncObjects& syncObjects, const VkDevice& device, const uint32_t maxFramesInFlight) {
     syncObjects.imageAvailableSemaphores.resize(maxFramesInFlight);

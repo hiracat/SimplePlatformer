@@ -1,7 +1,9 @@
+#include <vulkan/vulkan.h>
+
 #include <GLFW/glfw3.h>
+
 #include <cstring>
 #include <vector>
-#include <vulkan/vulkan_core.h>
 
 #include "../../compilesettings.h"
 

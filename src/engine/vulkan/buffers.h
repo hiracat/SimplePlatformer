@@ -1,6 +1,8 @@
-#include "../vertex.h"
+#include <vulkan/vulkan.h>
+
 #include <vector>
-#include <vulkan/vulkan_core.h>
+
+#include "../vertex.h"
 
 void createVertexBuffer(const std::vector<Vertex>& vertices,
                         const VkDevice             device,
