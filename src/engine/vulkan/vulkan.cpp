@@ -12,7 +12,6 @@
 #include "instance.h"
 #include "physicaldevice.h"
 #include "renderpass.h"
-#include "../vertex.h"
 #include "buffers.h"
 #include "../../compilesettings.h"
 #include "validationlayers.h"

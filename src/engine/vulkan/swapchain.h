@@ -29,12 +29,12 @@ void createFramebuffers(std::vector<VkFramebuffer>&     swapchainFrameBuffers,
 
 void createSwapChain(const VkPhysicalDevice physicalDevice,
                      const VkSurfaceKHR     surface,
-                     const Window           window,
+                     const Window&           window,
                      Swapchain&             swapchain,
                      const VkDevice         device,
                      VkSwapchainKHR&        oldSwapChain,
-                     std::vector<VkImage> images,
-                     std::vector<VkImageView> imageViews);
+                     std::vector<VkImage>& images,
+                     std::vector<VkImageView>& imageViews);
 
 void recreateSwapChain(const VkPhysicalDevice      physicalDevice,
                        const Window&               window,

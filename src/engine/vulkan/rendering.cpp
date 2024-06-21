@@ -5,12 +5,11 @@
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
-#include "../window.h"
 #include "commandobjects.h"
 #include "swapchain.h"
 #include "../enginedata.h"
-#include "syncronization.h"
 #include "../../utils/debugprint.h"
+#include "syncronization.h"
 
 void drawFrame(Data& data) {
 
@@ -29,7 +28,7 @@ void drawFrame(Data& data) {
     }
 
     VkResult fenceStatus = vkGetFenceStatus(data.vulkanObjects.device, data.resources.syncObjects.inFlightFences[data.currentFrame]);
-    std::cout << fenceStatus << std::endl;
+    debugnote("fence status: " << fenceStatus);
     // only reset fences when we know we are submitting work
     vkResetFences(data.vulkanObjects.device, 1, &data.resources.syncObjects.inFlightFences[data.currentFrame]);
 
@@ -42,7 +41,6 @@ void drawFrame(Data& data) {
                         data.renderingObjects.graphicsPipeline,
                         data.resources.vertexBuffer,
                         static_cast<uint32_t>(data.resources.renderData.size()));
-    debugnote("after recording command buffer");
 
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
