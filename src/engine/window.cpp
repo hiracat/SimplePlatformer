@@ -13,7 +13,8 @@ void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
 }
 
 void initializeWindow(Window& windowData, bool* frameBufferResized) {
-    debugnote("glfwinit says: " << glfwInit());
+    int reply = glfwInit();
+    debugnote("glfwinit says: " << reply);
     // disables the automatic opengl context creation
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     windowData.windowPointer = glfwCreateWindow(windowData.WIDTH, windowData.HEIGHT, windowData.name, nullptr, nullptr);

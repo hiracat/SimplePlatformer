@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <stdexcept>
+#include <vulkan/vulkan_core.h>
 
 #include "syncronization.h"
 
@@ -24,5 +25,13 @@ void createSyncObjects(SyncObjects& syncObjects, const VkDevice& device, const u
             vkCreateFence(device, &fenceInfo, nullptr, &syncObjects.inFlightFences[i]) != VK_SUCCESS) {
             throw std::runtime_error("failed to create sync objects");
         }
+    }
+}
+void cleanupSyncObjects(SyncObjects& objects, const VkDevice device, const uint32_t maxFramesInFlight) {
+
+    for (size_t i = 0; i < maxFramesInFlight; i++) {
+        vkDestroySemaphore(device, objects.imageAvailableSemaphores[i], nullptr);
+        vkDestroySemaphore(device, objects.renderFinishedSemaphores[i], nullptr);
+        vkDestroyFence(device, objects.inFlightFences[i], nullptr);
     }
 }

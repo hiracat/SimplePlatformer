@@ -44,11 +44,11 @@ struct RenderingResources {
                                             },
                                                {
                                                 {0.5f, 0.5f},
-                                                {0.0f, 1.0f, 0.0f},
+                                                {0.0f, 1.0f, 1.0f},
                                             },
                                                {
                                                 {-0.5f, 0.5f},
-                                                {0.0f, 0.0f, 1.0f},
+                                                {1.0f, 1.0f, 0.4f},
                                             }};
 
     const int MAX_FRAMES_IN_FLIGHT = 2;

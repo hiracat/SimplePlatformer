@@ -34,13 +34,15 @@ void drawFrame(Data& data) {
                           data.resources.swapchainFramebuffers,
                           data.resources.images,
                           data.resources.imageViews);
+        cleanupSyncObjects(data.resources.syncObjects, data.vulkanObjects.device, data.resources.MAX_FRAMES_IN_FLIGHT);
+        createSyncObjects(data.resources.syncObjects, data.vulkanObjects.device, data.resources.MAX_FRAMES_IN_FLIGHT);
         return;
     } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
         throw std::runtime_error("failed to acquire swap chain image!");
     }
 
     VkResult fenceStatus = vkGetFenceStatus(data.vulkanObjects.device, data.resources.syncObjects.inFlightFences[data.currentFrame]);
-    debugnote("fence status: " << fenceStatus);
+    // debugnote("fence status: " << fenceStatus);
     // only reset fences when we know we are submitting work
     vkResetFences(data.vulkanObjects.device, 1, &data.resources.syncObjects.inFlightFences[data.currentFrame]);
 

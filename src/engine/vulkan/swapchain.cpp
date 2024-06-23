@@ -53,8 +53,8 @@ void recreateSwapChain(const VkPhysicalDevice      physicalDevice,
                        const VkDevice              device,
                        const VkRenderPass          renderpass,
                        std::vector<VkFramebuffer>& swapchainFrameBuffers,
-                       std::vector<VkImage>        images,
-                       std::vector<VkImageView>    imageViews) {
+                       std::vector<VkImage>&       images,
+                       std::vector<VkImageView>&   imageViews) {
 
     int width = 0, height = 0;
     glfwGetFramebufferSize(window.windowPointer, &width, &height);
@@ -132,12 +132,12 @@ void createSwapChain(const VkPhysicalDevice    physicalDevice,
 
     if (indices.presentFamily.value() == indices.graphicsFamily.value()) {
         createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-        debugnote("graphics and presentation queus are the same");
+        // debugnote("graphics and presentation queus are the same");
     } else {
         createInfo.imageSharingMode      = VK_SHARING_MODE_CONCURRENT;
         createInfo.queueFamilyIndexCount = 2;
         createInfo.pQueueFamilyIndices   = queueFamilyIndices;
-        debugnote("graphics and presentation queus are different");
+        // debugnote("graphics and presentation queus are different");
     }
     createInfo.preTransform   = swapChainSupport.capabilities.currentTransform;
     createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
@@ -177,6 +177,6 @@ SwapChainSupportDetails querySwapChainSupport(const VkPhysicalDevice& physicalDe
         details.presentModes.resize(presentModesCount);
         vkGetPhysicalDeviceSurfacePresentModesKHR(physicalDevice, surface, &presentModesCount, details.presentModes.data());
     }
-    debugnote("swapchain min images from in query swapchain support: " << details.capabilities.minImageCount);
+    // debugnote("swapchain min images from in query swapchain support: " << details.capabilities.minImageCount);
     return details;
 }

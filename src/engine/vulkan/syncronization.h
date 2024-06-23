@@ -8,3 +8,4 @@ struct SyncObjects {
 };
 
 void createSyncObjects(SyncObjects& syncObjects, const VkDevice& device, const uint32_t maxFramesInFlight);
+void cleanupSyncObjects(SyncObjects& objects, const VkDevice device, const uint32_t maxFramesInFlight);

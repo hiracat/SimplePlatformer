@@ -2,11 +2,10 @@
 
 #include <GLFW/glfw3.h>
 
-#include <cstddef>
-
 #include "../compilesettings.h"
 #include "enginedata.h"
 #include "vulkan/swapchain.h"
+#include "vulkan/syncronization.h"
 
 void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT pMessenger, const VkAllocationCallbacks* pAllocator) {
     auto func = reinterpret_cast<PFN_vkDestroyDebugUtilsMessengerEXT>(vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT"));
@@ -31,11 +30,7 @@ void cleanup(Data& data) {
 
     vkDestroyRenderPass(data.vulkanObjects.device, data.renderingObjects.renderPass, nullptr);
 
-    for (size_t i = 0; i < data.resources.MAX_FRAMES_IN_FLIGHT; i++) {
-        vkDestroySemaphore(data.vulkanObjects.device, data.resources.syncObjects.imageAvailableSemaphores[i], nullptr);
-        vkDestroySemaphore(data.vulkanObjects.device, data.resources.syncObjects.renderFinishedSemaphores[i], nullptr);
-        vkDestroyFence(data.vulkanObjects.device, data.resources.syncObjects.inFlightFences[i], nullptr);
-    }
+    cleanupSyncObjects(data.resources.syncObjects, data.vulkanObjects.device, data.resources.MAX_FRAMES_IN_FLIGHT);
 
     vkDestroyCommandPool(data.vulkanObjects.device, data.renderingObjects.commandPool, nullptr);
 

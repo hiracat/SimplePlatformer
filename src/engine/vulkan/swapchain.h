@@ -41,8 +41,8 @@ void recreateSwapChain(const VkPhysicalDevice      physicalDevice,
                        const VkDevice              device,
                        const VkRenderPass          renderpass,
                        std::vector<VkFramebuffer>& swapchainFrameBuffers,
-                       std::vector<VkImage>        images,
-                       std::vector<VkImageView>    imageViews);
+                       std::vector<VkImage>&       images,
+                       std::vector<VkImageView>&   imageViews);
 void cleanupSwapChain(VkSwapchainKHR&             swapchain,
                       std::vector<VkImageView>&   imageViews,
                       std::vector<VkFramebuffer>& swapchainFramebuffers,

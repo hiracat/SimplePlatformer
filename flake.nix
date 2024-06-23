@@ -15,7 +15,6 @@
         buildInputs = with pkgs; [
           gcc
           cmake
-          hello
           glfw
 
           vulkan-headers
