@@ -20,6 +20,9 @@
 bool QueueFamilyIndices::isComplete() {
     return graphicsFamily.has_value() && presentFamily.has_value() && transferFamily.has_value();
 }
+bool QueueFamilyIndices::isSame() {
+    return (graphicsFamily.value() == presentFamily.value()) && (transferFamily.value() == graphicsFamily.value());
+}
 
 // requires vksurface to determine if a queue family supports presentation to a given surface
 QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice physicalDevice, const VkSurfaceKHR& surface) {

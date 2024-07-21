@@ -1,8 +1,8 @@
+#include <stdexcept>
 #include <vulkan/vulkan.h>
 
 #include <vector>
 
-#include "../../utils/debugprint.h"
 #include "../window.h"
 #include "physicaldevice.h"
 #include "swapchain.h"
@@ -127,17 +127,15 @@ void createSwapChain(const VkPhysicalDevice    physicalDevice,
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage       = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-    QueueFamilyIndices indices              = findQueueFamilies(physicalDevice, surface);
-    uint32_t           queueFamilyIndices[] = {indices.graphicsFamily.value(), indices.presentFamily.value()};
+    QueueFamilyIndices indices      = findQueueFamilies(physicalDevice, surface);
+    uint32_t           rawIndices[] = {indices.graphicsFamily.value(), indices.presentFamily.value()};
 
-    if (indices.presentFamily.value() == indices.graphicsFamily.value()) {
+    if ((indices.transferFamily.value() == indices.graphicsFamily.value()) && (indices.graphicsFamily == indices.presentFamily.value())) {
         createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-        // debugnote("graphics and presentation queus are the same");
     } else {
         createInfo.imageSharingMode      = VK_SHARING_MODE_CONCURRENT;
-        createInfo.queueFamilyIndexCount = 2;
-        createInfo.pQueueFamilyIndices   = queueFamilyIndices;
-        // debugnote("graphics and presentation queus are different");
+        createInfo.queueFamilyIndexCount = 3;
+        createInfo.pQueueFamilyIndices   = rawIndices;
     }
     createInfo.preTransform   = swapChainSupport.capabilities.currentTransform;
     createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;

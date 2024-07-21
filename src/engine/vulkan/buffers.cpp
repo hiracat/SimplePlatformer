@@ -3,24 +3,27 @@
 #include <cstring>
 #include <stdexcept>
 #include <vector>
+#include <vulkan/vulkan_core.h>
 
 #include "../vertex.h"
+#include "physicaldevice.h"
 #include "utils.h"
 
-void createVertexBuffer(const std::vector<Vertex>& vertices,
-                        const VkDevice             device,
-                        const VkPhysicalDevice     physicalDevice,
-                        VkBuffer&                  vertexBuffer,
-                        VkDeviceMemory&            vertexBufferMemory) {
+void createBuffer(const VkDevice         device,
+                  const VkPhysicalDevice physicalDevice,
+                  VkDeviceSize           size,
+                  VkBufferCreateFlags    usage,
+                  VkSharingMode          sharingMode,
+                  VkBuffer&              vertexBuffer,
+                  VkMemoryPropertyFlags  properties,
+                  VkDeviceMemory&        vertexBufferMemory) {
     VkBufferCreateInfo bufferInfo{};
-    bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    bufferInfo.size  = sizeof(vertices[0]) * vertices.size();
-
-    bufferInfo.usage       = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
-    bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
-
+    bufferInfo.sType       = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+    bufferInfo.size        = size;
+    bufferInfo.usage       = usage;
+    bufferInfo.sharingMode = sharingMode;
     if (vkCreateBuffer(device, &bufferInfo, nullptr, &vertexBuffer) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create vertex buffer!");
+        throw std::runtime_error("failed to create buffer!");
     }
 
     VkMemoryRequirements memRequirements;

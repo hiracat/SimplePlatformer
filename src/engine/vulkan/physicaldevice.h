@@ -13,6 +13,7 @@ struct QueueFamilyIndices {
     std::optional<uint32_t> transferFamily;
 
     bool isComplete();
+    bool isSame();
 };
 
 QueueFamilyIndices      findQueueFamilies(const VkPhysicalDevice, const VkSurfaceKHR&);
