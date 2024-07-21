@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <stdexcept>
+#include <vulkan/vulkan_core.h>
 
 #include "../../utils/fileio.h"
 #include "../vertex.h"
@@ -124,8 +125,9 @@ void createGraphicsPipeline(const VkDevice&   device,
     pipelineLayoutInfo.pPushConstantRanges    = nullptr; // Optional
                                                          //
 
-    if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create pipeline layout!");
+    VkResult createPipelineLayoutResult = vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout);
+    if (createPipelineLayoutResult != VK_SUCCESS) {
+        throw std::runtime_error("failed to create pipeline layout");
     }
 
     VkGraphicsPipelineCreateInfo pipelineInfo{};
@@ -149,7 +151,8 @@ void createGraphicsPipeline(const VkDevice&   device,
     pipelineInfo.basePipelineHandle = nullptr;
     pipelineInfo.basePipelineIndex  = -1;
 
-    if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
+    VkResult result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline);
+    if (result != VK_SUCCESS) {
         throw std::runtime_error("failed to create graphics pipeline");
     }
 

@@ -1,12 +1,10 @@
 #include <vulkan/vulkan.h>
 
 #include <cstdint>
-#include <iostream>
-#include <ostream>
 #include <stdexcept>
 #include <vector>
+#include <vulkan/vulkan_core.h>
 
-#include "../../utils/debugprint.h"
 #include "../enginedata.h"
 #include "commandobjects.h"
 #include "swapchain.h"
@@ -37,8 +35,9 @@ void drawFrame(Data& data) {
         cleanupSyncObjects(data.resources.syncObjects, data.vulkanObjects.device, data.resources.MAX_FRAMES_IN_FLIGHT);
         createSyncObjects(data.resources.syncObjects, data.vulkanObjects.device, data.resources.MAX_FRAMES_IN_FLIGHT);
         return;
-    } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-        throw std::runtime_error("failed to acquire swap chain image!");
+    }
+    if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+        throw std::runtime_error("unknown error while aquiring next image");
     }
 
     VkResult fenceStatus = vkGetFenceStatus(data.vulkanObjects.device, data.resources.syncObjects.inFlightFences[data.currentFrame]);

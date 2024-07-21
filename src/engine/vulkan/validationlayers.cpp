@@ -3,6 +3,7 @@
 #include <cstring>
 #include <stdexcept>
 #include <vector>
+#include <vulkan/vulkan_core.h>
 
 #include "../../utils/debugprint.h"
 
@@ -50,9 +51,9 @@ void setupDebugMessanger(VkInstance instance, VkDebugUtilsMessengerEXT* debugMes
 
     VkResult result;
 
-    if ((result = CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, debugMessenger)) != VK_SUCCESS) {
-        // debugerror(string_VkResult(result));
-        throw std::runtime_error("failed to set up debug messeneger");
+    result = CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, debugMessenger);
+    if (result != VK_SUCCESS) {
+        throw std::runtime_error("failed to create debug messenger");
     }
 }
 
