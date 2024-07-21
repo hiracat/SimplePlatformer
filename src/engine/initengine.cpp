@@ -5,11 +5,15 @@
 #include "vulkan/vulkan.h"
 #include "window.h"
 
-void initEngine(Data& Data) {
+void initEngine(Data& data) {
     debugnote("ig we're at it again yay have fun");
 
-    initializeWindow(Data.window, &Data.framebufferResized);
-    initVulkan(Data.vulkanObjects, Data.window);
-    createRenderingObjects(
-        Data.renderingObjects, Data.resources, Data.vulkanObjects.device, Data.vulkanObjects.physicalDevice, Data.window);
+    initializeWindow(data.window, &data.framebufferResized);
+    initVulkan(data.vulkanObjects, data.window);
+    createRenderingObjects(data.renderingObjects,
+                           data.resources,
+                           data.vulkanObjects.device,
+                           data.vulkanObjects.physicalDevice,
+                           data.window,
+                           data.window.surface);
 }
