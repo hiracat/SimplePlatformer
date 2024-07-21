@@ -11,6 +11,6 @@ else
 fi
 
 pushd build
-make
+make -j 10
 popd
 ./build/SimplePlatformer
