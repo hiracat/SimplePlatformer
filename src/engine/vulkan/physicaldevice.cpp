@@ -13,6 +13,7 @@
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
+#include "../../utils/debugprint.h"
 #include "../window.h"
 #include "physicaldevice.h"
 
@@ -21,13 +22,13 @@ bool QueueFamilyIndices::isComplete() {
 }
 
 // requires vksurface to determine if a queue family supports presentation to a given surface
-QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice& physicalDevice, const VkSurfaceKHR& surface) {
+QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice physicalDevice, const VkSurfaceKHR& surface) {
     QueueFamilyIndices indices;
     uint32_t           queueFamilyCount{};
 
+    // NOTE: getting queuefamily properties
     vkGetPhysicalDeviceQueueFamilyProperties2(physicalDevice, &queueFamilyCount, nullptr);
     std::vector<VkQueueFamilyProperties2> queueFamilies(queueFamilyCount);
-
     for (auto& queueFamily : queueFamilies) {
         queueFamily.sType                 = VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2;
         queueFamily.pNext                 = nullptr;
@@ -35,44 +36,41 @@ QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice& physicalDevice, con
     }
     vkGetPhysicalDeviceQueueFamilyProperties2(physicalDevice, &queueFamilyCount, queueFamilies.data());
 
+    // NOTE: finding the best combination of queues
     int currentQueueIndex = 0;
     // check for dedicated queues
     for (const auto& queueFamily : queueFamilies) {
 
         if ((queueFamily.queueFamilyProperties.queueFlags & VK_QUEUE_TRANSFER_BIT) &&
-            !(queueFamily.queueFamilyProperties.queueFlags & VK_QUEUE_GRAPHICS_BIT)) {
-            indices.transferFamily = currentQueueIndex;
-        }
+            !(queueFamily.queueFamilyProperties.queueFlags & VK_QUEUE_GRAPHICS_BIT) &&
+            !(queueFamily.queueFamilyProperties.queueFlags & VK_QUEUE_COMPUTE_BIT)) {
 
-        // Check for a dedicated present queue
-        VkBool32 presentSupport = false;
-        vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, currentQueueIndex, surface, &presentSupport);
-        if (presentSupport && !(queueFamily.queueFamilyProperties.queueFlags & VK_QUEUE_GRAPHICS_BIT)) {
-            indices.presentFamily = currentQueueIndex;
+            indices.transferFamily = currentQueueIndex;
         }
 
         // Check for a dedicated graphics queue
         if ((queueFamily.queueFamilyProperties.queueFlags & VK_QUEUE_GRAPHICS_BIT)) {
             indices.graphicsFamily = currentQueueIndex;
         }
+
+        VkBool32 presentSupport = false;
+        vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, currentQueueIndex, surface, &presentSupport);
+        if (presentSupport && !indices.presentFamily.has_value()) {
+            indices.presentFamily = currentQueueIndex;
+        }
         currentQueueIndex++;
     }
-    // if cant find dedicated options
-    currentQueueIndex = 0;
-    if (!indices.isComplete()) {
-        indices.transferFamily = indices.graphicsFamily;
-        for (const auto& queueFamily : queueFamilies) {
-            VkBool32 presentSupport = false;
-            vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, currentQueueIndex, surface, &presentSupport);
-            if (presentSupport) {
-                indices.presentFamily = currentQueueIndex;
-            }
-            currentQueueIndex++;
-        }
+
+    if (!indices.transferFamily.has_value()) {
+        indices.transferFamily = indices.graphicsFamily.value();
     }
+
     if (!indices.isComplete()) {
         throw std::runtime_error("no queue with present support");
     }
+    debugnote("graphics queue: " << indices.graphicsFamily.value());
+    debugnote("transfer queue: " << indices.transferFamily.value());
+    debugnote("present queue: " << indices.presentFamily.value());
     return indices;
 }
 

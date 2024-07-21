@@ -15,7 +15,7 @@ struct QueueFamilyIndices {
     bool isComplete();
 };
 
-QueueFamilyIndices      findQueueFamilies(const VkPhysicalDevice&, const VkSurfaceKHR&);
+QueueFamilyIndices      findQueueFamilies(const VkPhysicalDevice, const VkSurfaceKHR&);
 VkExtent2D              chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capiblilies, const Window& window);
 SwapChainSupportDetails querySwapChainSupport(const VkPhysicalDevice& physicalDevice, const VkSurfaceKHR& surface);
 VkSurfaceFormatKHR      chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
