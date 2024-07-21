@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 
 #include <stdexcept>
+#include <vulkan/vulkan_core.h>
 
 #include "../../compilesettings.h"
 #include "../enginedata.h"
@@ -33,6 +34,7 @@ void initVulkan(VulkanObjects& vulkanObjects, Window& window) {
                         vulkanObjects.deviceExtensions,
                         vulkanObjects.graphicsQueue,
                         vulkanObjects.presentQueue,
+                        vulkanObjects.transferQueue,
                         window.surface);
 }
 
@@ -40,7 +42,9 @@ void createRenderingObjects(RenderingObjects&      renderingObjects,
                             RenderingResources&    resources,
                             const VkDevice         device,
                             const VkPhysicalDevice physicalDevice,
-                            const Window&          window) {
+                            const Window&          window,
+                            const VkSurfaceKHR     surface) {
+
     createSwapChain(physicalDevice,
                     window.surface,
                     window,
@@ -56,7 +60,11 @@ void createRenderingObjects(RenderingObjects&      renderingObjects,
                            renderingObjects.renderPass,
                            renderingObjects.graphicsPipeline);
 
-    createCommandPool(physicalDevice, window.surface, renderingObjects.commandPool, device);
+    QueueFamilyIndices indices = findQueueFamilies(physicalDevice, surface);
+    createCommandPool(physicalDevice, indices.graphicsFamily.value(), device, window.surface, renderingObjects.commandPool);
+    if (indices.graphicsFamily.value() != indices.presentFamily.value()) {
+        createCommandPool(physicalDevice, indices.presentFamily.value(), device, window.surface, renderingObjects.commandPool);
+    }
     createImageViews(resources.imageViews, resources.images, renderingObjects.swapchain.format, device);
     createFramebuffers(
         resources.swapchainFramebuffers, resources.imageViews, renderingObjects.renderPass, renderingObjects.swapchain.extent, device);

@@ -11,45 +11,68 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <vulkan/vulkan_core.h>
 
 #include "../window.h"
 #include "physicaldevice.h"
 
 bool QueueFamilyIndices::isComplete() {
-    return graphicsFamily.has_value() && presentFamily.has_value();
+    return graphicsFamily.has_value() && presentFamily.has_value() && transferFamily.has_value();
 }
 
 // requires vksurface to determine if a queue family supports presentation to a given surface
 QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice& physicalDevice, const VkSurfaceKHR& surface) {
     QueueFamilyIndices indices;
+    uint32_t           queueFamilyCount{};
 
-    uint32_t queueFamilyCount{};
     vkGetPhysicalDeviceQueueFamilyProperties2(physicalDevice, &queueFamilyCount, nullptr);
     std::vector<VkQueueFamilyProperties2> queueFamilies(queueFamilyCount);
 
     for (auto& queueFamily : queueFamilies) {
-        queueFamily.sType = VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2;
-        queueFamily.pNext = nullptr;
+        queueFamily.sType                 = VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2;
+        queueFamily.pNext                 = nullptr;
+        queueFamily.queueFamilyProperties = {0};
     }
     vkGetPhysicalDeviceQueueFamilyProperties2(physicalDevice, &queueFamilyCount, queueFamilies.data());
 
-    int i = 0;
+    int currentQueueIndex = 0;
+    // check for dedicated queues
     for (const auto& queueFamily : queueFamilies) {
 
-        VkBool32 presentSupport = false;
-        vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, i, surface, &presentSupport);
-        if (presentSupport) {
-            indices.presentFamily = i;
+        if ((queueFamily.queueFamilyProperties.queueFlags & VK_QUEUE_TRANSFER_BIT) &&
+            !(queueFamily.queueFamilyProperties.queueFlags & VK_QUEUE_GRAPHICS_BIT)) {
+            indices.transferFamily = currentQueueIndex;
         }
-        if (queueFamily.queueFamilyProperties.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-            indices.graphicsFamily = i;
-        }
-        if (indices.isComplete()) {
-            break;
-        }
-        i++;
-    }
 
+        // Check for a dedicated present queue
+        VkBool32 presentSupport = false;
+        vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, currentQueueIndex, surface, &presentSupport);
+        if (presentSupport && !(queueFamily.queueFamilyProperties.queueFlags & VK_QUEUE_GRAPHICS_BIT)) {
+            indices.presentFamily = currentQueueIndex;
+        }
+
+        // Check for a dedicated graphics queue
+        if ((queueFamily.queueFamilyProperties.queueFlags & VK_QUEUE_GRAPHICS_BIT)) {
+            indices.graphicsFamily = currentQueueIndex;
+        }
+        currentQueueIndex++;
+    }
+    // if cant find dedicated options
+    currentQueueIndex = 0;
+    if (!indices.isComplete()) {
+        indices.transferFamily = indices.graphicsFamily;
+        for (const auto& queueFamily : queueFamilies) {
+            VkBool32 presentSupport = false;
+            vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, currentQueueIndex, surface, &presentSupport);
+            if (presentSupport) {
+                indices.presentFamily = currentQueueIndex;
+            }
+            currentQueueIndex++;
+        }
+    }
+    if (!indices.isComplete()) {
+        throw std::runtime_error("no queue with present support");
+    }
     return indices;
 }
 
@@ -80,13 +103,9 @@ scorePhysicalDevice(const VkPhysicalDevice& device, const VkSurfaceKHR& surface,
         return 0;
     }
     QueueFamilyIndices indices = findQueueFamilies(device, surface);
-    if (indices.presentFamily != indices.graphicsFamily) {
-        score += 50;
-    }
     if (!indices.isComplete()) {
         return 0;
     }
-
     SwapChainSupportDetails swapChainSupport  = querySwapChainSupport(device, surface);
     bool                    swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
     if (!swapChainAdequate) {

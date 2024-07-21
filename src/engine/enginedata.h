@@ -18,6 +18,7 @@ struct VulkanObjects {
     const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
     VkQueue                        graphicsQueue{};
     VkQueue                        presentQueue{};
+    VkQueue                        transferQueue{};
     VkDevice                       device{};
 };
 

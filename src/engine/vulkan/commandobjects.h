@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 #include <vulkan/vulkan.h>
 
 #include <vector>
@@ -9,9 +10,10 @@ void createCommandBuffers(const VkDevice&               device,
                           const uint32_t                maxFramesInFlight);
 
 void createCommandPool(const VkPhysicalDevice& physicalDevice,
+                       const uint32_t          queueFamilyIndex,
+                       const VkDevice&         device,
                        const VkSurfaceKHR&     surface,
-                       VkCommandPool&          commandPool,
-                       const VkDevice&         device);
+                       VkCommandPool&          commandPool);
 
 void recordCommandBuffer(VkCommandBuffer     commandBuffer,
                          const VkExtent2D&   swapChainExtent,

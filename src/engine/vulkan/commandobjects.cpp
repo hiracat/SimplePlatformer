@@ -84,14 +84,15 @@ void createCommandBuffers(const VkDevice&               device,
 }
 
 void createCommandPool(const VkPhysicalDevice& physicalDevice,
+                       const uint32_t          queueFamilyIndex,
+                       const VkDevice&         device,
                        const VkSurfaceKHR&     surface,
-                       VkCommandPool&          commandPool,
-                       const VkDevice&         device) {
+                       VkCommandPool&          commandPool) {
     QueueFamilyIndices      queueFamilyIndices = findQueueFamilies(physicalDevice, surface);
     VkCommandPoolCreateInfo poolInfo{};
     poolInfo.sType            = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     poolInfo.flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-    poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();
+    poolInfo.queueFamilyIndex = queueFamilyIndices.presentFamily.value();
     if (vkCreateCommandPool(device, &poolInfo, nullptr, &commandPool) != VK_SUCCESS) {
         throw std::runtime_error("failed to create command pool!");
     }

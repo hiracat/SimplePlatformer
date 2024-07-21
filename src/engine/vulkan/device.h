@@ -9,4 +9,5 @@ void createLogicalDevice(VkDevice&                       device,
                          const std::vector<const char*>& deviceExtensions,
                          VkQueue&                        graphicsQueue,
                          VkQueue&                        presentQueue,
+                         VkQueue&                        transferQueue,
                          const VkSurfaceKHR              surface);
