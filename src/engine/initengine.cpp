@@ -15,5 +15,6 @@ void initEngine(Data& data) {
                            data.vulkanObjects.device,
                            data.vulkanObjects.physicalDevice,
                            data.window,
-                           data.window.surface);
+                           data.window.surface,
+                           data.vulkanObjects.transferQueue);
 }

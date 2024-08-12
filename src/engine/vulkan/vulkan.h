@@ -10,4 +10,5 @@ void createRenderingObjects(RenderingObjects&      renderingObjects,
                             const VkDevice         device,
                             const VkPhysicalDevice physicalDevice,
                             const Window&          window,
-                            const VkSurfaceKHR     surface);
+                            const VkSurfaceKHR     surface,
+                            const VkQueue          transferQueue);

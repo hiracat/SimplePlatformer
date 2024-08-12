@@ -9,4 +9,6 @@ void createVertexBuffer(const std::vector<Vertex>& vertices,
                         const VkPhysicalDevice     physicalDevice,
                         VkBuffer&                  vertexBuffer,
                         VkDeviceMemory&            vertexBufferMemory,
-                        const VkSurfaceKHR         surface);
+                        const VkSurfaceKHR         surface,
+                        const VkCommandPool        commandPool,
+                        const VkQueue              transferQueue);

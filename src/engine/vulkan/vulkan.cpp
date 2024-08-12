@@ -43,7 +43,8 @@ void createRenderingObjects(RenderingObjects&      renderingObjects,
                             const VkDevice         device,
                             const VkPhysicalDevice physicalDevice,
                             const Window&          window,
-                            const VkSurfaceKHR     surface) {
+                            const VkSurfaceKHR     surface,
+                            const VkQueue          transferQueue) {
 
     createSwapChain(physicalDevice,
                     window.surface,
@@ -69,7 +70,14 @@ void createRenderingObjects(RenderingObjects&      renderingObjects,
     createFramebuffers(
         resources.swapchainFramebuffers, resources.imageViews, renderingObjects.renderPass, renderingObjects.swapchain.extent, device);
 
-    createVertexBuffer(resources.renderData, device, physicalDevice, resources.vertexBuffer, resources.vertexBufferMemory, surface);
+    createVertexBuffer(resources.renderData,
+                       device,
+                       physicalDevice,
+                       resources.vertexBuffer,
+                       resources.vertexBufferMemory,
+                       surface,
+                       renderingObjects.commandPool,
+                       transferQueue);
     createCommandBuffers(device, renderingObjects.commandPool, resources.commandBuffers, resources.MAX_FRAMES_IN_FLIGHT);
     createSyncObjects(resources.syncObjects, device, resources.MAX_FRAMES_IN_FLIGHT);
 }
