@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <vulkan/vulkan.h>
 
 #include <cstring>
@@ -77,6 +78,56 @@ void copyBuffer(VkBuffer&           srcBuffer,
     vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
 }
 
+void createIndexBuffer(const std::vector<uint32_t>& indices,
+                       const VkDevice               device,
+                       const VkPhysicalDevice       physicalDevice,
+                       VkBuffer&                    indexBuffer,
+                       VkDeviceMemory&              indexBufferMemory,
+                       const VkSurfaceKHR           surface,
+                       const VkCommandPool          commandPool,
+                       const VkQueue                transferQueue) {
+
+    VkDeviceSize  bufferSize = sizeof(indices[0]) * indices.size();
+    VkSharingMode queueSharingMode;
+    { // set sharing mode
+        QueueFamilyIndices indices = findQueueFamilies(physicalDevice, surface);
+        if (indices.isSame()) {
+            queueSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        } else {
+            queueSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        }
+    }
+
+    VkBuffer       stagingBuffer;
+    VkDeviceMemory stagingBufferMemory;
+    createBuffer(device,
+                 physicalDevice,
+                 bufferSize,
+                 VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                 queueSharingMode,
+                 stagingBuffer,
+                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                 stagingBufferMemory);
+
+    void* data;
+    vkMapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
+    memcpy(data, indices.data(), bufferSize);
+    vkUnmapMemory(device, stagingBufferMemory);
+
+    createBuffer(device,
+                 physicalDevice,
+                 bufferSize,
+                 VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                 queueSharingMode,
+                 indexBuffer,
+                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                 indexBufferMemory);
+
+    copyBuffer(stagingBuffer, indexBuffer, bufferSize, commandPool, device, transferQueue);
+
+    vkDestroyBuffer(device, stagingBuffer, nullptr);
+    vkFreeMemory(device, stagingBufferMemory, nullptr);
+}
 void createVertexBuffer(const std::vector<Vertex>& vertices,
                         const VkDevice             device,
                         const VkPhysicalDevice     physicalDevice,

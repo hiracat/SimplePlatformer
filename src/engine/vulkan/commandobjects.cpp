@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <stdexcept>
 #include <vector>
+#include <vulkan/vulkan_core.h>
 
 #include "physicaldevice.h"
 
@@ -12,7 +13,8 @@ void recordCommandBuffer(VkCommandBuffer     commandBuffer,
                          VkFramebuffer&      swapchainFrameBuffer,
                          const VkPipeline&   graphicsPipeline,
                          const VkBuffer      vertexBuffer,
-                         const uint32_t      verticesCount) {
+                         const VkBuffer      indexBuffer,
+                         const uint32_t      indicesCount) {
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags            = 0;
@@ -58,7 +60,9 @@ void recordCommandBuffer(VkCommandBuffer     commandBuffer,
     VkDeviceSize offsets[]       = {0};
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-    vkCmdDraw(commandBuffer, verticesCount, 1, 0, 0);
+    vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+
+    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indicesCount), 1, 0, 0, 0);
     vkCmdEndRenderPass(commandBuffer);
 
     if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {

@@ -22,6 +22,10 @@ void cleanup(Data& data) {
                      data.resources.imageViews,
                      data.resources.swapchainFramebuffers,
                      data.vulkanObjects.device);
+
+    vkDestroyBuffer(data.vulkanObjects.device, data.resources.indexBuffer, nullptr);
+    vkFreeMemory(data.vulkanObjects.device, data.resources.indexBufferMemory, nullptr);
+
     vkDestroyBuffer(data.vulkanObjects.device, data.resources.vertexBuffer, nullptr);
     vkFreeMemory(data.vulkanObjects.device, data.resources.vertexBufferMemory, nullptr);
 

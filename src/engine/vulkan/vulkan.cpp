@@ -70,7 +70,16 @@ void createRenderingObjects(RenderingObjects&      renderingObjects,
     createFramebuffers(
         resources.swapchainFramebuffers, resources.imageViews, renderingObjects.renderPass, renderingObjects.swapchain.extent, device);
 
-    createVertexBuffer(resources.renderData,
+    createIndexBuffer(resources.renderData.indices,
+                      device,
+                      physicalDevice,
+                      resources.indexBuffer,
+                      resources.indexBufferMemory,
+                      surface,
+                      renderingObjects.commandPool,
+                      transferQueue);
+
+    createVertexBuffer(resources.renderData.vertices,
                        device,
                        physicalDevice,
                        resources.vertexBuffer,

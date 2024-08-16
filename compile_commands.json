@@ -23,12 +23,12 @@
       "-v",
       "-c",
       "-o",
-      "CMakeFiles/cmTC_9e9e5.dir/CMakeCCompilerABI.c.o",
+      "CMakeFiles/cmTC_f8c7e.dir/CMakeCCompilerABI.c.o",
       "/nix/store/aqckch626lg0vxh41dabyzrq0jx7gdk5-cmake-3.29.6/share/cmake-3.29/Modules/CMakeCCompilerABI.c"
     ],
-    "directory": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/CMakeScratch/TryCompile-O4JU2y",
+    "directory": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/CMakeScratch/TryCompile-BJyoCx",
     "file": "/nix/store/aqckch626lg0vxh41dabyzrq0jx7gdk5-cmake-3.29.6/share/cmake-3.29/Modules/CMakeCCompilerABI.c",
-    "output": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/CMakeScratch/TryCompile-O4JU2y/CMakeFiles/cmTC_9e9e5.dir/CMakeCCompilerABI.c.o"
+    "output": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/CMakeScratch/TryCompile-BJyoCx/CMakeFiles/cmTC_f8c7e.dir/CMakeCCompilerABI.c.o"
   },
   {
     "arguments": [
@@ -36,12 +36,12 @@
       "-v",
       "-c",
       "-o",
-      "CMakeFiles/cmTC_e2089.dir/CMakeCXXCompilerABI.cpp.o",
+      "CMakeFiles/cmTC_b47ed.dir/CMakeCXXCompilerABI.cpp.o",
       "/nix/store/aqckch626lg0vxh41dabyzrq0jx7gdk5-cmake-3.29.6/share/cmake-3.29/Modules/CMakeCXXCompilerABI.cpp"
     ],
-    "directory": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/CMakeScratch/TryCompile-eyRXbp",
+    "directory": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/CMakeScratch/TryCompile-I76c3o",
     "file": "/nix/store/aqckch626lg0vxh41dabyzrq0jx7gdk5-cmake-3.29.6/share/cmake-3.29/Modules/CMakeCXXCompilerABI.cpp",
-    "output": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/CMakeScratch/TryCompile-eyRXbp/CMakeFiles/cmTC_e2089.dir/CMakeCXXCompilerABI.cpp.o"
+    "output": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/CMakeScratch/TryCompile-I76c3o/CMakeFiles/cmTC_b47ed.dir/CMakeCXXCompilerABI.cpp.o"
   },
   {
     "arguments": [
@@ -64,40 +64,12 @@
       "-g3",
       "-c",
       "-o",
-      "CMakeFiles/SimplePlatformer.dir/src/engine/initengine.cpp.o",
-      "/home/forest/Documents/projects/SimplePlatformer/src/engine/initengine.cpp"
+      "CMakeFiles/SimplePlatformer.dir/src/engine/vulkan/device.cpp.o",
+      "/home/forest/Documents/projects/SimplePlatformer/src/engine/vulkan/device.cpp"
     ],
     "directory": "/home/forest/Documents/projects/SimplePlatformer/build",
-    "file": "/home/forest/Documents/projects/SimplePlatformer/src/engine/initengine.cpp",
-    "output": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/SimplePlatformer.dir/src/engine/initengine.cpp.o"
-  },
-  {
-    "arguments": [
-      "/nix/store/62zpnw69ylcfhcpy1di8152zlzmbls91-gcc-wrapper-13.3.0/bin/g++",
-      "-g",
-      "-g3",
-      "-c",
-      "-o",
-      "CMakeFiles/SimplePlatformer.dir/src/engine/cleanupengine.cpp.o",
-      "/home/forest/Documents/projects/SimplePlatformer/src/engine/cleanupengine.cpp"
-    ],
-    "directory": "/home/forest/Documents/projects/SimplePlatformer/build",
-    "file": "/home/forest/Documents/projects/SimplePlatformer/src/engine/cleanupengine.cpp",
-    "output": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/SimplePlatformer.dir/src/engine/cleanupengine.cpp.o"
-  },
-  {
-    "arguments": [
-      "/nix/store/62zpnw69ylcfhcpy1di8152zlzmbls91-gcc-wrapper-13.3.0/bin/g++",
-      "-g",
-      "-g3",
-      "-c",
-      "-o",
-      "CMakeFiles/SimplePlatformer.dir/src/engine/vulkan/physicaldevice.cpp.o",
-      "/home/forest/Documents/projects/SimplePlatformer/src/engine/vulkan/physicaldevice.cpp"
-    ],
-    "directory": "/home/forest/Documents/projects/SimplePlatformer/build",
-    "file": "/home/forest/Documents/projects/SimplePlatformer/src/engine/vulkan/physicaldevice.cpp",
-    "output": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/SimplePlatformer.dir/src/engine/vulkan/physicaldevice.cpp.o"
+    "file": "/home/forest/Documents/projects/SimplePlatformer/src/engine/vulkan/device.cpp",
+    "output": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/SimplePlatformer.dir/src/engine/vulkan/device.cpp.o"
   },
   {
     "arguments": [
@@ -120,12 +92,12 @@
       "-g3",
       "-c",
       "-o",
-      "CMakeFiles/SimplePlatformer.dir/src/engine/vulkan/device.cpp.o",
-      "/home/forest/Documents/projects/SimplePlatformer/src/engine/vulkan/device.cpp"
+      "CMakeFiles/SimplePlatformer.dir/src/engine/vertex.cpp.o",
+      "/home/forest/Documents/projects/SimplePlatformer/src/engine/vertex.cpp"
     ],
     "directory": "/home/forest/Documents/projects/SimplePlatformer/build",
-    "file": "/home/forest/Documents/projects/SimplePlatformer/src/engine/vulkan/device.cpp",
-    "output": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/SimplePlatformer.dir/src/engine/vulkan/device.cpp.o"
+    "file": "/home/forest/Documents/projects/SimplePlatformer/src/engine/vertex.cpp",
+    "output": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/SimplePlatformer.dir/src/engine/vertex.cpp.o"
   },
   {
     "arguments": [
@@ -162,12 +134,12 @@
       "-g3",
       "-c",
       "-o",
-      "CMakeFiles/SimplePlatformer.dir/src/engine/vulkan/graphicspipeline.cpp.o",
-      "/home/forest/Documents/projects/SimplePlatformer/src/engine/vulkan/graphicspipeline.cpp"
+      "CMakeFiles/SimplePlatformer.dir/src/engine/vulkan/physicaldevice.cpp.o",
+      "/home/forest/Documents/projects/SimplePlatformer/src/engine/vulkan/physicaldevice.cpp"
     ],
     "directory": "/home/forest/Documents/projects/SimplePlatformer/build",
-    "file": "/home/forest/Documents/projects/SimplePlatformer/src/engine/vulkan/graphicspipeline.cpp",
-    "output": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/SimplePlatformer.dir/src/engine/vulkan/graphicspipeline.cpp.o"
+    "file": "/home/forest/Documents/projects/SimplePlatformer/src/engine/vulkan/physicaldevice.cpp",
+    "output": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/SimplePlatformer.dir/src/engine/vulkan/physicaldevice.cpp.o"
   },
   {
     "arguments": [
@@ -176,12 +148,40 @@
       "-g3",
       "-c",
       "-o",
-      "CMakeFiles/SimplePlatformer.dir/src/engine/vertex.cpp.o",
-      "/home/forest/Documents/projects/SimplePlatformer/src/engine/vertex.cpp"
+      "CMakeFiles/SimplePlatformer.dir/src/engine/cleanupengine.cpp.o",
+      "/home/forest/Documents/projects/SimplePlatformer/src/engine/cleanupengine.cpp"
     ],
     "directory": "/home/forest/Documents/projects/SimplePlatformer/build",
-    "file": "/home/forest/Documents/projects/SimplePlatformer/src/engine/vertex.cpp",
-    "output": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/SimplePlatformer.dir/src/engine/vertex.cpp.o"
+    "file": "/home/forest/Documents/projects/SimplePlatformer/src/engine/cleanupengine.cpp",
+    "output": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/SimplePlatformer.dir/src/engine/cleanupengine.cpp.o"
+  },
+  {
+    "arguments": [
+      "/nix/store/62zpnw69ylcfhcpy1di8152zlzmbls91-gcc-wrapper-13.3.0/bin/g++",
+      "-g",
+      "-g3",
+      "-c",
+      "-o",
+      "CMakeFiles/SimplePlatformer.dir/src/engine/initengine.cpp.o",
+      "/home/forest/Documents/projects/SimplePlatformer/src/engine/initengine.cpp"
+    ],
+    "directory": "/home/forest/Documents/projects/SimplePlatformer/build",
+    "file": "/home/forest/Documents/projects/SimplePlatformer/src/engine/initengine.cpp",
+    "output": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/SimplePlatformer.dir/src/engine/initengine.cpp.o"
+  },
+  {
+    "arguments": [
+      "/nix/store/62zpnw69ylcfhcpy1di8152zlzmbls91-gcc-wrapper-13.3.0/bin/g++",
+      "-g",
+      "-g3",
+      "-c",
+      "-o",
+      "CMakeFiles/SimplePlatformer.dir/src/engine/vulkan/graphicspipeline.cpp.o",
+      "/home/forest/Documents/projects/SimplePlatformer/src/engine/vulkan/graphicspipeline.cpp"
+    ],
+    "directory": "/home/forest/Documents/projects/SimplePlatformer/build",
+    "file": "/home/forest/Documents/projects/SimplePlatformer/src/engine/vulkan/graphicspipeline.cpp",
+    "output": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/SimplePlatformer.dir/src/engine/vulkan/graphicspipeline.cpp.o"
   },
   {
     "arguments": [
@@ -218,12 +218,12 @@
       "-g3",
       "-c",
       "-o",
-      "CMakeFiles/SimplePlatformer.dir/src/engine/vulkan/swapchain.cpp.o",
-      "/home/forest/Documents/projects/SimplePlatformer/src/engine/vulkan/swapchain.cpp"
+      "CMakeFiles/SimplePlatformer.dir/src/engine/vulkan/shaders.cpp.o",
+      "/home/forest/Documents/projects/SimplePlatformer/src/engine/vulkan/shaders.cpp"
     ],
     "directory": "/home/forest/Documents/projects/SimplePlatformer/build",
-    "file": "/home/forest/Documents/projects/SimplePlatformer/src/engine/vulkan/swapchain.cpp",
-    "output": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/SimplePlatformer.dir/src/engine/vulkan/swapchain.cpp.o"
+    "file": "/home/forest/Documents/projects/SimplePlatformer/src/engine/vulkan/shaders.cpp",
+    "output": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/SimplePlatformer.dir/src/engine/vulkan/shaders.cpp.o"
   },
   {
     "arguments": [
@@ -232,12 +232,12 @@
       "-g3",
       "-c",
       "-o",
-      "CMakeFiles/SimplePlatformer.dir/src/engine/vulkan/shaders.cpp.o",
-      "/home/forest/Documents/projects/SimplePlatformer/src/engine/vulkan/shaders.cpp"
+      "CMakeFiles/SimplePlatformer.dir/src/engine/vulkan/swapchain.cpp.o",
+      "/home/forest/Documents/projects/SimplePlatformer/src/engine/vulkan/swapchain.cpp"
     ],
     "directory": "/home/forest/Documents/projects/SimplePlatformer/build",
-    "file": "/home/forest/Documents/projects/SimplePlatformer/src/engine/vulkan/shaders.cpp",
-    "output": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/SimplePlatformer.dir/src/engine/vulkan/shaders.cpp.o"
+    "file": "/home/forest/Documents/projects/SimplePlatformer/src/engine/vulkan/swapchain.cpp",
+    "output": "/home/forest/Documents/projects/SimplePlatformer/build/CMakeFiles/SimplePlatformer.dir/src/engine/vulkan/swapchain.cpp.o"
   },
   {
     "arguments": [

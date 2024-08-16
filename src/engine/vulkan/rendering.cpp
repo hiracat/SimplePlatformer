@@ -53,7 +53,8 @@ void drawFrame(Data& data) {
                         data.resources.swapchainFramebuffers[imageIndex],
                         data.renderingObjects.graphicsPipeline,
                         data.resources.vertexBuffer,
-                        static_cast<uint32_t>(data.resources.renderData.size()));
+                        data.resources.indexBuffer,
+                        data.resources.renderData.indices.size());
 
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
