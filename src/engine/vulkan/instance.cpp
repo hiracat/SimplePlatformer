@@ -46,7 +46,7 @@ void createVkInstance(VkInstance& instance, const std::vector<const char*>& vali
 
 #ifdef ENABLE_VALIDATION_LAYERS
     if (!checkValidationLayerSupported(validationLayers)) {
-        throw std::runtime_error("validation layers not supported");
+        debugerror("validation layers not supported");
     };
 
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
@@ -59,16 +59,13 @@ void createVkInstance(VkInstance& instance, const std::vector<const char*>& vali
 
     for (uint32_t i = 0; i < createInfo.enabledExtensionCount; i++) {
         if (!checkExtensionSupported(supportedExtensionProperties, createInfo.ppEnabledExtensionNames[i])) {
-            std::string message("an extension was requested but not available called: ");
-            message.append(createInfo.ppEnabledExtensionNames[i]);
-            throw std::runtime_error(message);
+            debugerror("an extensions was requrested but not available called: " << createInfo.ppEnabledExtensionNames[i]);
         }
     }
 
     VkResult result;
 
     if ((result = vkCreateInstance(&createInfo, nullptr, &instance)) != VK_SUCCESS) {
-        // debugerror("creating instance failed with the error: " << string_VkResult(result));
-        throw std::runtime_error("failed to create instance!");
+        debugerror("failed to create instance!");
     }
 }

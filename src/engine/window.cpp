@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <stdexcept>
 #include <vulkan/vulkan.h>
 
@@ -20,7 +21,7 @@ void initializeWindow(Window& windowData, bool* frameBufferResized) {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     windowData.windowPointer = glfwCreateWindow(windowData.WIDTH, windowData.HEIGHT, windowData.name, nullptr, nullptr);
     if (windowData.windowPointer == nullptr) {
-        throw std::runtime_error("window pointer is nullptr");
+        debugerror("window pointer is nullptr");
     }
 
     glfwSetWindowUserPointer(windowData.windowPointer, frameBufferResized);
@@ -31,6 +32,6 @@ void createSurface(const VkInstance instance, GLFWwindow* window, VkSurfaceKHR* 
     VkResult result = glfwCreateWindowSurface(instance, window, nullptr, surface);
 
     if (result != VK_SUCCESS) {
-        throw std::runtime_error("failed to create surface");
+        debugerror("failed to create surface");
     }
 };

@@ -1,6 +1,6 @@
 #include <vulkan/vulkan.h>
 
-#include <stdexcept>
+#include "../../utils/debugprint.h"
 #include <vector>
 
 VkShaderModule createShaderModule(const VkDevice device, const std::vector<char>& code) {
@@ -10,7 +10,7 @@ VkShaderModule createShaderModule(const VkDevice device, const std::vector<char>
     createInfo.pCode    = reinterpret_cast<const uint32_t*>(code.data());
     VkShaderModule shaderModule;
     if (vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create shader module!");
+        debugerror("failed to create shader module!");
     }
     return shaderModule;
 }

@@ -69,7 +69,7 @@ QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice physicalDevice, cons
     }
 
     if (!indices.isComplete()) {
-        throw std::runtime_error("no queue with present support");
+        debugerror("no queue with present support");
     }
     debugnote("graphics queue: " << indices.graphicsFamily.value());
     debugnote("transfer queue: " << indices.transferFamily.value());
@@ -124,7 +124,7 @@ void pickPhysicalDevice(const VkInstance                instance,
 
     vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, nullptr);
     if (physicalDeviceCount < 1) {
-        throw std::runtime_error("no devices with vulkan support available");
+        debugerror("no devices with vulkan support available");
     }
 
     std::vector<VkPhysicalDevice> devices(physicalDeviceCount);
@@ -137,7 +137,7 @@ void pickPhysicalDevice(const VkInstance                instance,
     if (deviceScores.rbegin()->first > 0) {
         physicalDevice = deviceScores.rbegin()->second;
     } else {
-        throw std::runtime_error("no good enough gpus available");
+        debugerror("no good enough gpus available");
     }
 }
 

@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "../../utils/debugprint.h"
 #include "../window.h"
 #include "physicaldevice.h"
 #include "swapchain.h"
@@ -28,7 +29,7 @@ void createImageViews(std::vector<VkImageView>&   imageViews,
         createInfo.subresourceRange.baseArrayLayer = 0;
         createInfo.subresourceRange.layerCount     = 1;
         if (vkCreateImageView(device, &createInfo, nullptr, &imageViews[i]) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create image views");
+            debugerror("failed to create image views");
         }
     }
 }
@@ -91,7 +92,7 @@ void createFramebuffers(std::vector<VkFramebuffer>&     swapchainFrameBuffers,
         framebufferInfo.height          = swapchainExtent.height;
         framebufferInfo.layers          = 1;
         if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &swapchainFrameBuffers[i]) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create framebuffer");
+            debugerror("failed to create framebuffer");
         }
     }
 }
@@ -146,8 +147,7 @@ void createSwapChain(const VkPhysicalDevice    physicalDevice,
     VkResult result = VK_SUCCESS;
 
     if ((result = vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapchain.swapchain)) != VK_SUCCESS) {
-        // debugerror(string_VkResult(result));
-        throw std::runtime_error("failed to create swapchain");
+        debugerror("failed to create swapchain");
     }
 
     vkGetSwapchainImagesKHR(device, swapchain.swapchain, &imageCount, nullptr);

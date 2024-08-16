@@ -5,6 +5,7 @@
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
+#include "../../utils/debugprint.h"
 #include "../enginedata.h"
 #include "commandobjects.h"
 #include "swapchain.h"
@@ -37,7 +38,7 @@ void drawFrame(Data& data) {
         return;
     }
     if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-        throw std::runtime_error("unknown error while aquiring next image");
+        debugerror("unknown error while aquiring next image");
     }
 
     VkResult fenceStatus = vkGetFenceStatus(data.vulkanObjects.device, data.resources.syncObjects.inFlightFences[data.currentFrame]);
@@ -74,7 +75,7 @@ void drawFrame(Data& data) {
 
     if (vkQueueSubmit(data.vulkanObjects.graphicsQueue, 1, &submitInfo, data.resources.syncObjects.inFlightFences[data.currentFrame]) !=
         VK_SUCCESS) {
-        throw std::runtime_error("failed to submit draw command buffer");
+        debugerror("failed to submit draw command buffer");
     }
 
     VkPresentInfoKHR presentInfo{};
@@ -101,7 +102,7 @@ void drawFrame(Data& data) {
                           data.resources.images,
                           data.resources.imageViews);
     } else if (result != VK_SUCCESS) {
-        throw std::runtime_error("failed to present swap chain image!");
+        debugerror("failed to present swap chain image!");
     }
 
     data.currentFrame = (data.currentFrame + 1) % data.resources.MAX_FRAMES_IN_FLIGHT;

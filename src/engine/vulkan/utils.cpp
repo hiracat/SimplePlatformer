@@ -1,7 +1,7 @@
 #include <vulkan/vulkan.h>
 
+#include "../../utils/debugprint.h"
 #include <cstdint>
-#include <stdexcept>
 
 uint32_t findMemoryType(const uint32_t typeFilter, const VkMemoryPropertyFlags properties, const VkPhysicalDevice physicalDevice) {
     VkPhysicalDeviceMemoryProperties memProperties;
@@ -14,5 +14,5 @@ uint32_t findMemoryType(const uint32_t typeFilter, const VkMemoryPropertyFlags p
         }
     }
 
-    throw std::runtime_error("failed to find suitable memory type!");
+    debugerror("failed to find suitable memory type!");
 }

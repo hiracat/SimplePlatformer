@@ -2,10 +2,10 @@
 #include <vulkan/vulkan.h>
 
 #include <cstring>
-#include <stdexcept>
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
+#include "../../utils/debugprint.h"
 #include "../vertex.h"
 #include "physicaldevice.h"
 #include "utils.h"
@@ -24,7 +24,7 @@ void createBuffer(const VkDevice         device,
     bufferInfo.usage       = usage;
     bufferInfo.sharingMode = sharingMode;
     if (vkCreateBuffer(device, &bufferInfo, nullptr, &vertexBuffer) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create buffer!");
+        debugerror("failed to create buffer!");
     }
 
     VkMemoryRequirements memRequirements;
@@ -34,7 +34,7 @@ void createBuffer(const VkDevice         device,
     allocInfo.allocationSize  = memRequirements.size;
     allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties, physicalDevice);
     if (vkAllocateMemory(device, &allocInfo, nullptr, &vertexBufferMemory) != VK_SUCCESS) {
-        throw std::runtime_error("failed to allocate vertex buffer memory!");
+        debugerror("failed to allocate vertex buffer memory!");
     }
     vkBindBufferMemory(device, vertexBuffer, vertexBufferMemory, 0);
 }

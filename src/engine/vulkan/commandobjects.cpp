@@ -5,6 +5,7 @@
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
+#include "../../utils/debugprint.h"
 #include "physicaldevice.h"
 
 void recordCommandBuffer(VkCommandBuffer     commandBuffer,
@@ -22,7 +23,7 @@ void recordCommandBuffer(VkCommandBuffer     commandBuffer,
     beginInfo.pInheritanceInfo = nullptr;
 
     if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-        throw std::runtime_error("failed to being command buffer");
+        debugerror("failed to being command buffer");
     }
 
     VkRenderPassBeginInfo renderPassInfo{};
@@ -66,7 +67,7 @@ void recordCommandBuffer(VkCommandBuffer     commandBuffer,
     vkCmdEndRenderPass(commandBuffer);
 
     if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-        throw std::runtime_error("failed to record command buffer!");
+        debugerror("failed to record command buffer!");
     }
 }
 
@@ -83,7 +84,7 @@ void createCommandBuffers(const VkDevice&               device,
     commandBuffers.resize(maxFramesInFlight);
 
     if (vkAllocateCommandBuffers(device, &allocInfo, commandBuffers.data())) {
-        throw std::runtime_error("failed to allocate command buffers");
+        debugerror("failed to allocate command buffers");
     }
 }
 
@@ -98,6 +99,6 @@ void createCommandPool(const VkPhysicalDevice& physicalDevice,
     poolInfo.flags            = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
     poolInfo.queueFamilyIndex = queueFamilyIndices.presentFamily.value();
     if (vkCreateCommandPool(device, &poolInfo, nullptr, &commandPool) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create command pool!");
+        debugerror("failed to create command pool!");
     }
 }

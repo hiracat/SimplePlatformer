@@ -2,10 +2,10 @@
 
 #include <GLFW/glfw3.h>
 
-#include <stdexcept>
 #include <vulkan/vulkan_core.h>
 
 #include "../../compilesettings.h"
+#include "../../utils/debugprint.h"
 #include "../enginedata.h"
 #include "buffers.h"
 #include "commandobjects.h"
@@ -24,7 +24,7 @@ void initVulkan(VulkanObjects& vulkanObjects, Window& window) {
     setupDebugMessanger(vulkanObjects.instance, &vulkanObjects.debugMessenger);
 #endif
     if (glfwCreateWindowSurface(vulkanObjects.instance, window.windowPointer, nullptr, &window.surface) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create window surface");
+        debugerror("failed to create window surface");
     }
     pickPhysicalDevice(vulkanObjects.instance, vulkanObjects.physicalDevice, window.surface, vulkanObjects.deviceExtensions);
 

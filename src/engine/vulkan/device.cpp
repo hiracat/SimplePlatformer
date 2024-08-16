@@ -1,11 +1,11 @@
 #include <vulkan/vulkan.h>
 
 #include <set>
-#include <stdexcept>
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
 #include "../../compilesettings.h"
+#include "../../utils/debugprint.h"
 #include "physicaldevice.h"
 
 void createLogicalDevice(VkDevice&                       device,
@@ -54,7 +54,7 @@ void createLogicalDevice(VkDevice&                       device,
 
     VkResult result = vkCreateDevice(physicalDevice, &createInfo, nullptr, &device);
     if (result != VK_SUCCESS) {
-        throw std::runtime_error("failed to creat device");
+        debugerror("failed to creat device");
     }
 
     vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &graphicsQueue);

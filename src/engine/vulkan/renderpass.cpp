@@ -1,7 +1,7 @@
 #include <vulkan/vulkan.h>
-
-#include <stdexcept>
 #include <vulkan/vulkan_core.h>
+
+#include "../../utils/debugprint.h"
 
 void createRenderPass(const VkFormat& swapchainFormat, VkRenderPass& renderPass, const VkDevice& device) {
     VkAttachmentDescription colorAttachment{};
@@ -46,6 +46,6 @@ void createRenderPass(const VkFormat& swapchainFormat, VkRenderPass& renderPass,
 
     VkResult result = vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass);
     if (result != VK_SUCCESS) {
-        throw std::runtime_error("failed to create render pass");
+        debugerror("failed to create render pass");
     }
 }

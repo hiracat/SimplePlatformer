@@ -2,9 +2,9 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <stdexcept>
 #include <vulkan/vulkan_core.h>
 
+#include "../../utils/debugprint.h"
 #include "syncronization.h"
 
 void createSyncObjects(SyncObjects& syncObjects, const VkDevice& device, const uint32_t maxFramesInFlight) {
@@ -23,7 +23,7 @@ void createSyncObjects(SyncObjects& syncObjects, const VkDevice& device, const u
         if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &syncObjects.imageAvailableSemaphores[i]) != VK_SUCCESS ||
             vkCreateSemaphore(device, &semaphoreInfo, nullptr, &syncObjects.renderFinishedSemaphores[i]) != VK_SUCCESS ||
             vkCreateFence(device, &fenceInfo, nullptr, &syncObjects.inFlightFences[i]) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create sync objects");
+            debugerror("failed to create sync objects");
         }
     }
 }
