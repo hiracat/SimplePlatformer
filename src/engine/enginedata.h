@@ -1,5 +1,4 @@
 #pragma once
-#include "../game/gamedata.h"
 #include <GLFW/glfw3.h>
 #include <vulkan/vulkan_core.h>
 
@@ -87,5 +86,4 @@ struct Data {
     uint32_t  currentFrame         = 0;
     bool      framebufferResized   = false;
     const int MAX_FRAMES_IN_FLIGHT = 2;
-    GameData  gamedata{};
 };

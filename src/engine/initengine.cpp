@@ -14,8 +14,11 @@
 #include "vulkan/syncronization.h"
 #include "vulkan/vulkan.h"
 #include "window.h"
+#include <GLFW/glfw3.h>
 
 void initEngine(Data& data) {
+    glfwInit(); // needs to be called here because we use a function in vkcreateinstance to get the extensions needed for glfw to work
+
     createVkInstance(data.instance, data.instanceResources.validationLayers);
     initializeWindow(data.instance, data.windowResources, &data.framebufferResized);
     debugnote("created vk instance");

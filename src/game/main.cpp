@@ -15,8 +15,6 @@
 
 int main() {
 
-    glfwInit();
-
     bool windowShouldClose = false;
     auto startTime         = std::chrono::high_resolution_clock::now();
     auto endTime           = std::chrono::high_resolution_clock::now();
@@ -30,12 +28,13 @@ int main() {
 
                    .indices = {0, 1, 2, 2, 3, 0}};
 
-    Data data{};
-    data.gamedata.models.push_back(model);
+    Data     data{};
+    GameData gameData{};
+    gameData.models.push_back(model);
 
     debugnote("creqated index and vertex buffers");
     initEngine(data);
-    createIndexBuffer(data.gamedata.models[0].indices,
+    createIndexBuffer(gameData.models[0].indices,
                       data.device,
                       data.physicalDevice,
                       data.indexBuffer.buffer,
@@ -44,7 +43,7 @@ int main() {
                       data.commandResources.commandPool,
                       data.queues.transferQueue);
 
-    createVertexBuffer(data.gamedata.models[0].vertices,
+    createVertexBuffer(gameData.models[0].vertices,
                        data.device,
                        data.physicalDevice,
                        data.vertexBuffer.buffer,
@@ -57,7 +56,7 @@ int main() {
         startTime = std::chrono::high_resolution_clock::now();
 
         glfwPollEvents();
-        drawFrame(data, data.gamedata);
+        drawFrame(data, gameData);
 
         endTime    = std::chrono::high_resolution_clock::now();
         renderTime = endTime - startTime;
