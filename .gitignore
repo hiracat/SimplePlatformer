@@ -35,3 +35,4 @@
 build/
 .git/
 .cache/
+compile_commands.json
