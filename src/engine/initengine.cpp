@@ -27,22 +27,27 @@ void initEngine(Data& data) {
     debugnote("setup debug messenger");
 #endif
     pickPhysicalDevice(data.instance, data.physicalDevice, data.windowResources.surface, data.instanceResources.deviceExtensions);
+    data.queueFamilyIndices = findQueueFamilies(data.physicalDevice, data.windowResources.surface);
     debugnote("picked physical device");
-    createDevice(data.device, data.physicalDevice, data.instanceResources, data.queues, data.windowResources.surface);
+    createDevice(
+        data.device, data.physicalDevice, data.instanceResources, data.queues, data.windowResources.surface, data.queueFamilyIndices);
     debugnote("created device");
 
-    createSwapChain(data.physicalDevice, data.windowResources, data.swapchain, data.device, data.swapchainResources);
+    createSwapChain(
+        data.physicalDevice, data.windowResources, data.swapchain, data.device, data.swapchainResources, data.queueFamilyIndices);
 
     createRenderPass(data.swapchain.format, data.pipelineResources.renderPass, data.device);
     createGraphicsPipeline(data.device, data.swapchain, data.pipelineResources);
     debugnote("created graphics pipeline");
 
-    QueueFamilyIndices indices = findQueueFamilies(data.physicalDevice, data.windowResources.surface);
-    createCommandPool(
-        data.physicalDevice, indices.graphicsFamily.value(), data.device, data.windowResources.surface, data.commandResources.commandPool);
-    if (indices.graphicsFamily.value() != indices.presentFamily.value()) {
+    createCommandPool(data.physicalDevice,
+                      data.queueFamilyIndices.graphicsFamily.value(),
+                      data.device,
+                      data.windowResources.surface,
+                      data.commandResources.commandPool);
+    if (data.queueFamilyIndices.graphicsFamily.value() != data.queueFamilyIndices.presentFamily.value()) {
         createCommandPool(data.physicalDevice,
-                          indices.presentFamily.value(),
+                          data.queueFamilyIndices.presentFamily.value(),
                           data.device,
                           data.windowResources.surface,
                           data.commandResources.commandPool);

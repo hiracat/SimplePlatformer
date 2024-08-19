@@ -29,7 +29,8 @@ void drawFrame(Data& data, GameData& gamedata) {
                           data.swapchain,
                           data.device,
                           data.pipelineResources.renderPass,
-                          data.swapchainResources);
+                          data.swapchainResources,
+                          data.queueFamilyIndices);
         cleanupSyncObjects(data.syncResources, data.device, data.MAX_FRAMES_IN_FLIGHT);
         createSyncObjects(data.syncResources, data.device, data.MAX_FRAMES_IN_FLIGHT);
         return;
@@ -94,7 +95,8 @@ void drawFrame(Data& data, GameData& gamedata) {
                           data.swapchain,
                           data.device,
                           data.pipelineResources.renderPass,
-                          data.swapchainResources);
+                          data.swapchainResources,
+                          data.queueFamilyIndices);
     } else if (result != VK_SUCCESS) {
         debugerror("failed to present swap chain image!");
     }

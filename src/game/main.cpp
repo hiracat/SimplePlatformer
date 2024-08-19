@@ -1,3 +1,4 @@
+#include <system_error>
 #include <thread>
 #include <vulkan/vulkan.h>
 
@@ -8,6 +9,7 @@
 #include "../engine/cleanupengine.h"
 #include "../engine/enginedata.h"
 #include "../engine/initengine.h"
+#include "../engine/models.h"
 #include "../engine/vulkan/buffers.h"
 #include "../engine/vulkan/rendering.h"
 #include "../utils/debugprint.h"
@@ -34,23 +36,14 @@ int main() {
 
     debugnote("creqated index and vertex buffers");
     initEngine(data);
-    createIndexBuffer(gameData.models[0].indices,
-                      data.device,
-                      data.physicalDevice,
-                      data.indexBuffer.buffer,
-                      data.indexBuffer.memory,
-                      data.windowResources.surface,
-                      data.commandResources.commandPool,
-                      data.queues.transferQueue);
-
-    createVertexBuffer(gameData.models[0].vertices,
-                       data.device,
-                       data.physicalDevice,
-                       data.vertexBuffer.buffer,
-                       data.vertexBuffer.memory,
-                       data.windowResources.surface,
-                       data.commandResources.commandPool,
-                       data.queues.transferQueue);
+    createModel(data.device,
+                data.physicalDevice,
+                data.queues.transferQueue,
+                data.commandResources.commandPool,
+                data.queueFamilyIndices,
+                gameData.models[0],
+                data.vertexBuffer,
+                data.indexBuffer);
 
     while (!glfwWindowShouldClose(data.windowResources.windowPointer)) {
         startTime = std::chrono::high_resolution_clock::now();

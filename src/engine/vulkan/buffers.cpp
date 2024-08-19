@@ -81,17 +81,15 @@ void copyBuffer(VkBuffer&           srcBuffer,
 void createIndexBuffer(const std::vector<uint32_t>& indices,
                        const VkDevice               device,
                        const VkPhysicalDevice       physicalDevice,
-                       VkBuffer&                    indexBuffer,
-                       VkDeviceMemory&              indexBufferMemory,
-                       const VkSurfaceKHR           surface,
+                       Buffer&                      buffer,
                        const VkCommandPool          commandPool,
-                       const VkQueue                transferQueue) {
+                       const VkQueue                transferQueue,
+                       const QueueFamilyIndices&    queueFamilyIndices) {
 
     VkDeviceSize  bufferSize = sizeof(indices[0]) * indices.size();
     VkSharingMode queueSharingMode;
     { // set sharing mode
-        QueueFamilyIndices indices = findQueueFamilies(physicalDevice, surface);
-        if (indices.isSame()) {
+        if (queueFamilyIndices.isSame()) {
             queueSharingMode = VK_SHARING_MODE_EXCLUSIVE;
         } else {
             queueSharingMode = VK_SHARING_MODE_EXCLUSIVE;
@@ -119,11 +117,11 @@ void createIndexBuffer(const std::vector<uint32_t>& indices,
                  bufferSize,
                  VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
                  queueSharingMode,
-                 indexBuffer,
+                 buffer.buffer,
                  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                 indexBufferMemory);
+                 buffer.memory);
 
-    copyBuffer(stagingBuffer, indexBuffer, bufferSize, commandPool, device, transferQueue);
+    copyBuffer(stagingBuffer, buffer.buffer, bufferSize, commandPool, device, transferQueue);
 
     vkDestroyBuffer(device, stagingBuffer, nullptr);
     vkFreeMemory(device, stagingBufferMemory, nullptr);
@@ -131,17 +129,15 @@ void createIndexBuffer(const std::vector<uint32_t>& indices,
 void createVertexBuffer(const std::vector<Vertex>& vertices,
                         const VkDevice             device,
                         const VkPhysicalDevice     physicalDevice,
-                        VkBuffer&                  vertexBuffer,
-                        VkDeviceMemory&            vertexBufferMemory,
-                        const VkSurfaceKHR         surface,
+                        Buffer&                    buffer,
                         const VkCommandPool        commandPool,
-                        const VkQueue              transferQueue) {
+                        const VkQueue              transferQueue,
+                        const QueueFamilyIndices&  queueFamilyIndices) {
 
     VkDeviceSize  bufferSize = sizeof(vertices[0]) * vertices.size();
     VkSharingMode queueSharingMode;
     { // set sharing mode
-        QueueFamilyIndices indices = findQueueFamilies(physicalDevice, surface);
-        if (indices.isSame()) {
+        if (queueFamilyIndices.isSame()) {
             queueSharingMode = VK_SHARING_MODE_EXCLUSIVE;
         } else {
             queueSharingMode = VK_SHARING_MODE_EXCLUSIVE;
@@ -169,12 +165,12 @@ void createVertexBuffer(const std::vector<Vertex>& vertices,
                  bufferSize,
                  VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
                  queueSharingMode,
-                 vertexBuffer,
+                 buffer.buffer,
                  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                 vertexBufferMemory);
+                 buffer.memory);
 
     debugnote("before submitting copy command to copy buffer for vertex buffer");
-    copyBuffer(stagingBuffer, vertexBuffer, bufferSize, commandPool, device, transferQueue);
+    copyBuffer(stagingBuffer, buffer.buffer, bufferSize, commandPool, device, transferQueue);
 
     vkDestroyBuffer(device, stagingBuffer, nullptr);
     vkFreeMemory(device, stagingBufferMemory, nullptr);

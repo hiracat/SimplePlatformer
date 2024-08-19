@@ -44,12 +44,13 @@ void cleanupSwapChain(VkSwapchainKHR&             swapchain,
     vkDestroySwapchainKHR(device, swapchain, nullptr);
 }
 
-void recreateSwapChain(const VkPhysicalDevice physicalDevice,
-                       const WindowResources& window,
-                       Swapchain&             swapchain,
-                       const VkDevice         device,
-                       const VkRenderPass     renderpass,
-                       SwapchainResources&    resources) {
+void recreateSwapChain(const VkPhysicalDevice    physicalDevice,
+                       const WindowResources&    window,
+                       Swapchain&                swapchain,
+                       const VkDevice            device,
+                       const VkRenderPass        renderpass,
+                       SwapchainResources&       resources,
+                       const QueueFamilyIndices& indices) {
 
     int width = 0, height = 0;
     glfwGetFramebufferSize(window.windowPointer, &width, &height);
@@ -61,7 +62,7 @@ void recreateSwapChain(const VkPhysicalDevice physicalDevice,
     vkDeviceWaitIdle(device);
     swapchain.oldSwapChain = swapchain.swapchain;
 
-    createSwapChain(physicalDevice, window, swapchain, device, resources);
+    createSwapChain(physicalDevice, window, swapchain, device, resources, indices);
     cleanupSwapChain(swapchain.oldSwapChain, resources.imageViews, resources.swapchainFramebuffers, device);
     createImageViews(resources, swapchain.format, device);
     createFramebuffers(resources, renderpass, swapchain.extent, device);
@@ -90,11 +91,12 @@ void createFramebuffers(SwapchainResources& resources,
     }
 }
 
-void createSwapChain(const VkPhysicalDevice physicalDevice,
-                     const WindowResources& window,
-                     Swapchain&             swapchain,
-                     const VkDevice         device,
-                     SwapchainResources&    swapchainResources) {
+void createSwapChain(const VkPhysicalDevice    physicalDevice,
+                     const WindowResources&    window,
+                     Swapchain&                swapchain,
+                     const VkDevice            device,
+                     SwapchainResources&       swapchainResources,
+                     const QueueFamilyIndices& indices) {
 
     SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice, window.surface);
 
@@ -118,8 +120,7 @@ void createSwapChain(const VkPhysicalDevice physicalDevice,
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage       = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-    QueueFamilyIndices indices      = findQueueFamilies(physicalDevice, window.surface);
-    uint32_t           rawIndices[] = {indices.graphicsFamily.value(), indices.presentFamily.value()};
+    uint32_t rawIndices[] = {indices.graphicsFamily.value(), indices.presentFamily.value()};
 
     if ((indices.transferFamily.value() == indices.graphicsFamily.value()) && (indices.graphicsFamily == indices.presentFamily.value())) {
         createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;

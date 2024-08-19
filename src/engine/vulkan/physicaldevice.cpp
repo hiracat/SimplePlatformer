@@ -15,10 +15,10 @@
 #include "../../utils/debugprint.h"
 #include "physicaldevice.h"
 
-bool QueueFamilyIndices::isComplete() {
+bool QueueFamilyIndices::isComplete() const {
     return graphicsFamily.has_value() && presentFamily.has_value() && transferFamily.has_value();
 }
-bool QueueFamilyIndices::isSame() {
+bool QueueFamilyIndices::isSame() const {
     return (graphicsFamily.value() == presentFamily.value()) && (transferFamily.value() == graphicsFamily.value());
 }
 
@@ -97,11 +97,12 @@ scorePhysicalDevice(const VkPhysicalDevice& device, const VkSurfaceKHR& surface,
     vkGetPhysicalDeviceProperties2(device, &deviceProperties);
     vkGetPhysicalDeviceFeatures2(device, &deviceFeatures);
 
+    QueueFamilyIndices indices = findQueueFamilies(device, surface);
+
     // keep this in the front so that function calls that need an extension from here dont crash it
     if (!checkDeviceExtensionSupport(device, deviceExtensions)) {
         return 0;
     }
-    QueueFamilyIndices indices = findQueueFamilies(device, surface);
     if (!indices.isComplete()) {
         return 0;
     }

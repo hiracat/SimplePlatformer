@@ -1,5 +1,6 @@
 #pragma once
 #include <GLFW/glfw3.h>
+#include <optional>
 #include <vulkan/vulkan_core.h>
 
 #include <cstdint>
@@ -10,6 +11,15 @@ struct Swapchain {
     VkFormat       format;
     VkExtent2D     extent;
     VkSwapchainKHR oldSwapChain{};
+};
+
+struct QueueFamilyIndices {
+    std::optional<uint32_t> graphicsFamily;
+    std::optional<uint32_t> presentFamily;
+    std::optional<uint32_t> transferFamily;
+
+    bool isComplete() const;
+    bool isSame() const;
 };
 
 struct SwapChainSupportDetails {
@@ -76,9 +86,10 @@ struct Data {
     SwapchainResources swapchainResources;
     SyncResources      syncResources{};
 
-    CommandResources  commandResources;
-    PipelineResources pipelineResources;
-    Queues            queues;
+    CommandResources   commandResources;
+    PipelineResources  pipelineResources;
+    Queues             queues;
+    QueueFamilyIndices queueFamilyIndices;
 
     Buffer vertexBuffer{};
     Buffer indexBuffer{};
