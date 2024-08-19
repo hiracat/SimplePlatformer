@@ -20,7 +20,8 @@ int main() {
     bool windowShouldClose = false;
     auto startTime         = std::chrono::high_resolution_clock::now();
     auto endTime           = std::chrono::high_resolution_clock::now();
-    auto duration          = endTime - startTime;
+    auto targetTime        = std::chrono::milliseconds(10);
+    auto renderTime        = endTime - startTime;
 
     Model model = {.vertices = {{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
                                 {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
@@ -58,12 +59,13 @@ int main() {
         glfwPollEvents();
         drawFrame(data, data.gamedata);
 
-        endTime  = std::chrono::high_resolution_clock::now();
-        duration = endTime - startTime;
+        endTime    = std::chrono::high_resolution_clock::now();
+        renderTime = endTime - startTime;
+        std::this_thread::sleep_for(targetTime - renderTime);
     }
     cleanup(data);
 
-    auto frameTime = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
-    debugnote("frametime: " << frameTime);
+    debugnote("renderTime: " << std::chrono::duration_cast<std::chrono::microseconds>(renderTime).count());
+
     return 0;
 }
