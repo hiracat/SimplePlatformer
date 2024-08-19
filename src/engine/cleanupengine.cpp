@@ -16,36 +16,34 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 
 void cleanup(Data& data) {
 
-    vkDeviceWaitIdle(data.vulkanObjects.device);
+    vkDeviceWaitIdle(data.device);
 
-    cleanupSwapChain(data.renderingObjects.swapchain.swapchain,
-                     data.resources.imageViews,
-                     data.resources.swapchainFramebuffers,
-                     data.vulkanObjects.device);
+    cleanupSwapChain(
+        data.swapchain.swapchain, data.swapchainResources.imageViews, data.swapchainResources.swapchainFramebuffers, data.device);
 
-    vkDestroyBuffer(data.vulkanObjects.device, data.resources.indexBuffer, nullptr);
-    vkFreeMemory(data.vulkanObjects.device, data.resources.indexBufferMemory, nullptr);
+    vkDestroyBuffer(data.device, data.indexBuffer.buffer, nullptr);
+    vkFreeMemory(data.device, data.indexBuffer.memory, nullptr);
 
-    vkDestroyBuffer(data.vulkanObjects.device, data.resources.vertexBuffer, nullptr);
-    vkFreeMemory(data.vulkanObjects.device, data.resources.vertexBufferMemory, nullptr);
+    vkDestroyBuffer(data.device, data.vertexBuffer.buffer, nullptr);
+    vkFreeMemory(data.device, data.vertexBuffer.memory, nullptr);
 
-    vkDestroyPipeline(data.vulkanObjects.device, data.renderingObjects.graphicsPipeline, nullptr);
-    vkDestroyPipelineLayout(data.vulkanObjects.device, data.renderingObjects.pipelineLayout, nullptr);
+    vkDestroyPipeline(data.device, data.pipelineResources.graphicsPipeline, nullptr);
+    vkDestroyPipelineLayout(data.device, data.pipelineResources.pipelineLayout, nullptr);
 
-    vkDestroyRenderPass(data.vulkanObjects.device, data.renderingObjects.renderPass, nullptr);
+    vkDestroyRenderPass(data.device, data.pipelineResources.renderPass, nullptr);
 
-    cleanupSyncObjects(data.resources.syncObjects, data.vulkanObjects.device, data.resources.MAX_FRAMES_IN_FLIGHT);
+    cleanupSyncObjects(data.syncResources, data.device, data.MAX_FRAMES_IN_FLIGHT);
 
-    vkDestroyCommandPool(data.vulkanObjects.device, data.renderingObjects.commandPool, nullptr);
+    vkDestroyCommandPool(data.device, data.commandResources.commandPool, nullptr);
 
-    vkDestroyDevice(data.vulkanObjects.device, nullptr);
+    vkDestroyDevice(data.device, nullptr);
 
 #ifdef ENABLE_VALIDATION_LAYERS
-    DestroyDebugUtilsMessengerEXT(data.vulkanObjects.instance, data.vulkanObjects.debugMessenger, nullptr);
+    DestroyDebugUtilsMessengerEXT(data.instance, data.instanceResources.debugMessenger, nullptr);
 #endif
-    vkDestroySurfaceKHR(data.vulkanObjects.instance, data.window.surface, nullptr);
-    vkDestroyInstance(data.vulkanObjects.instance, nullptr);
+    vkDestroySurfaceKHR(data.instance, data.windowResources.surface, nullptr);
+    vkDestroyInstance(data.instance, nullptr);
 
-    glfwDestroyWindow(data.window.windowPointer);
+    glfwDestroyWindow(data.windowResources.windowPointer);
     glfwTerminate();
 }

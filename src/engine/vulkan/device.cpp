@@ -6,16 +6,14 @@
 
 #include "../../compilesettings.h"
 #include "../../utils/debugprint.h"
+#include "../enginedata.h"
 #include "physicaldevice.h"
 
-void createLogicalDevice(VkDevice&                       device,
-                         const VkPhysicalDevice          physicalDevice,
-                         const std::vector<const char*>& validationLayers,
-                         const std::vector<const char*>& deviceExtensions,
-                         VkQueue&                        graphicsQueue,
-                         VkQueue&                        presentQueue,
-                         VkQueue&                        transferQueue,
-                         const VkSurfaceKHR              surface) {
+void createDevice(VkDevice& device, // has to be a reference otherwise it only changes the device pointer copy and not the real thing
+                  const VkPhysicalDevice physicalDevice,
+                  InstanceResources      resources,
+                  Queues&                queues, // same with this
+                  const VkSurfaceKHR     surface) {
 
     QueueFamilyIndices                   indices = findQueueFamilies(physicalDevice, surface);
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -40,14 +38,14 @@ void createLogicalDevice(VkDevice&                       device,
         .queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size()),
         .pQueueCreateInfos    = queueCreateInfos.data(),
 
-        .enabledExtensionCount   = static_cast<uint32_t>(deviceExtensions.size()),
-        .ppEnabledExtensionNames = deviceExtensions.data(),
+        .enabledExtensionCount   = static_cast<uint32_t>(resources.deviceExtensions.size()),
+        .ppEnabledExtensionNames = resources.deviceExtensions.data(),
         .pEnabledFeatures        = &deviceFeatures.features,
     };
 
 #ifdef ENABLE_VALIDATION_LAYERS
-    createInfo.enabledLayerCount   = static_cast<uint32_t>(validationLayers.size());
-    createInfo.ppEnabledLayerNames = validationLayers.data();
+    createInfo.enabledLayerCount   = static_cast<uint32_t>(resources.validationLayers.size());
+    createInfo.ppEnabledLayerNames = resources.validationLayers.data();
 #else
     createInfo.enabledLayerCount = 0;
 #endif
@@ -57,7 +55,7 @@ void createLogicalDevice(VkDevice&                       device,
         debugerror("failed to creat device");
     }
 
-    vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &graphicsQueue);
-    vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &presentQueue);
-    vkGetDeviceQueue(device, indices.transferFamily.value(), 0, &transferQueue);
+    vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &queues.graphicsQueue);
+    vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &queues.presentQueue);
+    vkGetDeviceQueue(device, indices.transferFamily.value(), 0, &queues.transferQueue);
 }

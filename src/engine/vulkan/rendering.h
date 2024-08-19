@@ -1,9 +1,5 @@
 #pragma once
-#include <vector>
-#include <vulkan/vulkan.h>
-
+#include "../../game/gamedata.h"
 #include "../enginedata.h"
-#include "swapchain.h"
-#include "syncronization.h"
 
-void drawFrame(Data& data);
+void drawFrame(Data& data, GameData& gamedata);

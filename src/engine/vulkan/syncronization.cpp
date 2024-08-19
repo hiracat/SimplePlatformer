@@ -5,12 +5,13 @@
 #include <vulkan/vulkan_core.h>
 
 #include "../../utils/debugprint.h"
+#include "../enginedata.h"
 #include "syncronization.h"
 
-void createSyncObjects(SyncObjects& syncObjects, const VkDevice& device, const uint32_t maxFramesInFlight) {
-    syncObjects.imageAvailableSemaphores.resize(maxFramesInFlight);
-    syncObjects.renderFinishedSemaphores.resize(maxFramesInFlight);
-    syncObjects.inFlightFences.resize(maxFramesInFlight);
+void createSyncObjects(SyncResources& resources, const VkDevice& device, const uint32_t maxFramesInFlight) {
+    resources.imageAvailableSemaphores.resize(maxFramesInFlight);
+    resources.renderFinishedSemaphores.resize(maxFramesInFlight);
+    resources.inFlightFences.resize(maxFramesInFlight);
     VkSemaphoreCreateInfo semaphoreInfo{};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
@@ -20,18 +21,18 @@ void createSyncObjects(SyncObjects& syncObjects, const VkDevice& device, const u
 
     for (size_t i = 0; i < maxFramesInFlight; i++) {
 
-        if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &syncObjects.imageAvailableSemaphores[i]) != VK_SUCCESS ||
-            vkCreateSemaphore(device, &semaphoreInfo, nullptr, &syncObjects.renderFinishedSemaphores[i]) != VK_SUCCESS ||
-            vkCreateFence(device, &fenceInfo, nullptr, &syncObjects.inFlightFences[i]) != VK_SUCCESS) {
+        if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &resources.imageAvailableSemaphores[i]) != VK_SUCCESS ||
+            vkCreateSemaphore(device, &semaphoreInfo, nullptr, &resources.renderFinishedSemaphores[i]) != VK_SUCCESS ||
+            vkCreateFence(device, &fenceInfo, nullptr, &resources.inFlightFences[i]) != VK_SUCCESS) {
             debugerror("failed to create sync objects");
         }
     }
 }
-void cleanupSyncObjects(SyncObjects& objects, const VkDevice device, const uint32_t maxFramesInFlight) {
+void cleanupSyncObjects(SyncResources& resources, const VkDevice device, const uint32_t maxFramesInFlight) {
 
     for (size_t i = 0; i < maxFramesInFlight; i++) {
-        vkDestroySemaphore(device, objects.imageAvailableSemaphores[i], nullptr);
-        vkDestroySemaphore(device, objects.renderFinishedSemaphores[i], nullptr);
-        vkDestroyFence(device, objects.inFlightFences[i], nullptr);
+        vkDestroySemaphore(device, resources.imageAvailableSemaphores[i], nullptr);
+        vkDestroySemaphore(device, resources.renderFinishedSemaphores[i], nullptr);
+        vkDestroyFence(device, resources.inFlightFences[i], nullptr);
     }
 }

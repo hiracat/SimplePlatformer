@@ -1,68 +1,91 @@
 #pragma once
-
-#include <vulkan/vulkan.h>
+#include "../game/gamedata.h"
+#include <GLFW/glfw3.h>
+#include <vulkan/vulkan_core.h>
 
 #include <cstdint>
 #include <vector>
 
-#include "vertex.h"
-#include "vulkan/swapchain.h"
-#include "vulkan/syncronization.h"
-#include "window.h"
+struct Swapchain {
+    VkSwapchainKHR swapchain;
+    VkFormat       format;
+    VkExtent2D     extent;
+    VkSwapchainKHR oldSwapChain{};
+};
 
-struct VulkanObjects {
-    VkInstance                     instance{};
+struct SwapChainSupportDetails {
+    VkSurfaceCapabilitiesKHR        capabilities;
+    std::vector<VkSurfaceFormatKHR> formats;
+    std::vector<VkPresentModeKHR>   presentModes;
+};
+
+struct WindowResources {
+    const uint32_t WIDTH  = 800;
+    const uint32_t HEIGHT = 600;
+    GLFWwindow*    windowPointer{};
+    VkSurfaceKHR   surface{};
+    const char*    name = "hello ur mother";
+};
+
+struct SyncResources {
+    std::vector<VkSemaphore> imageAvailableSemaphores, renderFinishedSemaphores;
+    std::vector<VkFence>     inFlightFences;
+};
+
+struct Queues {
+    VkQueue graphicsQueue{};
+    VkQueue presentQueue{};
+    VkQueue transferQueue{};
+};
+
+struct InstanceResources {
     const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
     VkDebugUtilsMessengerEXT       debugMessenger{};
-    VkPhysicalDevice               physicalDevice   = VK_NULL_HANDLE;
     const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
-    VkQueue                        graphicsQueue{};
-    VkQueue                        presentQueue{};
-    VkQueue                        transferQueue{};
-    VkDevice                       device{};
 };
 
-struct RenderingObjects {
-    Swapchain        swapchain{};
-    VkSwapchainKHR   oldSwapChain{};
-    VkRenderPass     renderPass{};
-    VkPipeline       graphicsPipeline{};
-    VkCommandPool    commandPool{};
-    VkPipelineLayout pipelineLayout{};
-};
-
-struct Model {
-
-    std::vector<Vertex> vertices = {{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-                                    {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-                                    {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-                                    {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}};
-
-    std::vector<uint32_t> indices = {0, 1, 2, 2, 3, 0};
-};
-
-struct RenderingResources {
-    std::vector<VkImage>         images;
-    std::vector<VkImageView>     imageViews;
-    std::vector<VkFramebuffer>   swapchainFramebuffers{};
-    Model                        renderData;
-    VkBuffer                     vertexBuffer{};
-    VkDeviceMemory               vertexBufferMemory{};
-    VkBuffer                     indexBuffer{};
-    VkDeviceMemory               indexBufferMemory{};
+struct CommandResources {
+    VkCommandPool                commandPool{};
     std::vector<VkCommandBuffer> commandBuffers{};
-    SyncObjects                  syncObjects{};
+};
 
-    const int MAX_FRAMES_IN_FLIGHT = 2;
+struct PipelineResources {
+    VkPipeline       graphicsPipeline{};
+    VkPipelineLayout pipelineLayout{};
+    VkRenderPass     renderPass{};
+};
+
+struct SwapchainResources {
+    std::vector<VkImage>       images;
+    std::vector<VkImageView>   imageViews;
+    std::vector<VkFramebuffer> swapchainFramebuffers{};
+};
+
+struct Buffer {
+    VkBuffer       buffer;
+    VkDeviceMemory memory;
 };
 
 struct Data {
+    VkInstance        instance{};
+    VkDevice          device{};
+    VkPhysicalDevice  physicalDevice{};
+    InstanceResources instanceResources;
 
-    VulkanObjects      vulkanObjects;
-    RenderingObjects   renderingObjects;
-    RenderingResources resources;
+    WindowResources    windowResources{};
+    Swapchain          swapchain{};
+    SwapchainResources swapchainResources;
+    SyncResources      syncResources{};
 
-    Window   window{};
-    uint32_t currentFrame       = 0;
-    bool     framebufferResized = false;
+    CommandResources  commandResources;
+    PipelineResources pipelineResources;
+    Queues            queues;
+
+    Buffer vertexBuffer{};
+    Buffer indexBuffer{};
+
+    uint32_t  currentFrame         = 0;
+    bool      framebufferResized   = false;
+    const int MAX_FRAMES_IN_FLIGHT = 2;
+    GameData  gamedata{};
 };

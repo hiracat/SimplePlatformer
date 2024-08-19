@@ -7,14 +7,12 @@
 #include <limits>
 #include <map>
 #include <set>
-#include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
 #include "../../utils/debugprint.h"
-#include "../window.h"
 #include "physicaldevice.h"
 
 bool QueueFamilyIndices::isComplete() {
@@ -159,7 +157,7 @@ VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& pres
     return VK_PRESENT_MODE_FIFO_KHR; // this is the only present mode that is guaranteed
 }
 
-VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capiblilies, const Window& window) {
+VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capiblilies, const WindowResources& window) {
     if (capiblilies.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
         return capiblilies.currentExtent;
     } else { // special case, where widow size does not have to match swapchain resolution in certian window managers

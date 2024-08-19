@@ -1,11 +1,9 @@
 #pragma once
 #include <vulkan/vulkan.h>
 
+#include "../enginedata.h"
 #include <optional>
 #include <vector>
-
-#include "../window.h"
-#include "swapchain.h"
 
 struct QueueFamilyIndices {
     std::optional<uint32_t> graphicsFamily;
@@ -17,11 +15,11 @@ struct QueueFamilyIndices {
 };
 
 QueueFamilyIndices      findQueueFamilies(const VkPhysicalDevice, const VkSurfaceKHR&);
-VkExtent2D              chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capiblilies, const Window& window);
+VkExtent2D              chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capiblilies, const WindowResources& window);
 SwapChainSupportDetails querySwapChainSupport(const VkPhysicalDevice& physicalDevice, const VkSurfaceKHR& surface);
 VkSurfaceFormatKHR      chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 VkPresentModeKHR        chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& presentModes);
-VkExtent2D              chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capiblilies, const Window& window);
+VkExtent2D              chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capiblilies, const WindowResources& window);
 void                    pickPhysicalDevice(const VkInstance                instance,
                                            VkPhysicalDevice&               physicalDevice,
                                            const VkSurfaceKHR              surface,

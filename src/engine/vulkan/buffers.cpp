@@ -15,28 +15,28 @@ void createBuffer(const VkDevice         device,
                   VkDeviceSize           size,
                   VkBufferCreateFlags    usage,
                   VkSharingMode          sharingMode,
-                  VkBuffer&              vertexBuffer,
+                  VkBuffer&              buffer,
                   VkMemoryPropertyFlags  properties,
-                  VkDeviceMemory&        vertexBufferMemory) {
+                  VkDeviceMemory&        bufferMemory) {
     VkBufferCreateInfo bufferInfo{};
     bufferInfo.sType       = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     bufferInfo.size        = size;
     bufferInfo.usage       = usage;
     bufferInfo.sharingMode = sharingMode;
-    if (vkCreateBuffer(device, &bufferInfo, nullptr, &vertexBuffer) != VK_SUCCESS) {
+    if (vkCreateBuffer(device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
         debugerror("failed to create buffer!");
     }
 
     VkMemoryRequirements memRequirements;
-    vkGetBufferMemoryRequirements(device, vertexBuffer, &memRequirements);
+    vkGetBufferMemoryRequirements(device, buffer, &memRequirements);
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize  = memRequirements.size;
     allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties, physicalDevice);
-    if (vkAllocateMemory(device, &allocInfo, nullptr, &vertexBufferMemory) != VK_SUCCESS) {
-        debugerror("failed to allocate vertex buffer memory!");
+    if (vkAllocateMemory(device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
+        debugerror("failed to allocate buffer memory!");
     }
-    vkBindBufferMemory(device, vertexBuffer, vertexBufferMemory, 0);
+    vkBindBufferMemory(device, buffer, bufferMemory, 0);
 }
 void copyBuffer(VkBuffer&           srcBuffer,
                 VkBuffer&           dstBuffer,
@@ -173,6 +173,7 @@ void createVertexBuffer(const std::vector<Vertex>& vertices,
                  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                  vertexBufferMemory);
 
+    debugnote("before submitting copy command to copy buffer for vertex buffer");
     copyBuffer(stagingBuffer, vertexBuffer, bufferSize, commandPool, device, transferQueue);
 
     vkDestroyBuffer(device, stagingBuffer, nullptr);

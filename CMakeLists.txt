@@ -16,7 +16,7 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
-    target_compile_options(${PROJECT_NAME} PRIVATE "-g3")
+    target_compile_options(${PROJECT_NAME} PRIVATE "-g")
     add_compile_options(-Wno-cpp)
 else()
     target_compile_definitions(${PROJECT_NAME} PRIVATE NDEBUG)

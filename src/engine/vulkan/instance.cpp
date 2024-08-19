@@ -9,29 +9,25 @@
 
 void createVkInstance(VkInstance& instance, const std::vector<const char*>& validationLayers) {
 
-    VkApplicationInfo appInfo{
-        .sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO,
-        .pNext              = nullptr,
-        .pApplicationName   = "simple platformer",
-        .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
-        .pEngineName        = "no engine",
-        .engineVersion      = VK_MAKE_VERSION(0, 0, 0),
-        .apiVersion         = VK_MAKE_VERSION(1, 3, 269),
-    };
+    VkApplicationInfo appInfo{.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO,
+                              .pNext              = nullptr,
+                              .pApplicationName   = "simple platformer",
+                              .applicationVersion = VK_MAKE_VERSION(1, 0, 0),
+                              .pEngineName        = "no engine",
+                              .engineVersion      = VK_MAKE_VERSION(0, 0, 0),
+                              .apiVersion         = VK_MAKE_VERSION(1, 3, 269)};
 
     std::vector<const char*> requiredExtensions = getRequredExtensions();
 
-    VkInstanceCreateInfo createInfo{
-        .sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
-        .pNext            = nullptr,
-        .flags            = 0,
-        .pApplicationInfo = &appInfo,
-        // conditionally enable the vaildation layers later
-        .enabledLayerCount       = 0,
-        .ppEnabledLayerNames     = nullptr,
-        .enabledExtensionCount   = static_cast<uint32_t>(requiredExtensions.size()),
-        .ppEnabledExtensionNames = requiredExtensions.data(),
-    };
+    VkInstanceCreateInfo createInfo{.sType            = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO,
+                                    .pNext            = nullptr,
+                                    .flags            = 0,
+                                    .pApplicationInfo = &appInfo,
+                                    // conditionally enable the vaildation layers later
+                                    .enabledLayerCount       = 0,
+                                    .ppEnabledLayerNames     = nullptr,
+                                    .enabledExtensionCount   = static_cast<uint32_t>(requiredExtensions.size()),
+                                    .ppEnabledExtensionNames = requiredExtensions.data()};
 
     uint32_t extensionCount;
     vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);

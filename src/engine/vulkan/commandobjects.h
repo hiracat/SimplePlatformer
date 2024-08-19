@@ -1,13 +1,9 @@
 #pragma once
+#include "../enginedata.h"
 #include <cstdint>
 #include <vulkan/vulkan.h>
 
-#include <vector>
-
-void createCommandBuffers(const VkDevice&               device,
-                          const VkCommandPool&          commandPool,
-                          std::vector<VkCommandBuffer>& commandBuffers,
-                          const uint32_t                maxFramesInFlight);
+void createCommandBuffers(const VkDevice& device, CommandResources& resources, const uint32_t maxFramesInFlight);
 
 void createCommandPool(const VkPhysicalDevice& physicalDevice,
                        const uint32_t          queueFamilyIndex,

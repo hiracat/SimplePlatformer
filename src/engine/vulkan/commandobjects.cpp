@@ -1,7 +1,6 @@
 #include <vulkan/vulkan.h>
 
 #include <cstdint>
-#include <stdexcept>
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
@@ -11,11 +10,12 @@
 void recordCommandBuffer(VkCommandBuffer     commandBuffer,
                          const VkExtent2D&   swapChainExtent,
                          const VkRenderPass& renderPass,
-                         VkFramebuffer&      swapchainFrameBuffer,
+                         VkFramebuffer&      frameBuffer,
                          const VkPipeline&   graphicsPipeline,
                          const VkBuffer      vertexBuffer,
                          const VkBuffer      indexBuffer,
                          const uint32_t      indicesCount) {
+
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags            = 0;
@@ -29,7 +29,7 @@ void recordCommandBuffer(VkCommandBuffer     commandBuffer,
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType       = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass  = renderPass;
-    renderPassInfo.framebuffer = swapchainFrameBuffer;
+    renderPassInfo.framebuffer = frameBuffer;
 
     renderPassInfo.renderArea.offset = {0, 0};
     renderPassInfo.renderArea.extent = swapChainExtent;
@@ -71,19 +71,16 @@ void recordCommandBuffer(VkCommandBuffer     commandBuffer,
     }
 }
 
-void createCommandBuffers(const VkDevice&               device,
-                          const VkCommandPool&          commandPool,
-                          std::vector<VkCommandBuffer>& commandBuffers,
-                          const uint32_t                maxFramesInFlight) {
+void createCommandBuffers(const VkDevice& device, CommandResources& resources, const uint32_t maxFramesInFlight) {
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.commandPool        = commandPool;
+    allocInfo.commandPool        = resources.commandPool;
     allocInfo.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     allocInfo.commandBufferCount = maxFramesInFlight;
 
-    commandBuffers.resize(maxFramesInFlight);
+    resources.commandBuffers.resize(maxFramesInFlight);
 
-    if (vkAllocateCommandBuffers(device, &allocInfo, commandBuffers.data())) {
+    if (vkAllocateCommandBuffers(device, &allocInfo, resources.commandBuffers.data())) {
         debugerror("failed to allocate command buffers");
     }
 }

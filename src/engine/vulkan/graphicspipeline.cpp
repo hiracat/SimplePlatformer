@@ -1,20 +1,15 @@
 #include <vulkan/vulkan.h>
 
 #include <cstdint>
-#include <stdexcept>
 #include <vulkan/vulkan_core.h>
 
 #include "../../utils/debugprint.h"
 #include "../../utils/fileio.h"
+#include "../enginedata.h"
 #include "../vertex.h"
 #include "shaders.h"
-#include "swapchain.h"
 
-void createGraphicsPipeline(const VkDevice&   device,
-                            const Swapchain&  swapchain,
-                            VkPipelineLayout& pipelineLayout,
-                            VkRenderPass&     renderPass,
-                            VkPipeline&       graphicsPipeline) {
+void createGraphicsPipeline(const VkDevice& device, const Swapchain& swapchain, PipelineResources& resources) {
 
     auto vertShaderCode = readFile("build/shaders/vert.spv");
     auto fragShaderCode = readFile("build/shaders/frag.spv");
@@ -124,9 +119,8 @@ void createGraphicsPipeline(const VkDevice&   device,
     pipelineLayoutInfo.pSetLayouts            = nullptr; // Optional
     pipelineLayoutInfo.pushConstantRangeCount = 0;       // Optional
     pipelineLayoutInfo.pPushConstantRanges    = nullptr; // Optional
-                                                         //
 
-    VkResult createPipelineLayoutResult = vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout);
+    VkResult createPipelineLayoutResult = vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &resources.pipelineLayout);
     if (createPipelineLayoutResult != VK_SUCCESS) {
         debugerror("failed to create pipeline layout");
     }
@@ -145,14 +139,14 @@ void createGraphicsPipeline(const VkDevice&   device,
     pipelineInfo.pColorBlendState    = &colorBlending;
     pipelineInfo.pDynamicState       = &dynamicState;
 
-    pipelineInfo.layout     = pipelineLayout;
-    pipelineInfo.renderPass = renderPass;
+    pipelineInfo.layout     = resources.pipelineLayout;
+    pipelineInfo.renderPass = resources.renderPass;
     pipelineInfo.subpass    = 0;
 
     pipelineInfo.basePipelineHandle = nullptr;
     pipelineInfo.basePipelineIndex  = -1;
 
-    VkResult result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline);
+    VkResult result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &resources.graphicsPipeline);
     if (result != VK_SUCCESS) {
         debugerror("failed to create graphics pipeline");
     }

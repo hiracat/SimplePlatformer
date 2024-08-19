@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <vulkan/vulkan.h>
 
 #include <GLFW/glfw3.h>
@@ -20,7 +21,7 @@ bool checkExtensionSupported(const std::vector<VkExtensionProperties>& supported
 
 std::vector<const char*> getRequredExtensions() {
     // NOTE: get the required extensions by glfw
-    uint32_t                 glfwExtensionCount;
+    uint32_t                 glfwExtensionCount = 0;
     const char**             glfwExtensionNames = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
     std::vector<const char*> requiredExtensions(glfwExtensionNames, glfwExtensionNames + glfwExtensionCount);
 
