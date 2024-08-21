@@ -8,9 +8,9 @@
 
 struct Swapchain {
     VkSwapchainKHR swapchain;
+    VkSwapchainKHR oldSwapChain{};
     VkFormat       format;
     VkExtent2D     extent;
-    VkSwapchainKHR oldSwapChain{};
 };
 
 struct QueueFamilyIndices {
@@ -29,11 +29,11 @@ struct SwapChainSupportDetails {
 };
 
 struct WindowResources {
-    const uint32_t WIDTH  = 800;
-    const uint32_t HEIGHT = 600;
     GLFWwindow*    windowPointer{};
     VkSurfaceKHR   surface{};
-    const char*    name = "hello ur mother";
+    const uint32_t WIDTH  = 800;
+    const uint32_t HEIGHT = 600;
+    const char*    name   = "hello ur mother";
 };
 
 struct SyncResources {
@@ -54,8 +54,8 @@ struct InstanceResources {
 };
 
 struct CommandResources {
-    VkCommandPool                commandPool{};
     std::vector<VkCommandBuffer> commandBuffers{};
+    VkCommandPool                commandPool{};
 };
 
 struct PipelineResources {
@@ -77,11 +77,12 @@ struct Buffer {
 
 struct Data {
     VkInstance        instance{};
+    InstanceResources instanceResources;
     VkDevice          device{};
     VkPhysicalDevice  physicalDevice{};
-    InstanceResources instanceResources;
 
-    WindowResources    windowResources{};
+    WindowResources windowResources{};
+
     Swapchain          swapchain{};
     SwapchainResources swapchainResources;
     SyncResources      syncResources{};

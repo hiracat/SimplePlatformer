@@ -1,4 +1,3 @@
-#include <system_error>
 #include <thread>
 #include <vulkan/vulkan.h>
 
@@ -34,7 +33,7 @@ int main() {
     GameData gameData{};
     gameData.models.push_back(model);
 
-    debugnote("creqated index and vertex buffers");
+    debugnote("created index and vertex buffers");
     initEngine(data);
     createModel(data.device,
                 data.physicalDevice,
@@ -59,5 +58,6 @@ int main() {
 
     debugnote("renderTime: " << std::chrono::duration_cast<std::chrono::microseconds>(renderTime).count());
 
+    debugdata("end");
     return 0;
 }

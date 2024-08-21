@@ -11,6 +11,6 @@ VkSurfaceFormatKHR      chooseSwapSurfaceFormat(const std::vector<VkSurfaceForma
 VkPresentModeKHR        chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& presentModes);
 VkExtent2D              chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capiblilies, const WindowResources& window);
 void                    pickPhysicalDevice(const VkInstance                instance,
+                                           const std::vector<const char*>& deviceExtensions,
                                            VkPhysicalDevice&               physicalDevice,
-                                           const VkSurfaceKHR              surface,
-                                           const std::vector<const char*>& deviceExtensions);
+                                           const VkSurfaceKHR              surface);

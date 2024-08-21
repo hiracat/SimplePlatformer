@@ -116,9 +116,9 @@ scorePhysicalDevice(const VkPhysicalDevice& device, const VkSurfaceKHR& surface,
 }
 
 void pickPhysicalDevice(const VkInstance                instance,
+                        const std::vector<const char*>& deviceExtensions,
                         VkPhysicalDevice&               physicalDevice,
-                        const VkSurfaceKHR              surface,
-                        const std::vector<const char*>& deviceExtensions) {
+                        const VkSurfaceKHR              surface) {
     uint32_t physicalDeviceCount{};
 
     vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, nullptr);

@@ -6,6 +6,8 @@ source compileshaders.zsh
 
 if [ "$1" = "release" ]; then
     cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+elif [ "$1" = "data" ]; then
+    cmake -B build -S . -DCMAKE_BUILD_TYPE=Data
 else
     cmake -B build -S . -DCMAKE_BUILD_TYPE=Debug
 fi

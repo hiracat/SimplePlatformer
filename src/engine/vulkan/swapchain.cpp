@@ -62,7 +62,7 @@ void recreateSwapChain(const VkPhysicalDevice    physicalDevice,
     vkDeviceWaitIdle(device);
     swapchain.oldSwapChain = swapchain.swapchain;
 
-    createSwapChain(physicalDevice, window, swapchain, device, resources, indices);
+    createSwapChain(device, physicalDevice, window, swapchain, resources, indices);
     cleanupSwapChain(swapchain.oldSwapChain, resources.imageViews, resources.swapchainFramebuffers, device);
     createImageViews(resources, swapchain.format, device);
     createFramebuffers(resources, renderpass, swapchain.extent, device);
@@ -91,10 +91,10 @@ void createFramebuffers(SwapchainResources& resources,
     }
 }
 
-void createSwapChain(const VkPhysicalDevice    physicalDevice,
+void createSwapChain(const VkDevice            device,
+                     const VkPhysicalDevice    physicalDevice,
                      const WindowResources&    window,
                      Swapchain&                swapchain,
-                     const VkDevice            device,
                      SwapchainResources&       swapchainResources,
                      const QueueFamilyIndices& indices) {
 

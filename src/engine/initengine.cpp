@@ -26,15 +26,15 @@ void initEngine(Data& data) {
     setupDebugMessanger(data.instance, &data.instanceResources.debugMessenger);
     debugnote("setup debug messenger");
 #endif
-    pickPhysicalDevice(data.instance, data.physicalDevice, data.windowResources.surface, data.instanceResources.deviceExtensions);
+    pickPhysicalDevice(data.instance, data.instanceResources.deviceExtensions, data.physicalDevice, data.windowResources.surface);
     data.queueFamilyIndices = findQueueFamilies(data.physicalDevice, data.windowResources.surface);
     debugnote("picked physical device");
     createDevice(
-        data.device, data.physicalDevice, data.instanceResources, data.queues, data.windowResources.surface, data.queueFamilyIndices);
+        data.instanceResources, data.device, data.physicalDevice, data.queues, data.windowResources.surface, data.queueFamilyIndices);
     debugnote("created device");
 
     createSwapChain(
-        data.physicalDevice, data.windowResources, data.swapchain, data.device, data.swapchainResources, data.queueFamilyIndices);
+        data.device, data.physicalDevice, data.windowResources, data.swapchain, data.swapchainResources, data.queueFamilyIndices);
 
     createRenderPass(data.swapchain.format, data.pipelineResources.renderPass, data.device);
     createGraphicsPipeline(data.device, data.swapchain, data.pipelineResources);
