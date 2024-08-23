@@ -20,3 +20,9 @@ void createIndexBuffer(const std::vector<uint32_t>& indices,
                        const VkCommandPool          commandPool,
                        const VkQueue                transferQueue,
                        const QueueFamilyIndices&    queueFamilyIndices);
+
+void createUniformBuffers(VkDevice           device,
+                          VkPhysicalDevice   physicalDevice,
+                          QueueFamilyIndices indices,
+                          UniformBuffers     buffers,
+                          const uint32_t     MAX_FRAMES_IN_FLIGHT);

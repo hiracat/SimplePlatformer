@@ -115,8 +115,8 @@ void createGraphicsPipeline(const VkDevice& device, const Swapchain& swapchain, 
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType                  = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount         = 0;       // Optional
-    pipelineLayoutInfo.pSetLayouts            = nullptr; // Optional
+    pipelineLayoutInfo.setLayoutCount         = 1;
+    pipelineLayoutInfo.pSetLayouts            = &resources.descriptorSetLayout;
     pipelineLayoutInfo.pushConstantRangeCount = 0;       // Optional
     pipelineLayoutInfo.pPushConstantRanges    = nullptr; // Optional
 

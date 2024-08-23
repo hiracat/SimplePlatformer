@@ -21,6 +21,12 @@ void cleanup(Data& data) {
     cleanupSwapChain(
         data.swapchain.swapchain, data.swapchainResources.imageViews, data.swapchainResources.swapchainFramebuffers, data.device);
 
+    for (size_t i = 0; i < data.MAX_FRAMES_IN_FLIGHT; i++) {
+        vkDestroyBuffer(data.device, data.uniformBuffers.uniformBuffer[i].buffer, nullptr);
+        vkFreeMemory(data.device, data.uniformBuffers.uniformBuffer[i].memory, nullptr);
+    }
+    vkDestroyDescriptorSetLayout(data.device, data.pipelineResources.descriptorSetLayout, nullptr);
+
     vkDestroyBuffer(data.device, data.indexBuffer.buffer, nullptr);
     vkFreeMemory(data.device, data.indexBuffer.memory, nullptr);
 

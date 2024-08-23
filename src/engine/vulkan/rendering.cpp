@@ -40,7 +40,6 @@ void drawFrame(Data& data, GameData& gamedata) {
     }
 
     VkResult fenceStatus = vkGetFenceStatus(data.device, data.syncResources.inFlightFences[data.currentFrame]);
-    // debugnote("fence status: " << fenceStatus);
     // only reset fences when we know we are submitting work
     vkResetFences(data.device, 1, &data.syncResources.inFlightFences[data.currentFrame]);
 

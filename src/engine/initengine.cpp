@@ -1,5 +1,6 @@
 #include "../compilesettings.h"
 #include "../engine/vulkan/commandobjects.h"
+#include "../engine/vulkan/descriptorsets.h"
 #include "../engine/vulkan/device.h"
 #include "../engine/vulkan/graphicspipeline.h"
 #include "../engine/vulkan/instance.h"
@@ -37,6 +38,7 @@ void initEngine(Data& data) {
         data.device, data.physicalDevice, data.windowResources, data.swapchain, data.swapchainResources, data.queueFamilyIndices);
 
     createRenderPass(data.swapchain.format, data.pipelineResources.renderPass, data.device);
+    CreateDescriptorSetLayout(data.device, data.pipelineResources.descriptorSetLayout);
     createGraphicsPipeline(data.device, data.swapchain, data.pipelineResources);
     debugnote("created graphics pipeline");
 

@@ -1,10 +1,17 @@
 #pragma once
 #include <GLFW/glfw3.h>
+#include <glm/matrix.hpp>
 #include <optional>
 #include <vulkan/vulkan_core.h>
 
 #include <cstdint>
 #include <vector>
+
+struct MVPMatricies {
+    glm::mat4 model;
+    glm::mat4 view;
+    glm::mat4 projection;
+}; // the format of glm::mat4 is compatabile with what the shader expects so memcpy works just fine
 
 struct Swapchain {
     VkSwapchainKHR swapchain;
@@ -59,9 +66,10 @@ struct CommandResources {
 };
 
 struct PipelineResources {
-    VkPipeline       graphicsPipeline{};
-    VkPipelineLayout pipelineLayout{};
-    VkRenderPass     renderPass{};
+    VkPipeline            graphicsPipeline{};
+    VkDescriptorSetLayout descriptorSetLayout{};
+    VkPipelineLayout      pipelineLayout{};
+    VkRenderPass          renderPass{};
 };
 
 struct SwapchainResources {
@@ -73,6 +81,11 @@ struct SwapchainResources {
 struct Buffer {
     VkBuffer       buffer;
     VkDeviceMemory memory;
+};
+
+struct UniformBuffers {
+    std::vector<Buffer> uniformBuffer;
+    std::vector<void*>  uniformBufferMapped;
 };
 
 struct Data {
@@ -92,8 +105,11 @@ struct Data {
     Queues             queues;
     QueueFamilyIndices queueFamilyIndices;
 
-    Buffer vertexBuffer{};
-    Buffer indexBuffer{};
+    Buffer                       vertexBuffer{};
+    Buffer                       indexBuffer{};
+    UniformBuffers               uniformBuffers;
+    VkDescriptorPool             descriptorPool{};
+    std::vector<VkDescriptorSet> descriptorSets;
 
     uint32_t  currentFrame         = 0;
     bool      framebufferResized   = false;

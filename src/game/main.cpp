@@ -43,6 +43,7 @@ int main() {
                 gameData.models[0],
                 data.vertexBuffer,
                 data.indexBuffer);
+    createUniformBuffers(data.device, data.physicalDevice, data.queueFamilyIndices, data.uniformBuffers, data.MAX_FRAMES_IN_FLIGHT);
 
     while (!glfwWindowShouldClose(data.windowResources.windowPointer)) {
         startTime = std::chrono::high_resolution_clock::now();
