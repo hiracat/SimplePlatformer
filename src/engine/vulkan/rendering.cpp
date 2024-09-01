@@ -54,9 +54,12 @@ void drawFrame(Data& data, GameData& gamedata, std::chrono::high_resolution_cloc
                         data.pipelineResources.graphicsPipeline,
                         data.vertexBuffer.buffer,
                         data.indexBuffer.buffer,
+                        data.vertexBufferf.buffer,
+                        data.indexBufferf.buffer,
                         data.descriptorResources.sets[data.currentFrame],
                         data.pipelineResources.pipelineLayout,
-                        gamedata.models[0].indices.size());
+                        gamedata.models[0].indices.size(),
+                        gamedata.models[1].indices.size());
 
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

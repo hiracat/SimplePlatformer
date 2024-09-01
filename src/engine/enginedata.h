@@ -120,6 +120,9 @@ struct Data {
     Buffer vertexBuffer{};
     Buffer indexBuffer{};
 
+    Buffer vertexBufferf{};
+    Buffer indexBufferf{};
+
     TransformResources transformResources;
 
     uint32_t  currentFrame         = 0;

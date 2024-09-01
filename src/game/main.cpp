@@ -25,16 +25,23 @@ int main() {
     auto renderTime        = endTime - frameStartTime;
     auto startTime         = std::chrono::high_resolution_clock::now();
 
-    Model model = {.vertices = {{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-                                {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-                                {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-                                {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}},
+    Model player = {.vertices = {{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+                                 {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+                                 {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+                                 {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}},
 
-                   .indices = {0, 1, 2, 2, 3, 0}};
+                    .indices = {0, 1, 2, 2, 3, 0}};
+    Model floor  = {.vertices = {{{-0.9f, 0.9f}, {1.0f, 1.0f, 1.0f}},
+                                 {{0.9f, 0.9f}, {1.0f, 1.0f, 1.0f}},
+                                 {{0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}},
+                                 {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}},
+
+                    .indices = {0, 1, 2, 2, 3, 0}};
 
     Data     data{};
     GameData gameData{};
-    gameData.models.push_back(model);
+    gameData.models.push_back(player);
+    gameData.models.push_back(floor);
 
     debugnote("created index and vertex buffers");
     initEngine(data);
@@ -46,6 +53,14 @@ int main() {
                 gameData.models[0],
                 data.vertexBuffer,
                 data.indexBuffer);
+    createModel(data.device,
+                data.physicalDevice,
+                data.queues.transfer,
+                data.commandResources.pool,
+                data.queueFamilyIndices,
+                gameData.models[1],
+                data.vertexBufferf,
+                data.indexBufferf);
     createUniformBuffers(
         data.device, data.physicalDevice, data.queueFamilyIndices, data.transformResources.uniformBuffers, data.MAX_FRAMES_IN_FLIGHT);
     createDescriptorPool(data.device, data.descriptorResources.pool, data.MAX_FRAMES_IN_FLIGHT);
