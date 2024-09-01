@@ -18,16 +18,16 @@ void initializeWindow(VkInstance instance, WindowResources& windowData, bool* fr
     // disables the automatic opengl context creation
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    windowData.windowPointer = glfwCreateWindow(windowData.WIDTH, windowData.HEIGHT, windowData.name, nullptr, nullptr);
-    if (windowData.windowPointer == nullptr) {
+    windowData.pointer = glfwCreateWindow(windowData.WIDTH, windowData.HEIGHT, windowData.name, nullptr, nullptr);
+    if (windowData.pointer == nullptr) {
         debugerror("window pointer is nullptr");
     }
 
-    glfwSetWindowUserPointer(windowData.windowPointer, frameBufferResized);
-    glfwSetFramebufferSizeCallback(windowData.windowPointer, framebufferResizeCallback);
+    glfwSetWindowUserPointer(windowData.pointer, frameBufferResized);
+    glfwSetFramebufferSizeCallback(windowData.pointer, framebufferResizeCallback);
 
     int reply2;
-    if ((reply2 = glfwCreateWindowSurface(instance, windowData.windowPointer, nullptr, &windowData.surface)) != VK_SUCCESS) {
+    if ((reply2 = glfwCreateWindowSurface(instance, windowData.pointer, nullptr, &windowData.surface)) != VK_SUCCESS) {
         debugerror("failed to create window surface: " << reply2);
     }
 }

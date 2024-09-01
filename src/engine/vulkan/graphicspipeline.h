@@ -3,4 +3,7 @@
 
 #include "../enginedata.h"
 
-void createGraphicsPipeline(const VkDevice& device, const Swapchain& swapchain, PipelineResources& resources);
+void createGraphicsPipeline(const VkDevice&        device,
+                            const Swapchain&       swapchain,
+                            PipelineResources&     resources,
+                            VkDescriptorSetLayout& descriptorSetLayout);

@@ -13,6 +13,7 @@ else
 fi
 
 pushd build
-make -j 10
+bear --append --output ../compile_commands.json -- make -j 10
 popd
+
 ./build/SimplePlatformer

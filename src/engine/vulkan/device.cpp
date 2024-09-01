@@ -16,8 +16,7 @@ void createDevice(InstanceResources resources,
                   QueueFamilyIndices&    indices) { // and this
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
-    std::set<uint32_t>                   uniqueQueueFamilies = {
-        indices.graphicsFamily.value(), indices.presentFamily.value(), indices.transferFamily.value()};
+    std::set<uint32_t> uniqueQueueFamilies = {indices.graphics.value(), indices.present.value(), indices.transfer.value()};
 
     float queuePriority = 1.0f;
     for (uint32_t queueFamily : uniqueQueueFamilies) {
@@ -54,7 +53,7 @@ void createDevice(InstanceResources resources,
         debugerror("failed to creat device");
     }
 
-    vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &queues.graphicsQueue);
-    vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &queues.presentQueue);
-    vkGetDeviceQueue(device, indices.transferFamily.value(), 0, &queues.transferQueue);
+    vkGetDeviceQueue(device, indices.graphics.value(), 0, &queues.graphics);
+    vkGetDeviceQueue(device, indices.present.value(), 0, &queues.present);
+    vkGetDeviceQueue(device, indices.transfer.value(), 0, &queues.transfer);
 }

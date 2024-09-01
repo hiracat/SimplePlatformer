@@ -7,14 +7,16 @@
 #include "../../utils/debugprint.h"
 #include "physicaldevice.h"
 
-void recordCommandBuffer(VkCommandBuffer     commandBuffer,
-                         const VkExtent2D&   swapChainExtent,
-                         const VkRenderPass& renderPass,
-                         VkFramebuffer&      frameBuffer,
-                         const VkPipeline&   graphicsPipeline,
-                         const VkBuffer      vertexBuffer,
-                         const VkBuffer      indexBuffer,
-                         const uint32_t      indicesCount) {
+void recordCommandBuffer(VkCommandBuffer&        commandBuffer,
+                         const VkExtent2D&       swapChainExtent,
+                         const VkRenderPass&     renderPass,
+                         VkFramebuffer&          frameBuffer,
+                         const VkPipeline&       graphicsPipeline,
+                         const VkBuffer&         vertexBuffer,
+                         const VkBuffer&         indexBuffer,
+                         VkDescriptorSet&        descriptorSet,
+                         const VkPipelineLayout& pipelineLayout,
+                         const uint32_t&         indicesCount) {
 
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -63,6 +65,7 @@ void recordCommandBuffer(VkCommandBuffer     commandBuffer,
 
     vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
+    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
     vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indicesCount), 1, 0, 0, 0);
     vkCmdEndRenderPass(commandBuffer);
 
@@ -74,13 +77,13 @@ void recordCommandBuffer(VkCommandBuffer     commandBuffer,
 void createCommandBuffers(const VkDevice& device, CommandResources& resources, const uint32_t maxFramesInFlight) {
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.commandPool        = resources.commandPool;
+    allocInfo.commandPool        = resources.pool;
     allocInfo.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     allocInfo.commandBufferCount = maxFramesInFlight;
 
-    resources.commandBuffers.resize(maxFramesInFlight);
+    resources.buffers.resize(maxFramesInFlight);
 
-    if (vkAllocateCommandBuffers(device, &allocInfo, resources.commandBuffers.data())) {
+    if (vkAllocateCommandBuffers(device, &allocInfo, resources.buffers.data())) {
         debugerror("failed to allocate command buffers");
     }
 }

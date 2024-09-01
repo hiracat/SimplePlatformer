@@ -16,10 +16,10 @@
 #include "physicaldevice.h"
 
 bool QueueFamilyIndices::isComplete() const {
-    return graphicsFamily.has_value() && presentFamily.has_value() && transferFamily.has_value();
+    return graphics.has_value() && present.has_value() && transfer.has_value();
 }
 bool QueueFamilyIndices::isSame() const {
-    return (graphicsFamily.value() == presentFamily.value()) && (transferFamily.value() == graphicsFamily.value());
+    return (graphics.value() == present.value()) && (transfer.value() == graphics.value());
 }
 
 // requires vksurface to determine if a queue family supports presentation to a given surface
@@ -46,32 +46,32 @@ QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice physicalDevice, cons
             !(queueFamily.queueFamilyProperties.queueFlags & VK_QUEUE_GRAPHICS_BIT) &&
             !(queueFamily.queueFamilyProperties.queueFlags & VK_QUEUE_COMPUTE_BIT)) {
 
-            indices.transferFamily = currentQueueIndex;
+            indices.transfer = currentQueueIndex;
         }
 
         // Check for a dedicated graphics queue
         if ((queueFamily.queueFamilyProperties.queueFlags & VK_QUEUE_GRAPHICS_BIT)) {
-            indices.graphicsFamily = currentQueueIndex;
+            indices.graphics = currentQueueIndex;
         }
 
         VkBool32 presentSupport = false;
         vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, currentQueueIndex, surface, &presentSupport);
-        if (presentSupport && !indices.presentFamily.has_value()) {
-            indices.presentFamily = currentQueueIndex;
+        if (presentSupport && !indices.present.has_value()) {
+            indices.present = currentQueueIndex;
         }
         currentQueueIndex++;
     }
 
-    if (!indices.transferFamily.has_value()) {
-        indices.transferFamily = indices.graphicsFamily.value();
+    if (!indices.transfer.has_value()) {
+        indices.transfer = indices.graphics.value();
     }
 
     if (!indices.isComplete()) {
         debugerror("no queue with present support");
     }
-    debugnote("graphics queue: " << indices.graphicsFamily.value());
-    debugnote("transfer queue: " << indices.transferFamily.value());
-    debugnote("present queue: " << indices.presentFamily.value());
+    debugnote("graphics queue: " << indices.graphics.value());
+    debugnote("transfer queue: " << indices.transfer.value());
+    debugnote("present queue: " << indices.present.value());
     return indices;
 }
 
@@ -163,7 +163,7 @@ VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capiblilies, const W
         return capiblilies.currentExtent;
     } else { // special case, where widow size does not have to match swapchain resolution in certian window managers
         int width, height;
-        glfwGetFramebufferSize(window.windowPointer, &width, &height);
+        glfwGetFramebufferSize(window.pointer, &width, &height);
 
         VkExtent2D actualExtent = {
             static_cast<uint32_t>(width),

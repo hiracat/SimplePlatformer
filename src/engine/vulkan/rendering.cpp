@@ -1,3 +1,4 @@
+#include <chrono>
 #include <vulkan/vulkan.h>
 
 #include <cstdint>
@@ -6,21 +7,22 @@
 #include "../../game/gamedata.h"
 #include "../../utils/debugprint.h"
 #include "../enginedata.h"
+#include "buffers.h"
 #include "commandobjects.h"
 #include "swapchain.h"
 #include "syncronization.h"
 
-void drawFrame(Data& data, GameData& gamedata) {
+void drawFrame(Data& data, GameData& gamedata, std::chrono::high_resolution_clock::time_point startTime) {
 
-    vkWaitForFences(data.device, 1, &data.syncResources.inFlightFences[data.currentFrame], VK_TRUE, UINT64_MAX);
+    vkWaitForFences(data.device, 1, &data.syncResources.inFlight[data.currentFrame], VK_TRUE, UINT64_MAX);
 
-    uint32_t imageIndex;
+    uint32_t currentImageIndex;
     VkResult result = vkAcquireNextImageKHR(data.device,
                                             data.swapchain.swapchain,
                                             UINT64_MAX,
-                                            data.syncResources.imageAvailableSemaphores[data.currentFrame],
+                                            data.syncResources.imageAvailable[data.currentFrame],
                                             VK_NULL_HANDLE,
-                                            &imageIndex);
+                                            &currentImageIndex);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || data.framebufferResized) {
         data.framebufferResized = false;
@@ -39,38 +41,40 @@ void drawFrame(Data& data, GameData& gamedata) {
         debugerror("unknown error while aquiring next image");
     }
 
-    VkResult fenceStatus = vkGetFenceStatus(data.device, data.syncResources.inFlightFences[data.currentFrame]);
+    VkResult fenceStatus = vkGetFenceStatus(data.device, data.syncResources.inFlight[data.currentFrame]);
     // only reset fences when we know we are submitting work
-    vkResetFences(data.device, 1, &data.syncResources.inFlightFences[data.currentFrame]);
+    vkResetFences(data.device, 1, &data.syncResources.inFlight[data.currentFrame]);
 
-    vkResetCommandBuffer(data.commandResources.commandBuffers[data.currentFrame], 0);
+    vkResetCommandBuffer(data.commandResources.buffers[data.currentFrame], 0);
 
-    recordCommandBuffer(data.commandResources.commandBuffers[data.currentFrame],
+    recordCommandBuffer(data.commandResources.buffers[data.currentFrame],
                         data.swapchain.extent,
                         data.pipelineResources.renderPass,
-                        data.swapchainResources.swapchainFramebuffers[imageIndex],
+                        data.swapchainResources.framebuffers[currentImageIndex],
                         data.pipelineResources.graphicsPipeline,
                         data.vertexBuffer.buffer,
                         data.indexBuffer.buffer,
+                        data.descriptorResources.sets[data.currentFrame],
+                        data.pipelineResources.pipelineLayout,
                         gamedata.models[0].indices.size());
 
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-    VkSemaphore          waitSemaphores[] = {data.syncResources.imageAvailableSemaphores[data.currentFrame]};
+    VkSemaphore          waitSemaphores[] = {data.syncResources.imageAvailable[data.currentFrame]};
     VkPipelineStageFlags waitStages[]     = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
     submitInfo.waitSemaphoreCount         = 1;
     submitInfo.pWaitSemaphores            = waitSemaphores;
     submitInfo.pWaitDstStageMask          = waitStages;
 
     submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers    = &data.commandResources.commandBuffers[data.currentFrame];
+    submitInfo.pCommandBuffers    = &data.commandResources.buffers[data.currentFrame];
 
-    VkSemaphore signalSemaphores[]  = {data.syncResources.renderFinishedSemaphores[data.currentFrame]};
+    VkSemaphore signalSemaphores[]  = {data.syncResources.renderFinished[data.currentFrame]};
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores    = signalSemaphores;
 
-    if (vkQueueSubmit(data.queues.graphicsQueue, 1, &submitInfo, data.syncResources.inFlightFences[data.currentFrame]) != VK_SUCCESS) {
+    if (vkQueueSubmit(data.queues.graphics, 1, &submitInfo, data.syncResources.inFlight[data.currentFrame]) != VK_SUCCESS) {
         debugerror("failed to submit draw command buffer");
     }
 
@@ -83,9 +87,9 @@ void drawFrame(Data& data, GameData& gamedata) {
     VkSwapchainKHR swapchains[] = {data.swapchain.swapchain};
     presentInfo.swapchainCount  = 1;
     presentInfo.pSwapchains     = swapchains;
-    presentInfo.pImageIndices   = &imageIndex;
+    presentInfo.pImageIndices   = &currentImageIndex;
 
-    result = vkQueuePresentKHR(data.queues.presentQueue, &presentInfo);
+    result = vkQueuePresentKHR(data.queues.present, &presentInfo);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
         data.framebufferResized = false;

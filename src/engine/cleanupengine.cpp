@@ -1,6 +1,7 @@
 #include <vulkan/vulkan.h>
 
 #include <GLFW/glfw3.h>
+#include <vulkan/vulkan_core.h>
 
 #include "../compilesettings.h"
 #include "enginedata.h"
@@ -18,14 +19,14 @@ void cleanup(Data& data) {
 
     vkDeviceWaitIdle(data.device);
 
-    cleanupSwapChain(
-        data.swapchain.swapchain, data.swapchainResources.imageViews, data.swapchainResources.swapchainFramebuffers, data.device);
+    cleanupSwapChain(data.swapchain.swapchain, data.swapchainResources.imageViews, data.swapchainResources.framebuffers, data.device);
 
     for (size_t i = 0; i < data.MAX_FRAMES_IN_FLIGHT; i++) {
-        vkDestroyBuffer(data.device, data.uniformBuffers.uniformBuffer[i].buffer, nullptr);
-        vkFreeMemory(data.device, data.uniformBuffers.uniformBuffer[i].memory, nullptr);
+        vkDestroyBuffer(data.device, data.transformResources.uniformBuffers[i].buffer.buffer, nullptr);
+        vkFreeMemory(data.device, data.transformResources.uniformBuffers[i].buffer.memory, nullptr);
     }
-    vkDestroyDescriptorSetLayout(data.device, data.pipelineResources.descriptorSetLayout, nullptr);
+    vkDestroyDescriptorPool(data.device, data.descriptorResources.pool, nullptr);
+    vkDestroyDescriptorSetLayout(data.device, data.transformResources.descriptorSetLayout, nullptr);
 
     vkDestroyBuffer(data.device, data.indexBuffer.buffer, nullptr);
     vkFreeMemory(data.device, data.indexBuffer.memory, nullptr);
@@ -40,7 +41,7 @@ void cleanup(Data& data) {
 
     cleanupSyncObjects(data.syncResources, data.device, data.MAX_FRAMES_IN_FLIGHT);
 
-    vkDestroyCommandPool(data.device, data.commandResources.commandPool, nullptr);
+    vkDestroyCommandPool(data.device, data.commandResources.pool, nullptr);
 
     vkDestroyDevice(data.device, nullptr);
 
@@ -50,6 +51,6 @@ void cleanup(Data& data) {
     vkDestroySurfaceKHR(data.instance, data.windowResources.surface, nullptr);
     vkDestroyInstance(data.instance, nullptr);
 
-    glfwDestroyWindow(data.windowResources.windowPointer);
+    glfwDestroyWindow(data.windowResources.pointer);
     glfwTerminate();
 }

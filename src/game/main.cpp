@@ -1,3 +1,4 @@
+#include <glm/fwd.hpp>
 #include <thread>
 #include <vulkan/vulkan.h>
 
@@ -11,16 +12,18 @@
 #include "../engine/models.h"
 #include "../engine/vulkan/buffers.h"
 #include "../engine/vulkan/rendering.h"
+#include "../engine/vulkan/ubo.h"
 #include "../utils/debugprint.h"
 #include "gamedata.h"
 
 int main() {
 
     bool windowShouldClose = false;
-    auto startTime         = std::chrono::high_resolution_clock::now();
+    auto frameStartTime    = std::chrono::high_resolution_clock::now();
     auto endTime           = std::chrono::high_resolution_clock::now();
     auto targetTime        = std::chrono::milliseconds(10);
-    auto renderTime        = endTime - startTime;
+    auto renderTime        = endTime - frameStartTime;
+    auto startTime         = std::chrono::high_resolution_clock::now();
 
     Model model = {.vertices = {{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
                                 {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
@@ -37,22 +40,54 @@ int main() {
     initEngine(data);
     createModel(data.device,
                 data.physicalDevice,
-                data.queues.transferQueue,
-                data.commandResources.commandPool,
+                data.queues.transfer,
+                data.commandResources.pool,
                 data.queueFamilyIndices,
                 gameData.models[0],
                 data.vertexBuffer,
                 data.indexBuffer);
-    createUniformBuffers(data.device, data.physicalDevice, data.queueFamilyIndices, data.uniformBuffers, data.MAX_FRAMES_IN_FLIGHT);
+    createUniformBuffers(
+        data.device, data.physicalDevice, data.queueFamilyIndices, data.transformResources.uniformBuffers, data.MAX_FRAMES_IN_FLIGHT);
+    createDescriptorPool(data.device, data.descriptorResources.pool, data.MAX_FRAMES_IN_FLIGHT);
+    createDescriptorSets(data.device,
+                         data.transformResources.uniformBuffers,
+                         data.descriptorResources.pool,
+                         data.descriptorResources.sets,
+                         data.transformResources.descriptorSetLayout,
+                         data.MAX_FRAMES_IN_FLIGHT);
 
-    while (!glfwWindowShouldClose(data.windowResources.windowPointer)) {
-        startTime = std::chrono::high_resolution_clock::now();
+    glm::vec3 offset = {};
+    while (!glfwWindowShouldClose(data.windowResources.pointer)) {
+        frameStartTime = std::chrono::high_resolution_clock::now();
 
         glfwPollEvents();
-        drawFrame(data, gameData);
+        int key = 0;
+        for (int testkey = GLFW_KEY_SPACE; testkey <= GLFW_KEY_LAST; ++testkey) {
+            int state = glfwGetKey(data.windowResources.pointer, testkey);
+            if (state == GLFW_PRESS) {
+                key = testkey;
+                debugdata("key: " << key << "pressed");
+                break;
+            }
+        }
+        if (key == GLFW_KEY_RIGHT) {
+            offset.x += .01;
+        } else if (key == GLFW_KEY_LEFT) {
+            offset.x -= .01;
+        } else if (key == GLFW_KEY_UP) {
+            offset.y -= .01;
+        } else if (key == GLFW_KEY_DOWN) {
+            offset.y += .01;
+        } else if (key == GLFW_KEY_W) {
+            offset.z += .01;
+        } else if (key == GLFW_KEY_S) {
+            offset.z -= .01;
+        }
+        updateUniformBuffers(data.currentFrame, startTime, data.swapchain.extent, data.transformResources.uniformBuffers, offset);
+        drawFrame(data, gameData, startTime);
 
         endTime    = std::chrono::high_resolution_clock::now();
-        renderTime = endTime - startTime;
+        renderTime = endTime - frameStartTime;
         std::this_thread::sleep_for(targetTime - renderTime);
     }
     cleanup(data);

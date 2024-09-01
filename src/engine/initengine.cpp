@@ -38,21 +38,21 @@ void initEngine(Data& data) {
         data.device, data.physicalDevice, data.windowResources, data.swapchain, data.swapchainResources, data.queueFamilyIndices);
 
     createRenderPass(data.swapchain.format, data.pipelineResources.renderPass, data.device);
-    CreateDescriptorSetLayout(data.device, data.pipelineResources.descriptorSetLayout);
-    createGraphicsPipeline(data.device, data.swapchain, data.pipelineResources);
+    CreateDescriptorSetLayout(data.device, data.transformResources.descriptorSetLayout);
+    createGraphicsPipeline(data.device, data.swapchain, data.pipelineResources, data.transformResources.descriptorSetLayout);
     debugnote("created graphics pipeline");
 
     createCommandPool(data.physicalDevice,
-                      data.queueFamilyIndices.graphicsFamily.value(),
+                      data.queueFamilyIndices.graphics.value(),
                       data.device,
                       data.windowResources.surface,
-                      data.commandResources.commandPool);
-    if (data.queueFamilyIndices.graphicsFamily.value() != data.queueFamilyIndices.presentFamily.value()) {
+                      data.commandResources.pool);
+    if (data.queueFamilyIndices.graphics.value() != data.queueFamilyIndices.present.value()) {
         createCommandPool(data.physicalDevice,
-                          data.queueFamilyIndices.presentFamily.value(),
+                          data.queueFamilyIndices.present.value(),
                           data.device,
                           data.windowResources.surface,
-                          data.commandResources.commandPool);
+                          data.commandResources.pool);
     }
     createImageViews(data.swapchainResources, data.swapchain.format, data.device);
     createFramebuffers(data.swapchainResources, data.pipelineResources.renderPass, data.swapchain.extent, data.device);

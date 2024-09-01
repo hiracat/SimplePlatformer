@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <vulkan/vulkan.h>
 
 #include <vector>
@@ -53,9 +54,9 @@ void recreateSwapChain(const VkPhysicalDevice    physicalDevice,
                        const QueueFamilyIndices& indices) {
 
     int width = 0, height = 0;
-    glfwGetFramebufferSize(window.windowPointer, &width, &height);
+    glfwGetFramebufferSize(window.pointer, &width, &height);
     while (width == 0 || height == 0) {
-        glfwGetFramebufferSize(window.windowPointer, &width, &height);
+        glfwGetFramebufferSize(window.pointer, &width, &height);
         glfwWaitEvents();
     }
 
@@ -63,7 +64,7 @@ void recreateSwapChain(const VkPhysicalDevice    physicalDevice,
     swapchain.oldSwapChain = swapchain.swapchain;
 
     createSwapChain(device, physicalDevice, window, swapchain, resources, indices);
-    cleanupSwapChain(swapchain.oldSwapChain, resources.imageViews, resources.swapchainFramebuffers, device);
+    cleanupSwapChain(swapchain.oldSwapChain, resources.imageViews, resources.framebuffers, device);
     createImageViews(resources, swapchain.format, device);
     createFramebuffers(resources, renderpass, swapchain.extent, device);
 }
@@ -73,7 +74,7 @@ void createFramebuffers(SwapchainResources& resources,
                         const VkExtent2D    swapchainExtent,
                         const VkDevice      device) {
 
-    resources.swapchainFramebuffers.resize(resources.imageViews.size());
+    resources.framebuffers.resize(resources.imageViews.size());
 
     for (size_t i = 0; i < resources.imageViews.size(); i++) {
         VkImageView             attachments[] = {resources.imageViews[i]}; // as an array because there can be multiple attachments
@@ -85,7 +86,7 @@ void createFramebuffers(SwapchainResources& resources,
         framebufferInfo.width           = swapchainExtent.width;
         framebufferInfo.height          = swapchainExtent.height;
         framebufferInfo.layers          = 1;
-        if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &resources.swapchainFramebuffers[i]) != VK_SUCCESS) {
+        if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &resources.framebuffers[i]) != VK_SUCCESS) {
             debugerror("failed to create framebuffer");
         }
     }
@@ -108,6 +109,7 @@ void createSwapChain(const VkDevice            device,
     if (imageCount > swapChainSupport.capabilities.maxImageCount && swapChainSupport.capabilities.maxImageCount != 0) {
         imageCount = swapChainSupport.capabilities.maxImageCount;
     }
+    debugdata("swapchainimagecout = " << imageCount);
 
     VkSwapchainCreateInfoKHR createInfo{};
     createInfo.sType   = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -120,9 +122,9 @@ void createSwapChain(const VkDevice            device,
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage       = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-    uint32_t rawIndices[] = {indices.graphicsFamily.value(), indices.presentFamily.value()};
+    uint32_t rawIndices[] = {indices.graphics.value(), indices.present.value()};
 
-    if ((indices.transferFamily.value() == indices.graphicsFamily.value()) && (indices.graphicsFamily == indices.presentFamily.value())) {
+    if ((indices.transfer.value() == indices.graphics.value()) && (indices.graphics == indices.present.value())) {
         createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
     } else {
         createInfo.imageSharingMode      = VK_SHARING_MODE_CONCURRENT;
