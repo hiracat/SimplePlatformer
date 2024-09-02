@@ -52,9 +52,7 @@ int main() {
                     data.queues.transfer,
                     data.commandResources.pool,
                     data.queueFamilyIndices,
-                    gameData.models[i],
-                    gameData.models[i].vertexBuffer,
-                    gameData.models[i].indexBuffer);
+                    gameData.models[i]);
     }
     createUniformBuffers(
         data.device, data.physicalDevice, data.queueFamilyIndices, data.transformResources.uniformBuffers, data.MAX_FRAMES_IN_FLIGHT);

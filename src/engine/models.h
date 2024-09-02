@@ -9,6 +9,4 @@ void createModel(VkDevice                  device,
                  VkQueue                   transferQueue,
                  VkCommandPool             commandPool,
                  const QueueFamilyIndices& queueFamilyIndices,
-                 Model                     model,
-                 Buffer&                   vertexBuffer,
-                 Buffer&                   indexBuffer);
+                 Model&                    model);
