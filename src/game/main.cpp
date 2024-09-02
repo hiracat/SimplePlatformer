@@ -64,7 +64,6 @@ int main() {
                          data.transformResources.descriptorSetLayout,
                          data.MAX_FRAMES_IN_FLIGHT);
 
-    glm::vec3 offset = {};
     while (!glfwWindowShouldClose(data.windowResources.pointer)) {
         frameStartTime = std::chrono::high_resolution_clock::now();
 
@@ -79,19 +78,18 @@ int main() {
             }
         }
         if (key == GLFW_KEY_RIGHT) {
-            offset.x += .01;
+            gameData.models[0].position.x += .01;
         } else if (key == GLFW_KEY_LEFT) {
-            offset.x -= .01;
+            gameData.models[0].position.x -= .01;
         } else if (key == GLFW_KEY_UP) {
-            offset.y -= .01;
+            gameData.models[0].position.y -= .01;
         } else if (key == GLFW_KEY_DOWN) {
-            offset.y += .01;
+            gameData.models[0].position.y += .01;
         } else if (key == GLFW_KEY_W) {
-            offset.z += .01;
+            gameData.models[0].position.z += .01;
         } else if (key == GLFW_KEY_S) {
-            offset.z -= .01;
+            gameData.models[0].position.z -= .01;
         }
-        updateUniformBuffers(data.currentFrame, startTime, data.swapchain.extent, data.transformResources.uniformBuffers, offset);
         drawFrame(data, gameData, startTime);
 
         endTime    = std::chrono::high_resolution_clock::now();

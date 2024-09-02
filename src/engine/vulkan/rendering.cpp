@@ -46,20 +46,38 @@ void drawFrame(Data& data, GameData& gamedata, std::chrono::high_resolution_cloc
     vkResetFences(data.device, 1, &data.syncResources.inFlight[data.currentFrame]);
 
     vkResetCommandBuffer(data.commandResources.buffers[data.currentFrame], 0);
+    beginDrawing(data.commandResources.buffers[data.currentFrame],
+                 data.swapchain.extent,
+                 data.pipelineResources.renderPass,
+                 data.swapchainResources.framebuffers[currentImageIndex],
+                 data.pipelineResources.graphicsPipeline);
 
-    recordCommandBuffer(data.commandResources.buffers[data.currentFrame],
-                        data.swapchain.extent,
-                        data.pipelineResources.renderPass,
-                        data.swapchainResources.framebuffers[currentImageIndex],
-                        data.pipelineResources.graphicsPipeline,
-                        gamedata.models[0].vertexBuffer.buffer,
-                        gamedata.models[0].indexBuffer.buffer,
-                        gamedata.models[1].vertexBuffer.buffer,
-                        gamedata.models[1].indexBuffer.buffer,
-                        data.descriptorResources.sets[data.currentFrame],
-                        data.pipelineResources.pipelineLayout,
-                        gamedata.models[0].indices.size(),
-                        gamedata.models[1].indices.size());
+    VkDeviceSize offsets[] = {0};
+    vkCmdBindDescriptorSets(data.commandResources.buffers[data.currentFrame],
+                            VK_PIPELINE_BIND_POINT_GRAPHICS,
+                            data.pipelineResources.pipelineLayout,
+                            0,
+                            1,
+                            &data.descriptorResources.sets[data.currentFrame],
+                            0,
+                            nullptr);
+
+    updateUniformBuffers(
+        data.currentFrame, startTime, data.swapchain.extent, data.transformResources.uniformBuffers, gamedata.models[0].position);
+
+    vkCmdBindVertexBuffers(data.commandResources.buffers[data.currentFrame], 0, 1, &gamedata.models[0].vertexBuffer.buffer, offsets);
+    vkCmdBindIndexBuffer(data.commandResources.buffers[data.currentFrame], gamedata.models[0].indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
+    vkCmdDrawIndexed(
+        data.commandResources.buffers[data.currentFrame], static_cast<uint32_t>(gamedata.models[0].indices.size()), 1, 0, 0, 0);
+
+    updateUniformBuffers(
+        data.currentFrame, startTime, data.swapchain.extent, data.transformResources.uniformBuffers, gamedata.models[1].position);
+    vkCmdBindVertexBuffers(data.commandResources.buffers[data.currentFrame], 0, 1, &gamedata.models[1].vertexBuffer.buffer, offsets);
+    vkCmdBindIndexBuffer(data.commandResources.buffers[data.currentFrame], gamedata.models[1].indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
+    vkCmdDrawIndexed(
+        data.commandResources.buffers[data.currentFrame], static_cast<uint32_t>(gamedata.models[1].indices.size()), 1, 0, 0, 0);
+
+    endDrawing(data.commandResources.buffers[data.currentFrame]);
 
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

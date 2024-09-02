@@ -6,22 +6,11 @@
 
 #include "../../utils/debugprint.h"
 #include "physicaldevice.h"
-
-void recordCommandBuffer(VkCommandBuffer&    commandBuffer,
-                         const VkExtent2D&   swapChainExtent,
-                         const VkRenderPass& renderPass,
-                         VkFramebuffer&      frameBuffer,
-                         const VkPipeline&   graphicsPipeline,
-                         const VkBuffer&     vertexBuffer,
-                         const VkBuffer&     indexBuffer,
-
-                         const VkBuffer& vertexBufferf,
-                         const VkBuffer& indexBufferf,
-
-                         VkDescriptorSet&        descriptorSet,
-                         const VkPipelineLayout& pipelineLayout,
-                         const uint32_t&         indicesCount,
-                         const uint32_t&         indicesCountf) {
+void beginDrawing(VkCommandBuffer&    commandBuffer,
+                  const VkExtent2D&   swapChainExtent,
+                  const VkRenderPass& renderPass,
+                  VkFramebuffer&      frameBuffer,
+                  const VkPipeline&   graphicsPipeline) {
 
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType            = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -63,19 +52,8 @@ void recordCommandBuffer(VkCommandBuffer&    commandBuffer,
     scissor.offset = {0, 0};
     scissor.extent = swapChainExtent;
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-
-    VkDeviceSize offsets[] = {0};
-    vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBuffer, offsets);
-    vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
-
-    vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSet, 0, nullptr);
-    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indicesCount), 1, 0, 0, 0);
-
-    vkCmdBindVertexBuffers(commandBuffer, 0, 1, &vertexBufferf, offsets);
-    vkCmdBindIndexBuffer(commandBuffer, indexBufferf, 0, VK_INDEX_TYPE_UINT32);
-
-    vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indicesCountf), 1, 0, 0, 0);
-
+};
+void endDrawing(VkCommandBuffer commandBuffer) {
     // end
     vkCmdEndRenderPass(commandBuffer);
 

@@ -11,18 +11,10 @@ void createCommandPool(const VkPhysicalDevice& physicalDevice,
                        const VkSurfaceKHR&     surface,
                        VkCommandPool&          commandPool);
 
-void recordCommandBuffer(VkCommandBuffer&    commandBuffer,
-                         const VkExtent2D&   swapChainExtent,
-                         const VkRenderPass& renderPass,
-                         VkFramebuffer&      frameBuffer,
-                         const VkPipeline&   graphicsPipeline,
-                         const VkBuffer&     vertexBuffer,
-                         const VkBuffer&     indexBuffer,
+void beginDrawing(VkCommandBuffer&    commandBuffer,
+                  const VkExtent2D&   swapChainExtent,
+                  const VkRenderPass& renderPass,
+                  VkFramebuffer&      frameBuffer,
+                  const VkPipeline&   graphicsPipeline);
 
-                         const VkBuffer& vertexBufferf,
-                         const VkBuffer& indexBufferf,
-
-                         VkDescriptorSet&        descriptorSet,
-                         const VkPipelineLayout& pipelineLayout,
-                         const uint32_t&         indicesCount,
-                         const uint32_t&         indicesCountf);
+void endDrawing(VkCommandBuffer commandBuffer);
