@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <glm/fwd.hpp>
 #include <thread>
 #include <vulkan/vulkan.h>
@@ -45,22 +46,18 @@ int main() {
 
     debugnote("created index and vertex buffers");
     initEngine(data);
-    createModel(data.device,
-                data.physicalDevice,
-                data.queues.transfer,
-                data.commandResources.pool,
-                data.queueFamilyIndices,
-                gameData.models[0],
-                data.vertexBuffer,
-                data.indexBuffer);
-    createModel(data.device,
-                data.physicalDevice,
-                data.queues.transfer,
-                data.commandResources.pool,
-                data.queueFamilyIndices,
-                gameData.models[1],
-                data.vertexBufferf,
-                data.indexBufferf);
+    data.indexBuffers.resize(gameData.models.size());
+    data.vertexBuffers.resize(gameData.models.size());
+    for (size_t i = 0; i < gameData.models.size(); i++) {
+        createModel(data.device,
+                    data.physicalDevice,
+                    data.queues.transfer,
+                    data.commandResources.pool,
+                    data.queueFamilyIndices,
+                    gameData.models[i],
+                    data.vertexBuffers[i],
+                    data.indexBuffers[i]);
+    }
     createUniformBuffers(
         data.device, data.physicalDevice, data.queueFamilyIndices, data.transformResources.uniformBuffers, data.MAX_FRAMES_IN_FLIGHT);
     createDescriptorPool(data.device, data.descriptorResources.pool, data.MAX_FRAMES_IN_FLIGHT);

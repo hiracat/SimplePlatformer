@@ -117,11 +117,8 @@ struct Data {
     Queues             queues;
     QueueFamilyIndices queueFamilyIndices;
 
-    Buffer vertexBuffer{};
-    Buffer indexBuffer{};
-
-    Buffer vertexBufferf{};
-    Buffer indexBufferf{};
+    std::vector<Buffer> vertexBuffers{};
+    std::vector<Buffer> indexBuffers{};
 
     TransformResources transformResources;
 

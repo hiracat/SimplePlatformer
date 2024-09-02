@@ -26,6 +26,7 @@ void createBuffer(const VkDevice         device,
                   VkBuffer&              buffer,
                   VkMemoryPropertyFlags  properties,
                   VkDeviceMemory&        bufferMemory) {
+
     VkBufferCreateInfo bufferInfo{};
     bufferInfo.sType       = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     bufferInfo.size        = size;
@@ -204,8 +205,8 @@ void createVertexBuffer(const std::vector<Vertex>& vertices,
         }
     }
 
-    VkBuffer       stagingBuffer;
-    VkDeviceMemory stagingBufferMemory;
+    VkBuffer       stagingBuffer{};
+    VkDeviceMemory stagingBufferMemory{};
     createBuffer(device,
                  physicalDevice,
                  bufferSize,

@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <vulkan/vulkan.h>
 
 #include <GLFW/glfw3.h>
@@ -28,11 +29,13 @@ void cleanup(Data& data) {
     vkDestroyDescriptorPool(data.device, data.descriptorResources.pool, nullptr);
     vkDestroyDescriptorSetLayout(data.device, data.transformResources.descriptorSetLayout, nullptr);
 
-    vkDestroyBuffer(data.device, data.indexBuffer.buffer, nullptr);
-    vkFreeMemory(data.device, data.indexBuffer.memory, nullptr);
+    for (size_t i = 0; i < data.indexBuffers.size(); i++) {
+        vkDestroyBuffer(data.device, data.vertexBuffers[i].buffer, nullptr);
+        vkFreeMemory(data.device, data.vertexBuffers[i].memory, nullptr);
 
-    vkDestroyBuffer(data.device, data.vertexBuffer.buffer, nullptr);
-    vkFreeMemory(data.device, data.vertexBuffer.memory, nullptr);
+        vkDestroyBuffer(data.device, data.indexBuffers[i].buffer, nullptr);
+        vkFreeMemory(data.device, data.indexBuffers[i].memory, nullptr);
+    }
 
     vkDestroyPipeline(data.device, data.pipelineResources.graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(data.device, data.pipelineResources.pipelineLayout, nullptr);
