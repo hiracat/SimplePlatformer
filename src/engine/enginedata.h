@@ -117,9 +117,6 @@ struct Data {
     Queues             queues;
     QueueFamilyIndices queueFamilyIndices;
 
-    std::vector<Buffer> vertexBuffers{};
-    std::vector<Buffer> indexBuffers{};
-
     TransformResources transformResources;
 
     uint32_t  currentFrame         = 0;

@@ -5,6 +5,7 @@
 #include <vulkan/vulkan_core.h>
 
 #include "../compilesettings.h"
+#include "../game/gamedata.h"
 #include "enginedata.h"
 #include "vulkan/swapchain.h"
 #include "vulkan/syncronization.h"
@@ -16,7 +17,7 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
     }
 }
 
-void cleanup(Data& data) {
+void cleanup(Data& data, GameData& gameData) {
 
     vkDeviceWaitIdle(data.device);
 
@@ -29,12 +30,12 @@ void cleanup(Data& data) {
     vkDestroyDescriptorPool(data.device, data.descriptorResources.pool, nullptr);
     vkDestroyDescriptorSetLayout(data.device, data.transformResources.descriptorSetLayout, nullptr);
 
-    for (size_t i = 0; i < data.indexBuffers.size(); i++) {
-        vkDestroyBuffer(data.device, data.vertexBuffers[i].buffer, nullptr);
-        vkFreeMemory(data.device, data.vertexBuffers[i].memory, nullptr);
+    for (size_t i = 0; i < gameData.models.size(); i++) {
+        vkDestroyBuffer(data.device, gameData.models[i].vertexBuffer.buffer, nullptr);
+        vkFreeMemory(data.device, gameData.models[i].vertexBuffer.memory, nullptr);
 
-        vkDestroyBuffer(data.device, data.indexBuffers[i].buffer, nullptr);
-        vkFreeMemory(data.device, data.indexBuffers[i].memory, nullptr);
+        vkDestroyBuffer(data.device, gameData.models[i].indexBuffer.buffer, nullptr);
+        vkFreeMemory(data.device, gameData.models[i].indexBuffer.memory, nullptr);
     }
 
     vkDestroyPipeline(data.device, data.pipelineResources.graphicsPipeline, nullptr);

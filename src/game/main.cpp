@@ -46,8 +46,6 @@ int main() {
 
     debugnote("created index and vertex buffers");
     initEngine(data);
-    data.indexBuffers.resize(gameData.models.size());
-    data.vertexBuffers.resize(gameData.models.size());
     for (size_t i = 0; i < gameData.models.size(); i++) {
         createModel(data.device,
                     data.physicalDevice,
@@ -55,8 +53,8 @@ int main() {
                     data.commandResources.pool,
                     data.queueFamilyIndices,
                     gameData.models[i],
-                    data.vertexBuffers[i],
-                    data.indexBuffers[i]);
+                    gameData.models[i].vertexBuffer,
+                    gameData.models[i].indexBuffer);
     }
     createUniformBuffers(
         data.device, data.physicalDevice, data.queueFamilyIndices, data.transformResources.uniformBuffers, data.MAX_FRAMES_IN_FLIGHT);
@@ -102,7 +100,7 @@ int main() {
         renderTime = endTime - frameStartTime;
         std::this_thread::sleep_for(targetTime - renderTime);
     }
-    cleanup(data);
+    cleanup(data, gameData);
 
     debugnote("renderTime: " << std::chrono::duration_cast<std::chrono::microseconds>(renderTime).count());
 
