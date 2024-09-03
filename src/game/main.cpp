@@ -54,8 +54,12 @@ int main() {
                     data.queueFamilyIndices,
                     gameData.models[i]);
     }
-    createUniformBuffers(
-        data.device, data.physicalDevice, data.queueFamilyIndices, data.transformResources.uniformBuffers, data.MAX_FRAMES_IN_FLIGHT);
+    createUniformBuffers(data.device,
+                         data.physicalDevice,
+                         data.queueFamilyIndices,
+                         data.transformResources.uniformBuffers,
+                         data.MAX_FRAMES_IN_FLIGHT,
+                         gameData.models.size());
     createDescriptorPool(data.device, data.descriptorResources.pool, data.MAX_FRAMES_IN_FLIGHT);
     createDescriptorSets(data.device,
                          data.transformResources.uniformBuffers,

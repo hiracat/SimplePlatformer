@@ -55,10 +55,12 @@ void drawFrame(Data& data, GameData& gamedata, std::chrono::high_resolution_cloc
 
     updateUniformBuffers(
         data.currentFrame, startTime, data.swapchain.extent, data.transformResources.uniformBuffers, gamedata.models[0].position, 0);
+    updateUniformBuffers(
+        data.currentFrame, startTime, data.swapchain.extent, data.transformResources.uniformBuffers, gamedata.models[1].position, 1);
 
     for (uint32_t i = 0; i < gamedata.models.size(); i++) {
         VkDeviceSize offsets[]     = {0};
-        uint32_t     dynamicOffset = i * 0; // no dynamic offset because of allignas in MVPMatricies definition
+        uint32_t     dynamicOffset = i * sizeof(MVPMatricies);
 
         vkCmdBindDescriptorSets(data.commandResources.buffers[data.currentFrame],
                                 VK_PIPELINE_BIND_POINT_GRAPHICS,

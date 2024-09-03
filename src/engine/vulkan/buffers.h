@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <vulkan/vulkan.h>
 
 #include <vector>
@@ -26,7 +27,8 @@ void createUniformBuffers(VkDevice                    device,
                           VkPhysicalDevice            physicalDevice,
                           QueueFamilyIndices          indices,
                           std::vector<UniformBuffer>& buffers,
-                          const uint32_t              MAX_FRAMES_IN_FLIGHT);
+                          const uint32_t              MAX_FRAMES_IN_FLIGHT,
+                          uint32_t                    numModels);
 
 void updateUniformBuffers(uint32_t                                       currentImage,
                           std::chrono::high_resolution_clock::time_point startTime,
