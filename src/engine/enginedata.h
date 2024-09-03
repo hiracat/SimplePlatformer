@@ -81,7 +81,8 @@ struct UniformBuffer {
     void*  mappedMemory;
 };
 
-struct MVPMatricies {
+// TODO: this is technical debt and must be replaced with dynamic allignment at some point
+struct alignas(4) MVPMatricies {
     glm::mat4 model; // glm is compatable with shader format so memcpy works just fine to transfer
     glm::mat4 view;
     glm::mat4 projection;

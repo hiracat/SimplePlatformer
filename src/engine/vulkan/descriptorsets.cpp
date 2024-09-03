@@ -5,7 +5,7 @@
 void CreateDescriptorSetLayout(const VkDevice device, VkDescriptorSetLayout& layout) {
     VkDescriptorSetLayoutBinding mvpLayoutBinding{};
     mvpLayoutBinding.binding            = 0;
-    mvpLayoutBinding.descriptorType     = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    mvpLayoutBinding.descriptorType     = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
     mvpLayoutBinding.descriptorCount    = 1;
     mvpLayoutBinding.stageFlags         = VK_SHADER_STAGE_VERTEX_BIT;
     mvpLayoutBinding.pImmutableSamplers = nullptr;

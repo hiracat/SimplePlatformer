@@ -32,4 +32,5 @@ void updateUniformBuffers(uint32_t                                       current
                           std::chrono::high_resolution_clock::time_point startTime,
                           const VkExtent2D&                              swapchainExtent,
                           std::vector<UniformBuffer>                     buffers,
-                          glm::vec3                                      offset);
+                          glm::vec3                                      offset,
+                          uint32_t                                       dynamicOffset);

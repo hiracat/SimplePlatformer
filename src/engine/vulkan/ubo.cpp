@@ -7,7 +7,7 @@
 
 void createDescriptorPool(VkDevice device, VkDescriptorPool& descriptorPool, const uint32_t MAX_FRAMES_IN_FLIGHT) {
     VkDescriptorPoolSize poolSize{};
-    poolSize.type            = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+    poolSize.type            = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
     poolSize.descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 
     VkDescriptorPoolCreateInfo poolInfo{};
@@ -50,7 +50,7 @@ void createDescriptorSets(VkDevice                      device,
         descriptorWrite.dstSet          = descriptorSets[i];
         descriptorWrite.dstBinding      = 0;
         descriptorWrite.dstArrayElement = 0;
-        descriptorWrite.descriptorType  = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        descriptorWrite.descriptorType  = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
         descriptorWrite.descriptorCount = 1;
         descriptorWrite.pBufferInfo     = &bufferInfo;
         vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, nullptr);
