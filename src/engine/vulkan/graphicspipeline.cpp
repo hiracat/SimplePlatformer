@@ -62,9 +62,9 @@ void createGraphicsPipeline(const VkDevice&        device,
 
     VkViewport viewport{};
     viewport.x        = 0.0f;
-    viewport.y        = 0.0f;
+    viewport.y        = (float)swapchain.extent.height;
     viewport.width    = (float)swapchain.extent.width;
-    viewport.height   = (float)swapchain.extent.height;
+    viewport.height   = -(float)swapchain.extent.height;
     viewport.maxDepth = 1.0f;
     viewport.minDepth = 0.0f;
 
@@ -85,7 +85,7 @@ void createGraphicsPipeline(const VkDevice&        device,
     rasterizer.rasterizerDiscardEnable = VK_FALSE;
     rasterizer.polygonMode             = VK_POLYGON_MODE_FILL;
     rasterizer.lineWidth               = 1.0f;
-    rasterizer.cullMode                = VK_CULL_MODE_NONE;
+    rasterizer.cullMode                = VK_CULL_MODE_FRONT_BIT;
     rasterizer.frontFace               = VK_FRONT_FACE_CLOCKWISE;
     rasterizer.depthBiasEnable         = VK_FALSE;
 

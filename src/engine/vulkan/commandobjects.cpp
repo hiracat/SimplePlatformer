@@ -40,10 +40,12 @@ void beginDrawing(VkCommandBuffer&    commandBuffer,
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
     VkViewport viewport{};
-    viewport.x        = 0.0f;
-    viewport.y        = 0.0f;
-    viewport.width    = static_cast<float>(swapChainExtent.width);
-    viewport.height   = static_cast<float>(swapChainExtent.height);
+    viewport.x     = 0.0f;
+    viewport.y     = (float)swapChainExtent.height;
+    viewport.width = static_cast<float>(swapChainExtent.width);
+    // negative to flip y because of weird clip shenanigans and stuff basically coordinates are done as in the
+    // top left, instead of the bottom so this fixes that and makes +y up instead of -y
+    viewport.height   = -static_cast<float>(swapChainExtent.height);
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
     vkCmdSetViewport(commandBuffer, 0, 1, &viewport);

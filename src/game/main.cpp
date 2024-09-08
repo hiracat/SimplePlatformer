@@ -43,14 +43,13 @@ int main() {
                                  {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
                                  {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
                                  {{-0.5f, 0.5f}, {1.0f, 1.0f, 0.0f}}},
+                    .indices  = {0, 1, 2, 2, 3, 0}};
 
-                    .indices = {0, 1, 2, 2, 3, 0}};
-    Model floor  = {.vertices = {{{-0.9f, 0.9f}, {1.0f, 1.0f, 1.0f}},
-                                 {{0.9f, 0.9f}, {1.0f, 1.0f, 1.0f}},
-                                 {{0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}},
-                                 {{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}},
-
-                    .indices = {0, 1, 2, 2, 3, 0}};
+    Model floor = {.vertices = {{{-1.0f, -1.5f}, {1.0f, 1.0f, 1.0f}},
+                                {{1.0f, -1.5f}, {1.0f, 1.0f, 1.0f}},
+                                {{1.9f, -0.5f}, {1.0f, 1.0f, 0.0f}},
+                                {{-1.9f, -0.5f}, {1.0f, 1.0f, 0.0f}}},
+                   .indices  = {0, 1, 2, 2, 3, 0}};
 
     Data     data{};
     GameData gameData{};
@@ -87,7 +86,6 @@ int main() {
 
     while (!glfwWindowShouldClose(data.windowResources.pointer)) {
         glfwPollEvents();
-        gameData.models[0].position.y *= -1;
         frameStartTime        = std::chrono::high_resolution_clock::now();
         std::vector<int> keys = getPressedKey(data.windowResources.pointer);
 
@@ -124,7 +122,6 @@ int main() {
         debugdata("model position: " << gameData.models[0].position.y);
         debugdata("yvelocity: " << yvelocity);
         debugdata("============================" << yvelocity);
-        gameData.models[0].position.y *= -1;
         drawFrame(data, gameData, startTime);
 
         endTime    = std::chrono::high_resolution_clock::now();

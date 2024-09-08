@@ -121,6 +121,7 @@ void createUniformBuffers(VkDevice                    device,
     }
 }
 
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 void updateUniformBuffers(uint32_t                                       currentImage,
                           std::chrono::high_resolution_clock::time_point startTime,
                           const VkExtent2D&                              swapchainExtent,
