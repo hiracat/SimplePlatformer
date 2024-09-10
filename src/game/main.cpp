@@ -8,15 +8,11 @@
 
 #include <chrono>
 
-#include "../engine/cleanupengine.h"
-#include "../engine/enginedata.h"
-#include "../engine/initengine.h"
+#include "../engine/engine.h"
 #include "../engine/models.h"
 #include "../engine/vulkan/buffers.h"
-#include "../engine/vulkan/rendering.h"
 #include "../engine/vulkan/ubo.h"
 #include "../utils/debugprint.h"
-#include "gamedata.h"
 
 std::vector<int> getPressedKey(GLFWwindow* window) {
     std::vector<int> keys{};
@@ -51,34 +47,40 @@ int main() {
                                 {{-1.9f, -0.5f}, {1.0f, 1.0f, 0.0f}}},
                    .indices  = {0, 1, 2, 2, 3, 0}};
 
-    Data     data{};
-    GameData gameData{};
-    gameData.models.push_back(player);
-    gameData.models.push_back(floor);
+    EngineData         engineData{};
+    std::vector<Model> models{};
+    models.push_back(player);
+    models.push_back(floor);
 
     debugnote("created index and vertex buffers");
-    initEngine(data);
-    for (size_t i = 0; i < gameData.models.size(); i++) {
-        createModel(data.device,
-                    data.physicalDevice,
-                    data.queues.transfer,
-                    data.commandResources.pool,
-                    data.queueFamilyIndices,
-                    gameData.models[i]);
+    initEngine(engineData);
+    for (size_t i = 0; i < models.size(); i++) {
+        /*createModel(data.device,*/
+        /*            data.physicalDevice,*/
+        /*            data.queues.transfer,*/
+        /*            data.commandResources.pool,*/
+        /*            data.queueFamilyIndices,*/
+        /*            gameData.models[i]);*/
+        createModel(engineData, models[i]);
     }
-    createUniformBuffers(data.device,
-                         data.physicalDevice,
-                         data.queueFamilyIndices,
-                         data.transformResources.uniformBuffers,
-                         data.MAX_FRAMES_IN_FLIGHT,
-                         gameData.models.size());
-    createDescriptorPool(data.device, data.descriptorResources.pool, data.MAX_FRAMES_IN_FLIGHT);
+    /*createUniformBuffers(data.device,*/
+    /*                     data.physicalDevice,*/
+    /*                     data.queueFamilyIndices,*/
+    /*                     data.transformResources.uniformBuffers,*/
+    /*                     data.MAX_FRAMES_IN_FLIGHT,*/
+    /*                     gameData.models.size());*/
+    createUniformBuffers(engineData, models.size());
+
+    /*createDescriptorPool(data.device, data.descriptorResources.pool, data.MAX_FRAMES_IN_FLIGHT);*/
+    createDescriptorPool(engineData);
+
     createDescriptorSets(data.device,
                          data.transformResources.uniformBuffers,
                          data.descriptorResources.pool,
                          data.descriptorResources.sets,
                          data.transformResources.descriptorSetLayout,
                          data.MAX_FRAMES_IN_FLIGHT);
+    createDescriptorSets(engineData);
 
     double yvelocity    = 0;
     bool   keyuppressed = false;
@@ -91,32 +93,32 @@ int main() {
 
         for (auto key : keys) {
             if (key == GLFW_KEY_RIGHT) {
-                gameData.models[0].position.x += .02;
+                models[0].position.x += .02;
             } else if (key == GLFW_KEY_LEFT) {
-                gameData.models[0].position.x -= .02;
+                models[0].position.x -= .02;
             } else if (key == GLFW_KEY_UP) {
                 keyuppressed = true;
             } else if (key == GLFW_KEY_W) {
-                gameData.models[0].position.z += .02;
+                models[0].position.z += .02;
             } else if (key == GLFW_KEY_S) {
-                gameData.models[0].position.z -= .02;
+                models[0].position.z -= .02;
             }
         }
 
-        if (keyuppressed && (gameData.models[0].position.y < .0001f)) {
+        if (keyuppressed && (models[0].position.y < .0001f)) {
             yvelocity += .05;
             keyuppressed = false;
         }
-        if (gameData.models[0].position.y > 0) {
+        if (models[0].position.y > 0) {
             yvelocity -= .002; // gravity
         }
-        gameData.models[0].position.y += yvelocity;
+        models[0].position.y += yvelocity;
 
-        debugdata("model position: " << gameData.models[0].position.y);
+        debugdata("model position: " << models[0].position.y);
         debugdata("yvelocity: " << yvelocity);
 
-        if (gameData.models[0].position.y < 0) {
-            gameData.models[0].position.y = 0;
+        if (models[0].position.y < 0) {
+            models[0].position.y = 0;
         }
 
         debugdata("model position: " << gameData.models[0].position.y);

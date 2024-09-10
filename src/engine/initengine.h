@@ -3,4 +3,4 @@
 
 #include "enginedata.h"
 
-void initEngine(Data& enginedata);
+void initEngine(EngineData& enginedata);

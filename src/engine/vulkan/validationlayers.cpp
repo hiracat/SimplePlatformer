@@ -1,5 +1,6 @@
 #include <vulkan/vulkan.h>
 
+#include "../engine.h"
 #include <cstring>
 #include <stdexcept>
 #include <vector>
@@ -44,14 +45,14 @@ void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& create
                   .pUserData = nullptr};
 }
 
-void setupDebugMessanger(VkInstance instance, VkDebugUtilsMessengerEXT* debugMessenger) {
+void setupDebugMessanger(const VulkanData& vulkanData, VkDebugUtilsMessengerEXT* debugMessenger) {
 
     VkDebugUtilsMessengerCreateInfoEXT createInfo;
     PopulateDebugMessengerCreateInfo(createInfo);
 
     VkResult result;
 
-    result = CreateDebugUtilsMessengerEXT(instance, &createInfo, nullptr, debugMessenger);
+    result = CreateDebugUtilsMessengerEXT(vulkanData.instance, &createInfo, nullptr, debugMessenger);
     if (result != VK_SUCCESS) {
         debugerror("failed to create debug messenger");
     }

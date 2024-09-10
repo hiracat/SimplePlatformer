@@ -1,13 +1,15 @@
 #include <vulkan/vulkan.h>
 
 #include <vector>
+#include <vulkan/vulkan_core.h>
 
 #include "../../compilesettings.h"
 #include "../../utils/debugprint.h"
+#include "../engine.h"
 #include "extensions.h"
 #include "validationlayers.h"
 
-void createVkInstance(VkInstance& instance, const std::vector<const char*>& validationLayers) {
+void createInstance(const VulkanData& vulkanData, VkInstance* instance) {
 
     VkApplicationInfo appInfo{.sType              = VK_STRUCTURE_TYPE_APPLICATION_INFO,
                               .pNext              = nullptr,
@@ -41,15 +43,15 @@ void createVkInstance(VkInstance& instance, const std::vector<const char*>& vali
 #endif
 
 #ifdef ENABLE_VALIDATION_LAYERS
-    if (!checkValidationLayerSupported(validationLayers)) {
+    if (!checkValidationLayerSupported(vulkanData.validationLayers)) {
         debugerror("validation layers not supported");
     };
 
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
     PopulateDebugMessengerCreateInfo(debugCreateInfo);
 
-    createInfo.enabledLayerCount   = static_cast<uint32_t>(validationLayers.size());
-    createInfo.ppEnabledLayerNames = validationLayers.data();
+    createInfo.enabledLayerCount   = static_cast<uint32_t>(vulkanData.validationLayers.size());
+    createInfo.ppEnabledLayerNames = vulkanData.validationLayers.data();
     createInfo.pNext               = &debugCreateInfo;
 #endif
 
@@ -61,7 +63,7 @@ void createVkInstance(VkInstance& instance, const std::vector<const char*>& vali
 
     VkResult result;
 
-    if ((result = vkCreateInstance(&createInfo, nullptr, &instance)) != VK_SUCCESS) {
+    if ((result = vkCreateInstance(&createInfo, nullptr, instance)) != VK_SUCCESS) {
         debugerror("failed to create instance!");
     }
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include "vertex.h"
 #include <GLFW/glfw3.h>
 #include <glm/matrix.hpp>
 #include <optional>
@@ -29,14 +30,6 @@ struct SwapChainSupportDetails {
     std::vector<VkPresentModeKHR>   presentModes;
 };
 
-struct WindowResources {
-    GLFWwindow*    pointer{};
-    VkSurfaceKHR   surface{};
-    const uint32_t WIDTH  = 800;
-    const uint32_t HEIGHT = 600;
-    const char*    name   = "hello ur mother";
-};
-
 struct SyncResources {
     std::vector<VkSemaphore> imageAvailable, renderFinished;
     std::vector<VkFence>     inFlight;
@@ -46,12 +39,6 @@ struct Queues {
     VkQueue graphics{};
     VkQueue present{};
     VkQueue transfer{};
-};
-
-struct InstanceResources {
-    const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
-    VkDebugUtilsMessengerEXT       debugMessenger{};
-    const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 };
 
 struct CommandResources {
@@ -88,6 +75,14 @@ struct alignas(4) MVPMatricies {
     glm::mat4 projection;
 };
 
+struct Model {
+    std::vector<Vertex>   vertices{};
+    std::vector<uint32_t> indices{};
+    glm::vec3             position{};
+
+    Buffer vertexBuffer{};
+    Buffer indexBuffer{};
+};
 struct TransformResources {
     MVPMatricies               matricies{};
     VkDescriptorSetLayout      descriptorSetLayout{};
@@ -99,14 +94,33 @@ struct DescriptorResources {
     std::vector<VkDescriptorSet> sets;
 };
 
-struct Data {
-    VkInstance        instance{};
-    InstanceResources instanceResources;
-    VkDevice          device{};
-    VkPhysicalDevice  physicalDevice{};
+struct WindowData {
+    GLFWwindow*    window{};
+    VkSurfaceKHR   surface{};
+    bool           framebufferResized = false;
+    const uint32_t WIDTH              = 800;
+    const uint32_t HEIGHT             = 600;
+    const char*    name               = "hello ur mother";
+};
 
-    WindowResources windowResources{};
+struct VulkanData {
+    VulkanData(VkSurfaceKHR& surface) : surface(surface) {};
 
+    VkInstance                     instance{};
+    VkDebugUtilsMessengerEXT       debugMessenger{};
+    const std::vector<const char*> validationLayers = {"VK_LAYER_KHRONOS_validation"};
+    const std::vector<const char*> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
+
+    VkDevice           device{};
+    VkPhysicalDevice   physicalDevice{};
+    Queues             queues;
+    QueueFamilyIndices queueFamilyIndices;
+
+    const VkSurfaceKHR& surface;
+};
+
+struct RendererData {
+    RendererData(VkDevice& device) : device(device) {};
     Swapchain          swapchain{};
     SwapchainResources swapchainResources;
     SyncResources      syncResources{};
@@ -114,13 +128,18 @@ struct Data {
     CommandResources    commandResources;
     PipelineResources   pipelineResources;
     DescriptorResources descriptorResources;
+    TransformResources  transformResources;
 
-    Queues             queues;
-    QueueFamilyIndices queueFamilyIndices;
+    const VkDevice& device;
+    /*const Queues&   queues;*/
+    /*const uint32_t& MAX_FRAMES_IN_FLIGHT;*/
+};
 
-    TransformResources transformResources;
-
+struct EngineData {
     uint32_t  currentFrame         = 0;
-    bool      framebufferResized   = false;
     const int MAX_FRAMES_IN_FLIGHT = 2;
+
+    WindowData   windowData{};
+    VulkanData   vulkanData{windowData.surface};
+    RendererData renderData{vulkanData.device};
 };

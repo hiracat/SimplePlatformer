@@ -6,28 +6,28 @@
 #include <vulkan/vulkan_core.h>
 
 #include "../utils/debugprint.h"
-#include "enginedata.h"
+#include "engine.h"
 void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
     auto frameBufferResized = reinterpret_cast<bool*>(glfwGetWindowUserPointer(window));
     *frameBufferResized     = true;
 }
 
-void initializeWindow(VkInstance instance, WindowResources& windowData, bool* frameBufferResized) {
+void initWindow(const VulkanData& vulkanData, WindowData* windowData) {
     int reply = glfwInit();
     debugnote("reply: " << reply);
     // disables the automatic opengl context creation
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    windowData.pointer = glfwCreateWindow(windowData.WIDTH, windowData.HEIGHT, windowData.name, nullptr, nullptr);
-    if (windowData.pointer == nullptr) {
+    windowData->window = glfwCreateWindow(windowData->WIDTH, windowData->HEIGHT, windowData->name, nullptr, nullptr);
+    if (windowData->window == nullptr) {
         debugerror("window pointer is nullptr");
     }
 
-    glfwSetWindowUserPointer(windowData.pointer, frameBufferResized);
-    glfwSetFramebufferSizeCallback(windowData.pointer, framebufferResizeCallback);
+    glfwSetWindowUserPointer(windowData->window, &windowData->framebufferResized);
+    glfwSetFramebufferSizeCallback(windowData->window, framebufferResizeCallback);
 
     int reply2;
-    if ((reply2 = glfwCreateWindowSurface(instance, windowData.pointer, nullptr, &windowData.surface)) != VK_SUCCESS) {
+    if ((reply2 = glfwCreateWindowSurface(vulkanData.instance, windowData->window, nullptr, &windowData->surface)) != VK_SUCCESS) {
         debugerror("failed to create window surface: " << reply2);
     }
 }

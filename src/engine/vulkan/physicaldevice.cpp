@@ -2,6 +2,7 @@
 
 #include <GLFW/glfw3.h>
 
+#include "../engine.h"
 #include <algorithm>
 #include <cstdint>
 #include <limits>
@@ -22,20 +23,18 @@ bool QueueFamilyIndices::isSame() const {
     return (graphics.value() == present.value()) && (transfer.value() == graphics.value());
 }
 
-// requires vksurface to determine if a queue family supports presentation to a given surface
-QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice physicalDevice, const VkSurfaceKHR& surface) {
-    QueueFamilyIndices indices;
-    uint32_t           queueFamilyCount{};
+void findQueueFamilies(const VulkanData& vulkanData, QueueFamilyIndices* indices) {
+    uint32_t queueFamilyCount{};
 
     // NOTE: getting queuefamily properties
-    vkGetPhysicalDeviceQueueFamilyProperties2(physicalDevice, &queueFamilyCount, nullptr);
+    vkGetPhysicalDeviceQueueFamilyProperties2(vulkanData.physicalDevice, &queueFamilyCount, nullptr);
     std::vector<VkQueueFamilyProperties2> queueFamilies(queueFamilyCount);
     for (auto& queueFamily : queueFamilies) {
         queueFamily.sType                 = VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2;
         queueFamily.pNext                 = nullptr;
         queueFamily.queueFamilyProperties = {0};
     }
-    vkGetPhysicalDeviceQueueFamilyProperties2(physicalDevice, &queueFamilyCount, queueFamilies.data());
+    vkGetPhysicalDeviceQueueFamilyProperties2(vulkanData.physicalDevice, &queueFamilyCount, queueFamilies.data());
 
     // NOTE: finding the best combination of queues
     int currentQueueIndex = 0;
@@ -46,33 +45,32 @@ QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice physicalDevice, cons
             !(queueFamily.queueFamilyProperties.queueFlags & VK_QUEUE_GRAPHICS_BIT) &&
             !(queueFamily.queueFamilyProperties.queueFlags & VK_QUEUE_COMPUTE_BIT)) {
 
-            indices.transfer = currentQueueIndex;
+            indices->transfer = currentQueueIndex;
         }
 
         // Check for a dedicated graphics queue
         if ((queueFamily.queueFamilyProperties.queueFlags & VK_QUEUE_GRAPHICS_BIT)) {
-            indices.graphics = currentQueueIndex;
+            indices->graphics = currentQueueIndex;
         }
 
         VkBool32 presentSupport = false;
-        vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, currentQueueIndex, surface, &presentSupport);
-        if (presentSupport && !indices.present.has_value()) {
-            indices.present = currentQueueIndex;
+        vkGetPhysicalDeviceSurfaceSupportKHR(vulkanData.physicalDevice, currentQueueIndex, vulkanData.surface, &presentSupport);
+        if (presentSupport && !indices->present.has_value()) {
+            indices->present = currentQueueIndex;
         }
         currentQueueIndex++;
     }
 
-    if (!indices.transfer.has_value()) {
-        indices.transfer = indices.graphics.value();
+    if (!indices->transfer.has_value()) {
+        indices->transfer = indices->graphics.value();
     }
 
-    if (!indices.isComplete()) {
+    if (!indices->isComplete()) {
         debugerror("no queue with present support");
     }
-    debugnote("graphics queue: " << indices.graphics.value());
-    debugnote("transfer queue: " << indices.transfer.value());
-    debugnote("present queue: " << indices.present.value());
-    return indices;
+    debugnote("graphics queue: " << indices->graphics.value());
+    debugnote("transfer queue: " << indices->transfer.value());
+    debugnote("present queue: " << indices->present.value());
 }
 
 bool checkDeviceExtensionSupport(VkPhysicalDevice device, std::vector<const char*> deviceExtensions) {
@@ -115,26 +113,23 @@ scorePhysicalDevice(const VkPhysicalDevice& device, const VkSurfaceKHR& surface,
     return score;
 }
 
-void pickPhysicalDevice(const VkInstance                instance,
-                        const std::vector<const char*>& deviceExtensions,
-                        VkPhysicalDevice&               physicalDevice,
-                        const VkSurfaceKHR              surface) {
+void pickPhysicalDevice(const VulkanData& vulkanData, VkPhysicalDevice* physicalDevice) {
     uint32_t physicalDeviceCount{};
 
-    vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, nullptr);
+    vkEnumeratePhysicalDevices(vulkanData.instance, &physicalDeviceCount, nullptr);
     if (physicalDeviceCount < 1) {
         debugerror("no devices with vulkan support available");
     }
 
     std::vector<VkPhysicalDevice> devices(physicalDeviceCount);
-    vkEnumeratePhysicalDevices(instance, &physicalDeviceCount, devices.data());
+    vkEnumeratePhysicalDevices(vulkanData.instance, &physicalDeviceCount, devices.data());
 
     std::multimap<uint32_t, VkPhysicalDevice> deviceScores;
     for (const auto& device : devices) {
-        deviceScores.insert(std::make_pair(scorePhysicalDevice(device, surface, deviceExtensions), device));
+        deviceScores.insert(std::make_pair(scorePhysicalDevice(device, vulkanData.surface, vulkanData.deviceExtensions), device));
     }
     if (deviceScores.rbegin()->first > 0) {
-        physicalDevice = deviceScores.rbegin()->second;
+        *physicalDevice = deviceScores.rbegin()->second;
     } else {
         debugerror("no good enough gpus available");
     }
@@ -158,12 +153,12 @@ VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& pres
     return VK_PRESENT_MODE_FIFO_KHR; // this is the only present mode that is guaranteed
 }
 
-VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capiblilies, const WindowResources& window) {
+VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capiblilies, const WindowData& window) {
     if (capiblilies.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
         return capiblilies.currentExtent;
     } else { // special case, where widow size does not have to match swapchain resolution in certian window managers
         int width, height;
-        glfwGetFramebufferSize(window.pointer, &width, &height);
+        glfwGetFramebufferSize(window.window, &width, &height);
 
         VkExtent2D actualExtent = {
             static_cast<uint32_t>(width),

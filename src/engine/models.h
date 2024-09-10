@@ -1,6 +1,5 @@
 #pragma once
-#include "../game/gamedata.h"
-#include "enginedata.h"
+#include "engine.h"
 #include "vulkan/buffers.h"
 #include <vulkan/vulkan_core.h>
 

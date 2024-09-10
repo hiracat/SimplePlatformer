@@ -1,6 +1,7 @@
 #pragma once
 #include <vulkan/vulkan.h>
 
-#include <vector>
+#include "../engine.h"
+#include <vulkan/vulkan_core.h>
 
-void createVkInstance(VkInstance& instance, const std::vector<const char*>& validationLayers);
+void createInstance(const VulkanData& vulkanData, VkInstance* instance);

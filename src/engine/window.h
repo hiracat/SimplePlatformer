@@ -1,7 +1,7 @@
 #pragma once
 #include <vulkan/vulkan.h>
 
-#include "enginedata.h"
+#include "engine.h"
 #include <GLFW/glfw3.h>
 
-void initializeWindow(VkInstance instance, WindowResources& windowData, bool* frameBufferResized);
+void initWindow(const VulkanData& vulkanData, WindowData* windowData);
