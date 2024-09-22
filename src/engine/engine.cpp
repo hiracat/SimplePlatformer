@@ -10,58 +10,65 @@
 #include "../engine/vulkan/validationlayers.h"
 #include "../engine/window.h"
 #include "../utils/debugprint.h"
-#include "enginedata.h"
+#include "engine.h"
 #include "vulkan/buffers.h"
 #include "vulkan/swapchain.h"
 #include "vulkan/syncronization.h"
-#include "vulkan/vulkan.h"
 #include "window.h"
 #include <GLFW/glfw3.h>
+#include <vulkan/vulkan_core.h>
 
-void initEngine(EngineData& engine) {
+void initEngine(EngineData* engine) {
     glfwInit(); // needs to be called here because we use a function in vkcreateinstance to get the extensions needed for glfw to work
 
-    createInstance(engine.vulkanData, &engine.vulkanData.instance);
-    initWindow(engine.vulkanData, &engine.windowData);
+    createInstance(engine->vulkanData, &engine->vulkanData.instance);
+    initWindow(engine->vulkanData, &engine->windowData);
     debugnote("created vk instance");
 #ifdef ENABLE_VALIDATION_LAYERS
-    setupDebugMessanger(engine.vulkanData, &engine.vulkanData.debugMessenger);
+    setupDebugMessanger(engine->vulkanData, &engine->vulkanData.debugMessenger);
     debugnote("setup debug messenger");
 #endif
-    pickPhysicalDevice(engine.vulkanData, &engine.vulkanData.physicalDevice);
-    findQueueFamilies(engine.vulkanData, &engine.vulkanData.queueFamilyIndices);
+    pickPhysicalDevice(engine->vulkanData, &engine->vulkanData.physicalDevice);
+    // cache queue families so we dont have to find them again for every use
+    findQueueFamilies(engine->vulkanData, VK_NULL_HANDLE, &engine->vulkanData.queueFamilyIndices);
     debugnote("picked physical device");
 
-    createDevice(engine.vulkanData, &engine.vulkanData.device, &engine.vulkanData.queues);
+    createDevice(engine->vulkanData, &engine->vulkanData.device, &engine->vulkanData.queues);
     debugnote("created device");
 
-    createSwapChain(engine.device,
-                    engine.physicalDevice,
-                    engine.windowResources,
-                    engine.swapchain,
-                    engine.swapchainResources,
-                    engine.queueFamilyIndices);
+    createSwapChain(engine->vulkanData.device,
+                    engine->vulkanData.physicalDevice,
+                    engine->windowData,
+                    engine->renderData.swapchain,
+                    engine->renderData.swapchainResources,
+                    engine->vulkanData.queueFamilyIndices);
 
-    createRenderPass(engine.swapchain.format, engine.pipelineResources.renderPass, engine.device);
-    CreateDescriptorSetLayout(engine.device, engine.transformResources.descriptorSetLayout);
-    createGraphicsPipeline(engine.device, engine.swapchain, engine.pipelineResources, engine.transformResources.descriptorSetLayout);
+    createRenderPass(engine->renderData.swapchain.format, engine->renderData.pipelineResources.renderPass, engine->vulkanData.device);
+    CreateDescriptorSetLayout(engine->vulkanData.device, engine->renderData.transformResources.descriptorSetLayout);
+    createGraphicsPipeline(engine->renderData.device,
+                           engine->renderData.swapchain,
+                           engine->renderData.pipelineResources,
+                           engine->renderData.transformResources.descriptorSetLayout);
     debugnote("created graphics pipeline");
 
-    createCommandPool(engine.physicalDevice,
-                      engine.queueFamilyIndices.graphics.value(),
-                      engine.device,
-                      engine.windowResources.surface,
-                      engine.commandResources.pool);
-    if (engine.queueFamilyIndices.graphics.value() != engine.queueFamilyIndices.present.value()) {
-        createCommandPool(engine.physicalDevice,
-                          engine.queueFamilyIndices.present.value(),
-                          engine.device,
-                          engine.windowResources.surface,
-                          engine.commandResources.pool);
+    createCommandPool(engine->vulkanData.physicalDevice,
+                      engine->vulkanData.queueFamilyIndices.graphics.value(),
+                      engine->vulkanData.device,
+                      engine->windowData.surface,
+                      engine->renderData.commandResources.pool);
+    if (engine->vulkanData.queueFamilyIndices.graphics.value() != engine->vulkanData.queueFamilyIndices.present.value()) {
+        createCommandPool(engine->vulkanData.physicalDevice,
+                          engine->vulkanData.queueFamilyIndices.present.value(),
+                          engine->vulkanData.device,
+                          engine->windowData.surface,
+                          engine->renderData.commandResources.pool);
     }
-    createImageViews(engine.swapchainResources, engine.swapchain.format, engine.device);
-    createFramebuffers(engine.swapchainResources, engine.pipelineResources.renderPass, engine.swapchain.extent, engine.device);
+    createImageViews(engine->renderData.swapchainResources, engine->renderData.swapchain.format, engine->vulkanData.device);
+    createFramebuffers(engine->renderData.swapchainResources,
+                       engine->renderData.pipelineResources.renderPass,
+                       engine->renderData.swapchain.extent,
+                       engine->vulkanData.device);
 
-    createCommandBuffers(engine.device, engine.commandResources, engine.MAX_FRAMES_IN_FLIGHT);
-    createSyncObjects(engine.syncResources, engine.device, engine.MAX_FRAMES_IN_FLIGHT);
+    createCommandBuffers(engine->vulkanData.device, engine->renderData.commandResources, engine->MAX_FRAMES_IN_FLIGHT);
+    createSyncObjects(engine->renderData.syncResources, engine->vulkanData.device, engine->MAX_FRAMES_IN_FLIGHT);
 }

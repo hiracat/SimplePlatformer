@@ -1,5 +1,5 @@
 #pragma once
-#include "../enginedata.h"
+#include "../engine.h"
 #include <vector>
 #include <vulkan/vulkan.h>
 
@@ -11,13 +11,13 @@ void createFramebuffers(SwapchainResources& resources,
 
 void createSwapChain(const VkDevice            device,
                      const VkPhysicalDevice    physicalDevice,
-                     const WindowResources&    window,
+                     const WindowData&         window,
                      Swapchain&                swapchain,
                      SwapchainResources&       swapchainResources,
                      const QueueFamilyIndices& indices);
 
 void recreateSwapChain(const VkPhysicalDevice    physicalDevice,
-                       const WindowResources&    window,
+                       const WindowData&         window,
                        Swapchain&                swapchain,
                        const VkDevice            device,
                        const VkRenderPass        renderpass,

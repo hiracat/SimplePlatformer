@@ -1,6 +1,5 @@
 #pragma once
-#include "../../game/gamedata.h"
-#include "../enginedata.h"
+#include "../engine.h"
 #include <chrono>
 
-void drawFrame(Data& data, GameData& gamedata, std::chrono::high_resolution_clock::time_point startTime);
+void drawFrame(EngineData& data, const std::vector<Model>& models, std::chrono::high_resolution_clock::time_point startTime);

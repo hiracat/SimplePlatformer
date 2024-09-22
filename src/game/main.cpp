@@ -8,9 +8,12 @@
 
 #include <chrono>
 
+#include "../engine/cleanupengine.h"
 #include "../engine/engine.h"
+#include "../engine/initengine.h"
 #include "../engine/models.h"
 #include "../engine/vulkan/buffers.h"
+#include "../engine/vulkan/rendering.h"
 #include "../engine/vulkan/ubo.h"
 #include "../utils/debugprint.h"
 
@@ -53,43 +56,25 @@ int main() {
     models.push_back(floor);
 
     debugnote("created index and vertex buffers");
-    initEngine(engineData);
+    initEngine(&engineData);
     for (size_t i = 0; i < models.size(); i++) {
-        /*createModel(data.device,*/
-        /*            data.physicalDevice,*/
-        /*            data.queues.transfer,*/
-        /*            data.commandResources.pool,*/
-        /*            data.queueFamilyIndices,*/
-        /*            gameData.models[i]);*/
-        createModel(engineData, models[i]);
+        createModel(engineData, &models[i]);
     }
-    /*createUniformBuffers(data.device,*/
-    /*                     data.physicalDevice,*/
-    /*                     data.queueFamilyIndices,*/
-    /*                     data.transformResources.uniformBuffers,*/
-    /*                     data.MAX_FRAMES_IN_FLIGHT,*/
-    /*                     gameData.models.size());*/
-    createUniformBuffers(engineData, models.size());
+    createUniformBuffers(
+        engineData.vulkanData, engineData.MAX_FRAMES_IN_FLIGHT, models.size(), &engineData.renderData.transformResources.uniformBuffers);
 
-    /*createDescriptorPool(data.device, data.descriptorResources.pool, data.MAX_FRAMES_IN_FLIGHT);*/
-    createDescriptorPool(engineData);
+    createDescriptorPool(engineData.vulkanData.device, engineData.MAX_FRAMES_IN_FLIGHT, &engineData.renderData.descriptorResources.pool);
 
-    createDescriptorSets(data.device,
-                         data.transformResources.uniformBuffers,
-                         data.descriptorResources.pool,
-                         data.descriptorResources.sets,
-                         data.transformResources.descriptorSetLayout,
-                         data.MAX_FRAMES_IN_FLIGHT);
-    createDescriptorSets(engineData);
+    createDescriptorSets(engineData.renderData, engineData.MAX_FRAMES_IN_FLIGHT, engineData.renderData.descriptorResources.sets);
 
     double yvelocity    = 0;
     bool   keyuppressed = false;
     int    key;
 
-    while (!glfwWindowShouldClose(data.windowResources.pointer)) {
+    while (!glfwWindowShouldClose(engineData.windowData.window)) {
         glfwPollEvents();
         frameStartTime        = std::chrono::high_resolution_clock::now();
-        std::vector<int> keys = getPressedKey(data.windowResources.pointer);
+        std::vector<int> keys = getPressedKey(engineData.windowData.window);
 
         for (auto key : keys) {
             if (key == GLFW_KEY_RIGHT) {
@@ -121,16 +106,16 @@ int main() {
             models[0].position.y = 0;
         }
 
-        debugdata("model position: " << gameData.models[0].position.y);
+        debugdata("model position: " << models[0].position.y);
         debugdata("yvelocity: " << yvelocity);
         debugdata("============================" << yvelocity);
-        drawFrame(data, gameData, startTime);
+        drawFrame(engineData, models, startTime);
 
         endTime    = std::chrono::high_resolution_clock::now();
         renderTime = endTime - frameStartTime;
         std::this_thread::sleep_for(targetTime - renderTime);
     }
-    cleanup(data, gameData);
+    cleanup(engineData, models);
 
     debugnote("renderTime: " << std::chrono::duration_cast<std::chrono::microseconds>(renderTime).count());
 

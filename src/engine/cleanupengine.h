@@ -1,5 +1,5 @@
 #pragma once
-#include "../game/gamedata.h"
-#include "enginedata.h"
+#include "engine.h"
+#include <vector>
 
-void cleanup(Data& enginedata, GameData& gamedata);
+void cleanup(EngineData& enginedata, std::vector<Model>& models);

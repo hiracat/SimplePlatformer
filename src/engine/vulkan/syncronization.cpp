@@ -5,7 +5,7 @@
 #include <vulkan/vulkan_core.h>
 
 #include "../../utils/debugprint.h"
-#include "../enginedata.h"
+#include "../engine.h"
 #include "syncronization.h"
 
 void createSyncObjects(SyncResources& resources, const VkDevice& device, const uint32_t maxFramesInFlight) {

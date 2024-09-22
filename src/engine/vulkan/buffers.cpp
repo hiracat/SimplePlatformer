@@ -87,19 +87,17 @@ void copyBuffer(VkBuffer&           srcBuffer,
     vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
 }
 
-void createUniformBuffers(VkDevice                    device,
-                          VkPhysicalDevice            physicalDevice,
-                          QueueFamilyIndices          indices,
-                          std::vector<UniformBuffer>& buffers,
-                          uint32_t                    MAX_FRAMES_IN_FLIGHT,
-                          uint32_t                    numModels) {
+void createUniformBuffers(const VulkanData&           data,
+                          const uint32_t              MAX_FRAMES_IN_FLIGHT,
+                          const uint32_t              numModels,
+                          std::vector<UniformBuffer>* buffers) {
     VkDeviceSize bufferSize = sizeof(MVPMatricies) * 2;
 
-    buffers.resize(MAX_FRAMES_IN_FLIGHT);
+    buffers->resize(MAX_FRAMES_IN_FLIGHT);
 
     VkSharingMode sharingMode;
     { // set sharing mode
-        if (indices.isSame()) {
+        if (data.queueFamilyIndices.isSame()) {
             sharingMode = VK_SHARING_MODE_EXCLUSIVE;
         } else {
             sharingMode = VK_SHARING_MODE_EXCLUSIVE;
@@ -107,16 +105,16 @@ void createUniformBuffers(VkDevice                    device,
     }
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        createBuffer(device,
-                     physicalDevice,
+        createBuffer(data.device,
+                     data.physicalDevice,
                      bufferSize,
                      VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                      sharingMode,
-                     buffers[i].buffer.buffer,
+                     (*buffers)[i].buffer.buffer,
                      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                     buffers[i].buffer.memory);
+                     (*buffers)[i].buffer.memory);
 
-        vkMapMemory(device, buffers[i].buffer.memory, 0, bufferSize, 0, &buffers[i].mappedMemory);
+        vkMapMemory(data.device, (*buffers)[i].buffer.memory, 0, bufferSize, 0, &(*buffers)[i].mappedMemory);
         // directly map memory since its not worth it to have a staging buffer and maybe even be slower because its changed every frame
     }
 }

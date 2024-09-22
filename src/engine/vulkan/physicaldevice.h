@@ -4,8 +4,9 @@
 #include "../engine.h"
 #include <vector>
 
-void                    findQueueFamilies(const VulkanData& vulkanData, QueueFamilyIndices* indices);
-VkExtent2D              chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capiblilies, const WindowData& window);
+// set physicaldeviceoverride to chose a custom physical device, otherwise it is just the one in vulkandata
+void       findQueueFamilies(const VulkanData& vulkanData, const VkPhysicalDevice physicalDeviceOverride, QueueFamilyIndices* indices);
+VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capiblilies, const WindowData& window);
 SwapChainSupportDetails querySwapChainSupport(const VkPhysicalDevice& physicalDevice, const VkSurfaceKHR& surface);
 VkSurfaceFormatKHR      chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 VkPresentModeKHR        chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& presentModes);

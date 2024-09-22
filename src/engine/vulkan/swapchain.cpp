@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "../../utils/debugprint.h"
-#include "../enginedata.h"
+#include "../engine.h"
 #include "physicaldevice.h"
 #include "swapchain.h"
 
@@ -46,7 +46,7 @@ void cleanupSwapChain(VkSwapchainKHR&             swapchain,
 }
 
 void recreateSwapChain(const VkPhysicalDevice    physicalDevice,
-                       const WindowResources&    window,
+                       const WindowData&         window,
                        Swapchain&                swapchain,
                        const VkDevice            device,
                        const VkRenderPass        renderpass,
@@ -54,9 +54,9 @@ void recreateSwapChain(const VkPhysicalDevice    physicalDevice,
                        const QueueFamilyIndices& indices) {
 
     int width = 0, height = 0;
-    glfwGetFramebufferSize(window.pointer, &width, &height);
+    glfwGetFramebufferSize(window.window, &width, &height);
     while (width == 0 || height == 0) {
-        glfwGetFramebufferSize(window.pointer, &width, &height);
+        glfwGetFramebufferSize(window.window, &width, &height);
         glfwWaitEvents();
     }
 
@@ -94,7 +94,7 @@ void createFramebuffers(SwapchainResources& resources,
 
 void createSwapChain(const VkDevice            device,
                      const VkPhysicalDevice    physicalDevice,
-                     const WindowResources&    window,
+                     const WindowData&         window,
                      Swapchain&                swapchain,
                      SwapchainResources&       swapchainResources,
                      const QueueFamilyIndices& indices) {

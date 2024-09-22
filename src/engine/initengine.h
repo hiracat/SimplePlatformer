@@ -1,6 +1,6 @@
 #pragma once
 #include <vulkan/vulkan.h>
 
-#include "enginedata.h"
+#include "engine.h"
 
-void initEngine(EngineData& enginedata);
+void initEngine(EngineData* enginedata);

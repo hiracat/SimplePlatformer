@@ -1,7 +1,7 @@
 #pragma once
 #include <vulkan/vulkan.h>
 
-#include "../enginedata.h"
+#include "../engine.h"
 
 void createGraphicsPipeline(const VkDevice&        device,
                             const Swapchain&       swapchain,

@@ -1,14 +1,21 @@
-#include "../game/gamedata.h"
-#include "enginedata.h"
+#include "engine.h"
 #include "vulkan/buffers.h"
 #include <vulkan/vulkan_core.h>
 
-void createModel(VkDevice                  device,
-                 VkPhysicalDevice          physicalDevice,
-                 VkQueue                   transferQueue,
-                 VkCommandPool             commandPool,
-                 const QueueFamilyIndices& queueFamilyIndices,
-                 Model&                    model) {
-    createVertexBuffer(model.vertices, device, physicalDevice, model.vertexBuffer, commandPool, transferQueue, queueFamilyIndices);
-    createIndexBuffer(model.indices, device, physicalDevice, model.indexBuffer, commandPool, transferQueue, queueFamilyIndices);
+void createModel(const EngineData& engineData, Model* model) {
+    createVertexBuffer(model->vertices,
+                       engineData.vulkanData.device,
+                       engineData.vulkanData.physicalDevice,
+                       model->vertexBuffer,
+                       engineData.renderData.commandResources.pool,
+                       engineData.vulkanData.queues.transfer,
+                       engineData.vulkanData.queueFamilyIndices);
+
+    createIndexBuffer(model->indices,
+                      engineData.vulkanData.device,
+                      engineData.vulkanData.physicalDevice,
+                      model->indexBuffer,
+                      engineData.renderData.commandResources.pool,
+                      engineData.vulkanData.queues.transfer,
+                      engineData.vulkanData.queueFamilyIndices);
 }

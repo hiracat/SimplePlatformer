@@ -1,5 +1,5 @@
 #pragma once
-#include "../enginedata.h"
+#include "../engine.h"
 #include <vulkan/vulkan.h>
 
 void createSyncObjects(SyncResources& syncObjects, const VkDevice& device, const uint32_t maxFramesInFlight);

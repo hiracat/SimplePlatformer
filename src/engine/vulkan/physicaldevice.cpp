@@ -23,18 +23,25 @@ bool QueueFamilyIndices::isSame() const {
     return (graphics.value() == present.value()) && (transfer.value() == graphics.value());
 }
 
-void findQueueFamilies(const VulkanData& vulkanData, QueueFamilyIndices* indices) {
+void findQueueFamilies(const VulkanData& vulkanData, const VkPhysicalDevice physicalDeviceOverride, QueueFamilyIndices* indices) {
+    VkPhysicalDevice physicalDevice;
+
+    if (physicalDeviceOverride != VK_NULL_HANDLE) {
+        physicalDevice = physicalDeviceOverride;
+    } else {
+        physicalDevice = vulkanData.physicalDevice;
+    }
     uint32_t queueFamilyCount{};
 
     // NOTE: getting queuefamily properties
-    vkGetPhysicalDeviceQueueFamilyProperties2(vulkanData.physicalDevice, &queueFamilyCount, nullptr);
+    vkGetPhysicalDeviceQueueFamilyProperties2(physicalDevice, &queueFamilyCount, nullptr);
     std::vector<VkQueueFamilyProperties2> queueFamilies(queueFamilyCount);
     for (auto& queueFamily : queueFamilies) {
         queueFamily.sType                 = VK_STRUCTURE_TYPE_QUEUE_FAMILY_PROPERTIES_2;
         queueFamily.pNext                 = nullptr;
         queueFamily.queueFamilyProperties = {0};
     }
-    vkGetPhysicalDeviceQueueFamilyProperties2(vulkanData.physicalDevice, &queueFamilyCount, queueFamilies.data());
+    vkGetPhysicalDeviceQueueFamilyProperties2(physicalDevice, &queueFamilyCount, queueFamilies.data());
 
     // NOTE: finding the best combination of queues
     int currentQueueIndex = 0;
@@ -54,7 +61,7 @@ void findQueueFamilies(const VulkanData& vulkanData, QueueFamilyIndices* indices
         }
 
         VkBool32 presentSupport = false;
-        vkGetPhysicalDeviceSurfaceSupportKHR(vulkanData.physicalDevice, currentQueueIndex, vulkanData.surface, &presentSupport);
+        vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, currentQueueIndex, vulkanData.surface, &presentSupport);
         if (presentSupport && !indices->present.has_value()) {
             indices->present = currentQueueIndex;
         }
@@ -87,15 +94,15 @@ bool checkDeviceExtensionSupport(VkPhysicalDevice device, std::vector<const char
     return requiredExtensions.empty();
 }
 
-uint32_t
-scorePhysicalDevice(const VkPhysicalDevice& device, const VkSurfaceKHR& surface, const std::vector<const char*>& deviceExtensions) {
+uint32_t scorePhysicalDevice(const VkPhysicalDevice&         device,
+                             QueueFamilyIndices              indices,
+                             const VkSurfaceKHR&             surface,
+                             const std::vector<const char*>& deviceExtensions) {
     uint32_t                    score = 1;
     VkPhysicalDeviceProperties2 deviceProperties{.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2, .pNext = nullptr};
     VkPhysicalDeviceFeatures2   deviceFeatures{.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2, .pNext = nullptr};
     vkGetPhysicalDeviceProperties2(device, &deviceProperties);
     vkGetPhysicalDeviceFeatures2(device, &deviceFeatures);
-
-    QueueFamilyIndices indices = findQueueFamilies(device, surface);
 
     // keep this in the front so that function calls that need an extension from here dont crash it
     if (!checkDeviceExtensionSupport(device, deviceExtensions)) {
@@ -125,8 +132,13 @@ void pickPhysicalDevice(const VulkanData& vulkanData, VkPhysicalDevice* physical
     vkEnumeratePhysicalDevices(vulkanData.instance, &physicalDeviceCount, devices.data());
 
     std::multimap<uint32_t, VkPhysicalDevice> deviceScores;
+
+    QueueFamilyIndices currentDeviceIndices;
+
     for (const auto& device : devices) {
-        deviceScores.insert(std::make_pair(scorePhysicalDevice(device, vulkanData.surface, vulkanData.deviceExtensions), device));
+        findQueueFamilies(vulkanData, device, &currentDeviceIndices);
+        deviceScores.insert(
+            std::make_pair(scorePhysicalDevice(device, currentDeviceIndices, vulkanData.surface, vulkanData.deviceExtensions), device));
     }
     if (deviceScores.rbegin()->first > 0) {
         *physicalDevice = deviceScores.rbegin()->second;

@@ -5,7 +5,7 @@
 
 #include "../../utils/debugprint.h"
 #include "../../utils/fileio.h"
-#include "../enginedata.h"
+#include "../engine.h"
 #include "../vertex.h"
 #include "shaders.h"
 

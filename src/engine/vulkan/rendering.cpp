@@ -1,102 +1,112 @@
 #include <chrono>
+#include <vector>
 #include <vulkan/vulkan.h>
 
 #include <cstdint>
 #include <vulkan/vulkan_core.h>
 
-#include "../../game/gamedata.h"
 #include "../../utils/debugprint.h"
-#include "../enginedata.h"
+#include "../engine.h"
 #include "buffers.h"
 #include "commandobjects.h"
 #include "swapchain.h"
 #include "syncronization.h"
 
-void drawFrame(Data& data, GameData& gamedata, std::chrono::high_resolution_clock::time_point startTime) {
+void drawFrame(EngineData& data, const std::vector<Model>& models, std::chrono::high_resolution_clock::time_point startTime) {
 
-    vkWaitForFences(data.device, 1, &data.syncResources.inFlight[data.currentFrame], VK_TRUE, UINT64_MAX);
+    vkWaitForFences(data.vulkanData.device, 1, &data.renderData.syncResources.inFlight[data.currentFrame], VK_TRUE, UINT64_MAX);
 
     uint32_t currentImageIndex;
-    VkResult result = vkAcquireNextImageKHR(data.device,
-                                            data.swapchain.swapchain,
+    VkResult result = vkAcquireNextImageKHR(data.vulkanData.device,
+                                            data.renderData.swapchain.swapchain,
                                             UINT64_MAX,
-                                            data.syncResources.imageAvailable[data.currentFrame],
+                                            data.renderData.syncResources.imageAvailable[data.currentFrame],
                                             VK_NULL_HANDLE,
                                             &currentImageIndex);
 
-    if (result == VK_ERROR_OUT_OF_DATE_KHR || data.framebufferResized) {
-        data.framebufferResized = false;
-        recreateSwapChain(data.physicalDevice,
-                          data.windowResources,
-                          data.swapchain,
-                          data.device,
-                          data.pipelineResources.renderPass,
-                          data.swapchainResources,
-                          data.queueFamilyIndices);
-        cleanupSyncObjects(data.syncResources, data.device, data.MAX_FRAMES_IN_FLIGHT);
-        createSyncObjects(data.syncResources, data.device, data.MAX_FRAMES_IN_FLIGHT);
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || data.windowData.framebufferResized) {
+        data.windowData.framebufferResized = false;
+        recreateSwapChain(data.vulkanData.physicalDevice,
+                          data.windowData,
+                          data.renderData.swapchain,
+                          data.vulkanData.device,
+                          data.renderData.pipelineResources.renderPass,
+                          data.renderData.swapchainResources,
+                          data.vulkanData.queueFamilyIndices);
+
+        cleanupSyncObjects(data.renderData.syncResources, data.vulkanData.device, data.MAX_FRAMES_IN_FLIGHT);
+        createSyncObjects(data.renderData.syncResources, data.vulkanData.device, data.MAX_FRAMES_IN_FLIGHT);
         return;
     }
     if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
         debugerror("unknown error while aquiring next image");
     }
 
-    VkResult fenceStatus = vkGetFenceStatus(data.device, data.syncResources.inFlight[data.currentFrame]);
+    VkResult fenceStatus = vkGetFenceStatus(data.vulkanData.device, data.renderData.syncResources.inFlight[data.currentFrame]);
     // only reset fences when we know we are submitting work
-    vkResetFences(data.device, 1, &data.syncResources.inFlight[data.currentFrame]);
+    vkResetFences(data.vulkanData.device, 1, &data.renderData.syncResources.inFlight[data.currentFrame]);
 
-    vkResetCommandBuffer(data.commandResources.buffers[data.currentFrame], 0);
+    vkResetCommandBuffer(data.renderData.commandResources.buffers[data.currentFrame], 0);
 
-    beginDrawing(data.commandResources.buffers[data.currentFrame],
-                 data.swapchain.extent,
-                 data.pipelineResources.renderPass,
-                 data.swapchainResources.framebuffers[currentImageIndex],
-                 data.pipelineResources.graphicsPipeline);
+    beginDrawing(data.renderData.commandResources.buffers[data.currentFrame],
+                 data.renderData.swapchain.extent,
+                 data.renderData.pipelineResources.renderPass,
+                 data.renderData.swapchainResources.framebuffers[currentImageIndex],
+                 data.renderData.pipelineResources.graphicsPipeline);
 
-    updateUniformBuffers(
-        data.currentFrame, startTime, data.swapchain.extent, data.transformResources.uniformBuffers, gamedata.models[0].position, 0);
-    updateUniformBuffers(
-        data.currentFrame, startTime, data.swapchain.extent, data.transformResources.uniformBuffers, gamedata.models[1].position, 1);
+    updateUniformBuffers(data.currentFrame,
+                         startTime,
+                         data.renderData.swapchain.extent,
+                         data.renderData.transformResources.uniformBuffers,
+                         models[0].position,
+                         0);
+    updateUniformBuffers(data.currentFrame,
+                         startTime,
+                         data.renderData.swapchain.extent,
+                         data.renderData.transformResources.uniformBuffers,
+                         models[1].position,
+                         1);
 
-    for (uint32_t i = 0; i < gamedata.models.size(); i++) {
+    for (uint32_t i = 0; i < models.size(); i++) {
         VkDeviceSize offsets[]     = {0};
         uint32_t     dynamicOffset = i * sizeof(MVPMatricies);
 
-        vkCmdBindDescriptorSets(data.commandResources.buffers[data.currentFrame],
+        vkCmdBindDescriptorSets(data.renderData.commandResources.buffers[data.currentFrame],
                                 VK_PIPELINE_BIND_POINT_GRAPHICS,
-                                data.pipelineResources.pipelineLayout,
+                                data.renderData.pipelineResources.pipelineLayout,
                                 0,
                                 1,
-                                &data.descriptorResources.sets[data.currentFrame],
+                                &data.renderData.descriptorResources.sets[data.currentFrame],
                                 1,
                                 &dynamicOffset);
 
-        vkCmdBindVertexBuffers(data.commandResources.buffers[data.currentFrame], 0, 1, &gamedata.models[i].vertexBuffer.buffer, offsets);
+        vkCmdBindVertexBuffers(data.renderData.commandResources.buffers[data.currentFrame], 0, 1, &models[i].vertexBuffer.buffer, offsets);
         vkCmdBindIndexBuffer(
-            data.commandResources.buffers[data.currentFrame], gamedata.models[i].indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
+            data.renderData.commandResources.buffers[data.currentFrame], models[i].indexBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
         vkCmdDrawIndexed(
-            data.commandResources.buffers[data.currentFrame], static_cast<uint32_t>(gamedata.models[i].indices.size()), 1, 0, 0, 0);
+            data.renderData.commandResources.buffers[data.currentFrame], static_cast<uint32_t>(models[i].indices.size()), 1, 0, 0, 0);
     }
 
-    endDrawing(data.commandResources.buffers[data.currentFrame]);
+    endDrawing(data.renderData.commandResources.buffers[data.currentFrame]);
 
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-    VkSemaphore          waitSemaphores[] = {data.syncResources.imageAvailable[data.currentFrame]};
+    VkSemaphore          waitSemaphores[] = {data.renderData.syncResources.imageAvailable[data.currentFrame]};
     VkPipelineStageFlags waitStages[]     = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
     submitInfo.waitSemaphoreCount         = 1;
     submitInfo.pWaitSemaphores            = waitSemaphores;
     submitInfo.pWaitDstStageMask          = waitStages;
 
     submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers    = &data.commandResources.buffers[data.currentFrame];
+    submitInfo.pCommandBuffers    = &data.renderData.commandResources.buffers[data.currentFrame];
 
-    VkSemaphore signalSemaphores[]  = {data.syncResources.renderFinished[data.currentFrame]};
+    VkSemaphore signalSemaphores[]  = {data.renderData.syncResources.renderFinished[data.currentFrame]};
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores    = signalSemaphores;
 
-    if (vkQueueSubmit(data.queues.graphics, 1, &submitInfo, data.syncResources.inFlight[data.currentFrame]) != VK_SUCCESS) {
+    if (vkQueueSubmit(data.vulkanData.queues.graphics, 1, &submitInfo, data.renderData.syncResources.inFlight[data.currentFrame]) !=
+        VK_SUCCESS) {
         debugerror("failed to submit draw command buffer");
     }
 
@@ -106,22 +116,22 @@ void drawFrame(Data& data, GameData& gamedata, std::chrono::high_resolution_cloc
     presentInfo.waitSemaphoreCount = 1;
     presentInfo.pWaitSemaphores    = signalSemaphores;
 
-    VkSwapchainKHR swapchains[] = {data.swapchain.swapchain};
+    VkSwapchainKHR swapchains[] = {data.renderData.swapchain.swapchain};
     presentInfo.swapchainCount  = 1;
     presentInfo.pSwapchains     = swapchains;
     presentInfo.pImageIndices   = &currentImageIndex;
 
-    result = vkQueuePresentKHR(data.queues.present, &presentInfo);
+    result = vkQueuePresentKHR(data.vulkanData.queues.present, &presentInfo);
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
-        data.framebufferResized = false;
-        recreateSwapChain(data.physicalDevice,
-                          data.windowResources,
-                          data.swapchain,
-                          data.device,
-                          data.pipelineResources.renderPass,
-                          data.swapchainResources,
-                          data.queueFamilyIndices);
+        data.windowData.framebufferResized = false;
+        recreateSwapChain(data.vulkanData.physicalDevice,
+                          data.windowData,
+                          data.renderData.swapchain,
+                          data.vulkanData.device,
+                          data.renderData.pipelineResources.renderPass,
+                          data.renderData.swapchainResources,
+                          data.vulkanData.queueFamilyIndices);
     } else if (result != VK_SUCCESS) {
         debugerror("failed to present swap chain image!");
     }

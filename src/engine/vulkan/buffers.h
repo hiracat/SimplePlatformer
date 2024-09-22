@@ -23,12 +23,10 @@ void createIndexBuffer(const std::vector<uint32_t>& indices,
                        const VkQueue                transferQueue,
                        const QueueFamilyIndices&    queueFamilyIndices);
 
-void createUniformBuffers(VkDevice                    device,
-                          VkPhysicalDevice            physicalDevice,
-                          QueueFamilyIndices          indices,
-                          std::vector<UniformBuffer>& buffers,
+void createUniformBuffers(const VulkanData&           data,
                           const uint32_t              MAX_FRAMES_IN_FLIGHT,
-                          uint32_t                    numModels);
+                          const uint32_t              numModels,
+                          std::vector<UniformBuffer>* buffers);
 
 void updateUniformBuffers(uint32_t                                       currentImage,
                           std::chrono::high_resolution_clock::time_point startTime,
