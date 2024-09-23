@@ -2,4 +2,4 @@
 #include "engine.h"
 #include <vector>
 
-void cleanup(EngineData& enginedata, std::vector<Model>& models);
+void cleanupEngine(EngineData* data, std::vector<Model>* models);

@@ -36,12 +36,7 @@ void initEngine(EngineData* engine) {
     createDevice(engine->vulkanData, &engine->vulkanData.device, &engine->vulkanData.queues);
     debugnote("created device");
 
-    createSwapChain(engine->vulkanData.device,
-                    engine->vulkanData.physicalDevice,
-                    engine->windowData,
-                    engine->renderData.swapchain,
-                    engine->renderData.swapchainResources,
-                    engine->vulkanData.queueFamilyIndices);
+    createSwapChain(engine->vulkanData, &engine->renderData.swapchain, &engine->renderData.swapchainResources);
 
     createRenderPass(engine->renderData.swapchain.format, engine->renderData.pipelineResources.renderPass, engine->vulkanData.device);
     CreateDescriptorSetLayout(engine->vulkanData.device, engine->renderData.transformResources.descriptorSetLayout);

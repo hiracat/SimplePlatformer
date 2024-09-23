@@ -104,7 +104,8 @@ struct WindowData {
 };
 
 struct VulkanData {
-    VulkanData(VkSurfaceKHR& surface) : surface(surface) {};
+    VulkanData(VkSurfaceKHR& surface, const uint32_t& MAX_FRAMES_IN_FLIGHT, const WindowData& windowData)
+        : surface(surface), MAX_FRAMES_IN_FLIGHT(MAX_FRAMES_IN_FLIGHT), windowData((windowData)) {};
 
     VkInstance                     instance{};
     VkDebugUtilsMessengerEXT       debugMessenger{};
@@ -117,10 +118,13 @@ struct VulkanData {
     QueueFamilyIndices queueFamilyIndices;
 
     const VkSurfaceKHR& surface;
+    const uint32_t&     MAX_FRAMES_IN_FLIGHT;
+    const WindowData&   windowData;
 };
 
 struct RendererData {
-    RendererData(VkDevice& device) : device(device) {};
+    RendererData(VkDevice& device, const uint32_t& MAX_FRAMES_IN_FLIGHT, const WindowData& windowData)
+        : device(device), MAX_FRAMES_IN_FLIGHT(MAX_FRAMES_IN_FLIGHT), windowData(windowData) {};
     Swapchain          swapchain{};
     SwapchainResources swapchainResources;
     SyncResources      syncResources{};
@@ -130,16 +134,17 @@ struct RendererData {
     DescriptorResources descriptorResources;
     TransformResources  transformResources;
 
-    const VkDevice& device;
+    const VkDevice&   device;
+    const uint32_t&   MAX_FRAMES_IN_FLIGHT;
+    const WindowData& windowData;
     /*const Queues&   queues;*/
-    /*const uint32_t& MAX_FRAMES_IN_FLIGHT;*/
 };
 
 struct EngineData {
-    uint32_t  currentFrame         = 0;
-    const int MAX_FRAMES_IN_FLIGHT = 2;
+    uint32_t       currentFrame         = 0;
+    const uint32_t MAX_FRAMES_IN_FLIGHT = 2;
 
     WindowData   windowData{};
-    VulkanData   vulkanData{windowData.surface};
-    RendererData renderData{vulkanData.device};
+    VulkanData   vulkanData{windowData.surface, MAX_FRAMES_IN_FLIGHT, windowData};
+    RendererData renderData{vulkanData.device, MAX_FRAMES_IN_FLIGHT, windowData};
 };

@@ -26,13 +26,8 @@ void drawFrame(EngineData& data, const std::vector<Model>& models, std::chrono::
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || data.windowData.framebufferResized) {
         data.windowData.framebufferResized = false;
-        recreateSwapChain(data.vulkanData.physicalDevice,
-                          data.windowData,
-                          data.renderData.swapchain,
-                          data.vulkanData.device,
-                          data.renderData.pipelineResources.renderPass,
-                          data.renderData.swapchainResources,
-                          data.vulkanData.queueFamilyIndices);
+        recreateSwapChain(
+            data.vulkanData, data.renderData.pipelineResources.renderPass, &data.renderData.swapchain, &data.renderData.swapchainResources);
 
         cleanupSyncObjects(data.renderData.syncResources, data.vulkanData.device, data.MAX_FRAMES_IN_FLIGHT);
         createSyncObjects(data.renderData.syncResources, data.vulkanData.device, data.MAX_FRAMES_IN_FLIGHT);
@@ -125,13 +120,8 @@ void drawFrame(EngineData& data, const std::vector<Model>& models, std::chrono::
 
     if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) {
         data.windowData.framebufferResized = false;
-        recreateSwapChain(data.vulkanData.physicalDevice,
-                          data.windowData,
-                          data.renderData.swapchain,
-                          data.vulkanData.device,
-                          data.renderData.pipelineResources.renderPass,
-                          data.renderData.swapchainResources,
-                          data.vulkanData.queueFamilyIndices);
+        recreateSwapChain(
+            data.vulkanData, data.renderData.pipelineResources.renderPass, &data.renderData.swapchain, &data.renderData.swapchainResources);
     } else if (result != VK_SUCCESS) {
         debugerror("failed to present swap chain image!");
     }

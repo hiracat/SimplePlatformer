@@ -87,13 +87,10 @@ void copyBuffer(VkBuffer&           srcBuffer,
     vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
 }
 
-void createUniformBuffers(const VulkanData&           data,
-                          const uint32_t              MAX_FRAMES_IN_FLIGHT,
-                          const uint32_t              numModels,
-                          std::vector<UniformBuffer>* buffers) {
+void createUniformBuffers(const VulkanData& data, const uint32_t numModels, std::vector<UniformBuffer>* buffers) {
     VkDeviceSize bufferSize = sizeof(MVPMatricies) * 2;
 
-    buffers->resize(MAX_FRAMES_IN_FLIGHT);
+    buffers->resize(data.MAX_FRAMES_IN_FLIGHT);
 
     VkSharingMode sharingMode;
     { // set sharing mode
@@ -104,7 +101,7 @@ void createUniformBuffers(const VulkanData&           data,
         }
     }
 
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+    for (size_t i = 0; i < data.MAX_FRAMES_IN_FLIGHT; i++) {
         createBuffer(data.device,
                      data.physicalDevice,
                      bufferSize,

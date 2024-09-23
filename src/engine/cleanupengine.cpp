@@ -16,47 +16,47 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
     }
 }
 
-void cleanup(EngineData& data, std::vector<Model>& models) {
+void cleanupEngine(EngineData* data, std::vector<Model>* models) {
 
-    vkDeviceWaitIdle(data.vulkanData.device);
+    vkDeviceWaitIdle(data->vulkanData.device);
 
-    cleanupSwapChain(data.renderData.swapchain.swapchain,
-                     data.renderData.swapchainResources.imageViews,
-                     data.renderData.swapchainResources.framebuffers,
-                     data.vulkanData.device);
+    cleanupSwapChain(data->renderData.swapchain.swapchain,
+                     data->renderData.swapchainResources.imageViews,
+                     data->renderData.swapchainResources.framebuffers,
+                     data->vulkanData.device);
 
-    for (size_t i = 0; i < data.MAX_FRAMES_IN_FLIGHT; i++) {
-        vkDestroyBuffer(data.vulkanData.device, data.renderData.transformResources.uniformBuffers[i].buffer.buffer, nullptr);
-        vkFreeMemory(data.vulkanData.device, data.renderData.transformResources.uniformBuffers[i].buffer.memory, nullptr);
+    for (size_t i = 0; i < data->MAX_FRAMES_IN_FLIGHT; i++) {
+        vkDestroyBuffer(data->vulkanData.device, data->renderData.transformResources.uniformBuffers[i].buffer.buffer, nullptr);
+        vkFreeMemory(data->vulkanData.device, data->renderData.transformResources.uniformBuffers[i].buffer.memory, nullptr);
     }
-    vkDestroyDescriptorPool(data.vulkanData.device, data.renderData.descriptorResources.pool, nullptr);
-    vkDestroyDescriptorSetLayout(data.vulkanData.device, data.renderData.transformResources.descriptorSetLayout, nullptr);
+    vkDestroyDescriptorPool(data->vulkanData.device, data->renderData.descriptorResources.pool, nullptr);
+    vkDestroyDescriptorSetLayout(data->vulkanData.device, data->renderData.transformResources.descriptorSetLayout, nullptr);
 
-    for (size_t i = 0; i < models.size(); i++) {
-        vkDestroyBuffer(data.vulkanData.device, models[i].vertexBuffer.buffer, nullptr);
-        vkFreeMemory(data.vulkanData.device, models[i].vertexBuffer.memory, nullptr);
+    for (size_t i = 0; i < models->size(); i++) {
+        vkDestroyBuffer(data->vulkanData.device, (*models)[i].vertexBuffer.buffer, nullptr);
+        vkFreeMemory(data->vulkanData.device, (*models)[i].vertexBuffer.memory, nullptr);
 
-        vkDestroyBuffer(data.vulkanData.device, models[i].indexBuffer.buffer, nullptr);
-        vkFreeMemory(data.vulkanData.device, models[i].indexBuffer.memory, nullptr);
+        vkDestroyBuffer(data->vulkanData.device, (*models)[i].indexBuffer.buffer, nullptr);
+        vkFreeMemory(data->vulkanData.device, (*models)[i].indexBuffer.memory, nullptr);
     }
 
-    vkDestroyPipeline(data.vulkanData.device, data.renderData.pipelineResources.graphicsPipeline, nullptr);
-    vkDestroyPipelineLayout(data.vulkanData.device, data.renderData.pipelineResources.pipelineLayout, nullptr);
+    vkDestroyPipeline(data->vulkanData.device, data->renderData.pipelineResources.graphicsPipeline, nullptr);
+    vkDestroyPipelineLayout(data->vulkanData.device, data->renderData.pipelineResources.pipelineLayout, nullptr);
 
-    vkDestroyRenderPass(data.vulkanData.device, data.renderData.pipelineResources.renderPass, nullptr);
+    vkDestroyRenderPass(data->vulkanData.device, data->renderData.pipelineResources.renderPass, nullptr);
 
-    cleanupSyncObjects(data.renderData.syncResources, data.vulkanData.device, data.MAX_FRAMES_IN_FLIGHT);
+    cleanupSyncObjects(data->renderData.syncResources, data->vulkanData.device, data->MAX_FRAMES_IN_FLIGHT);
 
-    vkDestroyCommandPool(data.vulkanData.device, data.renderData.commandResources.pool, nullptr);
+    vkDestroyCommandPool(data->vulkanData.device, data->renderData.commandResources.pool, nullptr);
 
-    vkDestroyDevice(data.vulkanData.device, nullptr);
+    vkDestroyDevice(data->vulkanData.device, nullptr);
 
 #ifdef ENABLE_VALIDATION_LAYERS
-    DestroyDebugUtilsMessengerEXT(data.vulkanData.instance, data.vulkanData.debugMessenger, nullptr);
+    DestroyDebugUtilsMessengerEXT(data->vulkanData.instance, data->vulkanData.debugMessenger, nullptr);
 #endif
-    vkDestroySurfaceKHR(data.vulkanData.instance, data.windowData.surface, nullptr);
-    vkDestroyInstance(data.vulkanData.instance, nullptr);
+    vkDestroySurfaceKHR(data->vulkanData.instance, data->windowData.surface, nullptr);
+    vkDestroyInstance(data->vulkanData.instance, nullptr);
 
-    glfwDestroyWindow(data.windowData.window);
+    glfwDestroyWindow(data->windowData.window);
     glfwTerminate();
 }

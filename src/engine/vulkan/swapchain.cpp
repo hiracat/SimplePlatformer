@@ -2,6 +2,7 @@
 #include <vulkan/vulkan.h>
 
 #include <vector>
+#include <vulkan/vulkan_core.h>
 
 #include "../../utils/debugprint.h"
 #include "../engine.h"
@@ -45,28 +46,26 @@ void cleanupSwapChain(VkSwapchainKHR&             swapchain,
     vkDestroySwapchainKHR(device, swapchain, nullptr);
 }
 
-void recreateSwapChain(const VkPhysicalDevice    physicalDevice,
-                       const WindowData&         window,
-                       Swapchain&                swapchain,
-                       const VkDevice            device,
-                       const VkRenderPass        renderpass,
-                       SwapchainResources&       resources,
-                       const QueueFamilyIndices& indices) {
+void recreateSwapChain(const VulkanData&   vulkanData,
+                       const VkRenderPass  renderPass,
+                       Swapchain*          swapchain,
+                       SwapchainResources* swapchainResources) {
 
     int width = 0, height = 0;
-    glfwGetFramebufferSize(window.window, &width, &height);
+    glfwGetFramebufferSize(vulkanData.windowData.window, &width, &height);
     while (width == 0 || height == 0) {
-        glfwGetFramebufferSize(window.window, &width, &height);
+        glfwGetFramebufferSize(vulkanData.windowData.window, &width, &height);
         glfwWaitEvents();
     }
 
-    vkDeviceWaitIdle(device);
-    swapchain.oldSwapChain = swapchain.swapchain;
+    vkDeviceWaitIdle(vulkanData.device);
+    swapchain->oldSwapChain = swapchain->swapchain;
 
-    createSwapChain(device, physicalDevice, window, swapchain, resources, indices);
-    cleanupSwapChain(swapchain.oldSwapChain, resources.imageViews, resources.framebuffers, device);
-    createImageViews(resources, swapchain.format, device);
-    createFramebuffers(resources, renderpass, swapchain.extent, device);
+    createSwapChain(vulkanData, swapchain, swapchainResources);
+
+    cleanupSwapChain(swapchain->oldSwapChain, swapchainResources->imageViews, swapchainResources->framebuffers, vulkanData.device);
+    createImageViews(*swapchainResources, swapchain->format, vulkanData.device);
+    createFramebuffers(*swapchainResources, renderPass, swapchain->extent, vulkanData.device);
 }
 
 void createFramebuffers(SwapchainResources& resources,
@@ -92,18 +91,13 @@ void createFramebuffers(SwapchainResources& resources,
     }
 }
 
-void createSwapChain(const VkDevice            device,
-                     const VkPhysicalDevice    physicalDevice,
-                     const WindowData&         window,
-                     Swapchain&                swapchain,
-                     SwapchainResources&       swapchainResources,
-                     const QueueFamilyIndices& indices) {
+void createSwapChain(const VulkanData& vulkanData, Swapchain* swapchain, SwapchainResources* swapchainResources) {
 
-    SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice, window.surface);
+    SwapChainSupportDetails swapChainSupport = querySwapChainSupport(vulkanData.physicalDevice, vulkanData.windowData.surface);
 
     VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
     VkPresentModeKHR   presentMode   = chooseSwapPresentMode(swapChainSupport.presentModes);
-    VkExtent2D         extent        = chooseSwapExtent(swapChainSupport.capabilities, window);
+    VkExtent2D         extent        = chooseSwapExtent(swapChainSupport.capabilities, vulkanData.windowData);
 
     uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
     if (imageCount > swapChainSupport.capabilities.maxImageCount && swapChainSupport.capabilities.maxImageCount != 0) {
@@ -113,7 +107,7 @@ void createSwapChain(const VkDevice            device,
 
     VkSwapchainCreateInfoKHR createInfo{};
     createInfo.sType   = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-    createInfo.surface = window.surface;
+    createInfo.surface = vulkanData.windowData.surface;
 
     createInfo.minImageCount    = imageCount;
     createInfo.imageFormat      = surfaceFormat.format;
@@ -122,9 +116,10 @@ void createSwapChain(const VkDevice            device,
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage       = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-    uint32_t rawIndices[] = {indices.graphics.value(), indices.present.value()};
+    uint32_t rawIndices[] = {vulkanData.queueFamilyIndices.graphics.value(), vulkanData.queueFamilyIndices.present.value()};
 
-    if ((indices.transfer.value() == indices.graphics.value()) && (indices.graphics == indices.present.value())) {
+    if ((vulkanData.queueFamilyIndices.transfer.value() == vulkanData.queueFamilyIndices.graphics.value()) &&
+        (vulkanData.queueFamilyIndices.graphics.value() == vulkanData.queueFamilyIndices.present.value())) {
         createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
     } else {
         createInfo.imageSharingMode      = VK_SHARING_MODE_CONCURRENT;
@@ -135,20 +130,20 @@ void createSwapChain(const VkDevice            device,
     createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
     createInfo.presentMode    = presentMode;
     createInfo.clipped        = VK_TRUE;
-    createInfo.oldSwapchain   = swapchain.oldSwapChain;
+    createInfo.oldSwapchain   = swapchain->oldSwapChain;
 
     VkResult result = VK_SUCCESS;
 
-    if ((result = vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapchain.swapchain)) != VK_SUCCESS) {
+    if ((result = vkCreateSwapchainKHR(vulkanData.device, &createInfo, nullptr, &swapchain->swapchain)) != VK_SUCCESS) {
         debugerror("failed to create swapchain: " << result);
     }
 
-    vkGetSwapchainImagesKHR(device, swapchain.swapchain, &imageCount, nullptr);
-    swapchainResources.images.resize(imageCount);
-    vkGetSwapchainImagesKHR(device, swapchain.swapchain, &imageCount, swapchainResources.images.data());
+    vkGetSwapchainImagesKHR(vulkanData.device, swapchain->swapchain, &imageCount, nullptr);
+    swapchainResources->images.resize(imageCount);
+    vkGetSwapchainImagesKHR(vulkanData.device, swapchain->swapchain, &imageCount, swapchainResources->images.data());
 
-    swapchain.format = surfaceFormat.format;
-    swapchain.extent = extent;
+    swapchain->format = surfaceFormat.format;
+    swapchain->extent = extent;
 }
 
 SwapChainSupportDetails querySwapChainSupport(const VkPhysicalDevice& physicalDevice, const VkSurfaceKHR& surface) {

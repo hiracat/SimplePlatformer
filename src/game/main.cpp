@@ -17,7 +17,7 @@
 #include "../engine/vulkan/ubo.h"
 #include "../utils/debugprint.h"
 
-std::vector<int> getPressedKey(GLFWwindow* window) {
+std::vector<int> getPressedKeys(GLFWwindow* window) {
     std::vector<int> keys{};
     for (int testkey = GLFW_KEY_SPACE; testkey <= GLFW_KEY_LAST; ++testkey) {
         int state = glfwGetKey(window, testkey);
@@ -50,22 +50,21 @@ int main() {
                                 {{-1.9f, -0.5f}, {1.0f, 1.0f, 0.0f}}},
                    .indices  = {0, 1, 2, 2, 3, 0}};
 
-    EngineData         engineData{};
     std::vector<Model> models{};
     models.push_back(player);
     models.push_back(floor);
 
     debugnote("created index and vertex buffers");
+    EngineData engineData{};
     initEngine(&engineData);
     for (size_t i = 0; i < models.size(); i++) {
         createModel(engineData, &models[i]);
     }
-    createUniformBuffers(
-        engineData.vulkanData, engineData.MAX_FRAMES_IN_FLIGHT, models.size(), &engineData.renderData.transformResources.uniformBuffers);
+    createUniformBuffers(engineData.vulkanData, models.size(), &engineData.renderData.transformResources.uniformBuffers);
 
-    createDescriptorPool(engineData.vulkanData.device, engineData.MAX_FRAMES_IN_FLIGHT, &engineData.renderData.descriptorResources.pool);
+    createDescriptorPool(engineData.vulkanData, &engineData.renderData.descriptorResources.pool);
 
-    createDescriptorSets(engineData.renderData, engineData.MAX_FRAMES_IN_FLIGHT, engineData.renderData.descriptorResources.sets);
+    createDescriptorSets(engineData.renderData, &engineData.renderData.descriptorResources.sets);
 
     double yvelocity    = 0;
     bool   keyuppressed = false;
@@ -74,7 +73,7 @@ int main() {
     while (!glfwWindowShouldClose(engineData.windowData.window)) {
         glfwPollEvents();
         frameStartTime        = std::chrono::high_resolution_clock::now();
-        std::vector<int> keys = getPressedKey(engineData.windowData.window);
+        std::vector<int> keys = getPressedKeys(engineData.windowData.window);
 
         for (auto key : keys) {
             if (key == GLFW_KEY_RIGHT) {
@@ -115,10 +114,10 @@ int main() {
         renderTime = endTime - frameStartTime;
         std::this_thread::sleep_for(targetTime - renderTime);
     }
-    cleanup(engineData, models);
+    cleanupEngine(&engineData, &models);
 
     debugnote("renderTime: " << std::chrono::duration_cast<std::chrono::microseconds>(renderTime).count());
 
-    debugdata("end");
+    debugdata("shutting down");
     return 0;
 }
