@@ -1,12 +1,13 @@
+#include "../engine.h"
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_core.h>
 
 #include "../../utils/debugprint.h"
 
-void createRenderPass(const VkFormat& swapchainFormat, VkRenderPass& renderPass, const VkDevice& device) {
+void createRenderPass(const RendererData& data, VkRenderPass* renderPass) {
     VkAttachmentDescription colorAttachment{};
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-    colorAttachment.format  = swapchainFormat;
+    colorAttachment.format  = data.swapchain.format;
     colorAttachment.loadOp  = VK_ATTACHMENT_LOAD_OP_CLEAR;
     colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 
@@ -44,7 +45,7 @@ void createRenderPass(const VkFormat& swapchainFormat, VkRenderPass& renderPass,
     renderPassInfo.dependencyCount = 1;
     renderPassInfo.pDependencies   = &dependency;
 
-    VkResult result = vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass);
+    VkResult result = vkCreateRenderPass(data.device, &renderPassInfo, nullptr, renderPass);
     if (result != VK_SUCCESS) {
         debugerror("failed to create render pass");
     }

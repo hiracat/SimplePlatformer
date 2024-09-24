@@ -1,4 +1,6 @@
 #pragma once
 #include <vulkan/vulkan.h>
 
-void createRenderPass(const VkFormat& swapchainFormat, VkRenderPass& renderPass, const VkDevice& device);
+#include "../engine.h"
+
+void createRenderPass(const RendererData& data, VkRenderPass* renderPass);

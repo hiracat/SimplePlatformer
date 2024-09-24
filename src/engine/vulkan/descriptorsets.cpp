@@ -2,7 +2,7 @@
 
 #include "../../utils/debugprint.h"
 
-void CreateDescriptorSetLayout(const VkDevice device, VkDescriptorSetLayout& layout) {
+void createDescriptorSetLayout(const VkDevice device, VkDescriptorSetLayout* layout) {
     VkDescriptorSetLayoutBinding mvpLayoutBinding{};
     mvpLayoutBinding.binding            = 0;
     mvpLayoutBinding.descriptorType     = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
@@ -16,7 +16,7 @@ void CreateDescriptorSetLayout(const VkDevice device, VkDescriptorSetLayout& lay
     layoutInfo.pBindings    = &mvpLayoutBinding;
     layoutInfo.bindingCount = 1;
 
-    if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &layout) != VK_SUCCESS) {
+    if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, layout) != VK_SUCCESS) {
         debugerror("failed to create descriptor set layout");
     }
 }

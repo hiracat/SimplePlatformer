@@ -3,7 +3,4 @@
 
 #include "../engine.h"
 
-void createGraphicsPipeline(const VkDevice&        device,
-                            const Swapchain&       swapchain,
-                            PipelineResources&     resources,
-                            VkDescriptorSetLayout& descriptorSetLayout);
+void createGraphicsPipeline(const RendererData& renderData, PipelineResources* resources, VkDescriptorSetLayout* descriptorSetLayout);

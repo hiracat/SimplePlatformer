@@ -9,17 +9,14 @@
 #include "../vertex.h"
 #include "shaders.h"
 
-void createGraphicsPipeline(const VkDevice&        device,
-                            const Swapchain&       swapchain,
-                            PipelineResources&     resources,
-                            VkDescriptorSetLayout& descriptorSetLayout) {
+void createGraphicsPipeline(const RendererData& renderData, PipelineResources* resources, VkDescriptorSetLayout* descriptorSetLayout) {
 
     auto vertShaderCode = readFile("build/shaders/vert.spv");
     auto fragShaderCode = readFile("build/shaders/frag.spv");
 
     // these are used when graphics pipeline is created, so we can destroy them right after we finish creation in this function
-    VkShaderModule vertShaderModule = createShaderModule(device, vertShaderCode);
-    VkShaderModule fragShaderModule = createShaderModule(device, fragShaderCode);
+    VkShaderModule vertShaderModule = createShaderModule(renderData.device, vertShaderCode);
+    VkShaderModule fragShaderModule = createShaderModule(renderData.device, fragShaderCode);
 
     VkPipelineShaderStageCreateInfo vertShaderStageCreateInfo{};
     vertShaderStageCreateInfo.sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -62,15 +59,15 @@ void createGraphicsPipeline(const VkDevice&        device,
 
     VkViewport viewport{};
     viewport.x        = 0.0f;
-    viewport.y        = (float)swapchain.extent.height;
-    viewport.width    = (float)swapchain.extent.width;
-    viewport.height   = -(float)swapchain.extent.height;
+    viewport.y        = (float)renderData.swapchain.extent.height;
+    viewport.width    = (float)renderData.swapchain.extent.width;
+    viewport.height   = -(float)renderData.swapchain.extent.height;
     viewport.maxDepth = 1.0f;
     viewport.minDepth = 0.0f;
 
     VkRect2D scizzor{};
     scizzor.offset = {0, 0};
-    scizzor.extent = swapchain.extent;
+    scizzor.extent = renderData.swapchain.extent;
 
     VkPipelineViewportStateCreateInfo viewportState{};
     viewportState.sType         = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -119,11 +116,12 @@ void createGraphicsPipeline(const VkDevice&        device,
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType                  = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
     pipelineLayoutInfo.setLayoutCount         = 1;
-    pipelineLayoutInfo.pSetLayouts            = &descriptorSetLayout;
+    pipelineLayoutInfo.pSetLayouts            = descriptorSetLayout;
     pipelineLayoutInfo.pushConstantRangeCount = 0;       // Optional
     pipelineLayoutInfo.pPushConstantRanges    = nullptr; // Optional
 
-    VkResult createPipelineLayoutResult = vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &resources.pipelineLayout);
+    VkResult createPipelineLayoutResult =
+        vkCreatePipelineLayout(renderData.device, &pipelineLayoutInfo, nullptr, &resources->pipelineLayout);
     if (createPipelineLayoutResult != VK_SUCCESS) {
         debugerror("failed to create pipeline layout");
     }
@@ -142,18 +140,18 @@ void createGraphicsPipeline(const VkDevice&        device,
     pipelineInfo.pColorBlendState    = &colorBlending;
     pipelineInfo.pDynamicState       = &dynamicState;
 
-    pipelineInfo.layout     = resources.pipelineLayout;
-    pipelineInfo.renderPass = resources.renderPass;
+    pipelineInfo.layout     = resources->pipelineLayout;
+    pipelineInfo.renderPass = resources->renderPass;
     pipelineInfo.subpass    = 0;
 
     pipelineInfo.basePipelineHandle = nullptr;
     pipelineInfo.basePipelineIndex  = -1;
 
-    VkResult result = vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &resources.graphicsPipeline);
+    VkResult result = vkCreateGraphicsPipelines(renderData.device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &resources->graphicsPipeline);
     if (result != VK_SUCCESS) {
         debugerror("failed to create graphics pipeline");
     }
 
-    vkDestroyShaderModule(device, fragShaderModule, nullptr);
-    vkDestroyShaderModule(device, vertShaderModule, nullptr);
+    vkDestroyShaderModule(renderData.device, fragShaderModule, nullptr);
+    vkDestroyShaderModule(renderData.device, vertShaderModule, nullptr);
 }

@@ -38,12 +38,12 @@ void initEngine(EngineData* engine) {
 
     createSwapChain(engine->vulkanData, &engine->renderData.swapchain, &engine->renderData.swapchainResources);
 
-    createRenderPass(engine->renderData.swapchain.format, engine->renderData.pipelineResources.renderPass, engine->vulkanData.device);
-    CreateDescriptorSetLayout(engine->vulkanData.device, engine->renderData.transformResources.descriptorSetLayout);
-    createGraphicsPipeline(engine->renderData.device,
-                           engine->renderData.swapchain,
-                           engine->renderData.pipelineResources,
-                           engine->renderData.transformResources.descriptorSetLayout);
+    createRenderPass(engine->renderData, &engine->renderData.pipelineResources.renderPass);
+
+    createDescriptorSetLayout(engine->vulkanData.device, &engine->renderData.transformResources.descriptorSetLayout);
+
+    createGraphicsPipeline(
+        engine->renderData, &engine->renderData.pipelineResources, &engine->renderData.transformResources.descriptorSetLayout);
     debugnote("created graphics pipeline");
 
     createCommandPool(engine->vulkanData.physicalDevice,
