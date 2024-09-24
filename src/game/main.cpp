@@ -89,16 +89,16 @@ int main() {
         }
         models[0].position.y += yvelocity;
 
-        debugdata("model position: " << models[0].position.y);
-        debugdata("yvelocity: " << yvelocity);
+        /*debugdata("model position: " << models[0].position.y);*/
+        /*debugdata("yvelocity: " << yvelocity);*/
 
         if (models[0].position.y < 0) {
             models[0].position.y = 0;
         }
 
-        debugdata("model position: " << models[0].position.y);
-        debugdata("yvelocity: " << yvelocity);
-        debugdata("============================" << yvelocity);
+        /*debugdata("model position: " << models[0].position.y);*/
+        /*debugdata("yvelocity: " << yvelocity);*/
+        /*debugdata("============================" << yvelocity);*/
         drawFrame(engineData, models);
 
         endTime    = std::chrono::high_resolution_clock::now();
@@ -107,7 +107,7 @@ int main() {
     }
     cleanupEngine(&engineData, &models);
 
-    debugnote("renderTime: " << std::chrono::duration_cast<std::chrono::microseconds>(renderTime).count());
+    std::cerr << "renderTime: " << std::chrono::duration_cast<std::chrono::microseconds>(renderTime).count() << std::endl;
 
     debugdata("shutting down");
     return 0;
