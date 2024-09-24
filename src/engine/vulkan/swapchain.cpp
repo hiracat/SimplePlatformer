@@ -62,27 +62,24 @@ void recreateSwapChain(const RendererData& renderData, Swapchain* swapchain, Swa
 
     cleanupSwapChain(swapchain->oldSwapChain, swapchainResources->imageViews, swapchainResources->framebuffers, renderData.device);
     createImageViews(renderData, swapchainResources);
-    createFramebuffers(*swapchainResources, renderData.pipelineResources.renderPass, swapchain->extent, renderData.device);
+    createFramebuffers(renderData, swapchainResources);
 }
 
-void createFramebuffers(SwapchainResources& resources,
-                        const VkRenderPass  renderPass,
-                        const VkExtent2D    swapchainExtent,
-                        const VkDevice      device) {
+void createFramebuffers(const RendererData& renderData, SwapchainResources* resources) {
 
-    resources.framebuffers.resize(resources.imageViews.size());
+    resources->framebuffers.resize(resources->imageViews.size());
 
-    for (size_t i = 0; i < resources.imageViews.size(); i++) {
-        VkImageView             attachments[] = {resources.imageViews[i]}; // as an array because there can be multiple attachments
+    for (size_t i = 0; i < resources->imageViews.size(); i++) {
+        VkImageView             attachments[] = {resources->imageViews[i]}; // as an array because there can be multiple attachments
         VkFramebufferCreateInfo framebufferInfo{};
         framebufferInfo.sType           = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-        framebufferInfo.renderPass      = renderPass;
+        framebufferInfo.renderPass      = renderData.pipelineResources.renderPass;
         framebufferInfo.attachmentCount = 1;
         framebufferInfo.pAttachments    = attachments;
-        framebufferInfo.width           = swapchainExtent.width;
-        framebufferInfo.height          = swapchainExtent.height;
+        framebufferInfo.width           = renderData.swapchain.extent.width;
+        framebufferInfo.height          = renderData.swapchain.extent.height;
         framebufferInfo.layers          = 1;
-        if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &resources.framebuffers[i]) != VK_SUCCESS) {
+        if (vkCreateFramebuffer(renderData.device, &framebufferInfo, nullptr, &resources->framebuffers[i]) != VK_SUCCESS) {
             debugerror("failed to create framebuffer");
         }
     }

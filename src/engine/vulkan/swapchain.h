@@ -5,10 +5,7 @@
 #include <vulkan/vulkan_core.h>
 
 void createImageViews(const RendererData& renderData, SwapchainResources* resources);
-void createFramebuffers(SwapchainResources& resources,
-                        const VkRenderPass  renderPass,
-                        const VkExtent2D    swapchainExtent,
-                        const VkDevice      device);
+void createFramebuffers(const RendererData& renderData, SwapchainResources* resources);
 
 void createSwapChain(const RendererData& renderData, Swapchain* swapchain, SwapchainResources* swapchainResources);
 

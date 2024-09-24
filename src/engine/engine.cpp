@@ -53,10 +53,7 @@ void initEngine(EngineData* engine) {
             engine->vulkanData, engine->vulkanData.queueFamilyIndices.graphics.value(), &engine->renderData.commandResources.pool);
     }
     createImageViews(engine->renderData, &engine->renderData.swapchainResources);
-    createFramebuffers(engine->renderData.swapchainResources,
-                       engine->renderData.pipelineResources.renderPass,
-                       engine->renderData.swapchain.extent,
-                       engine->vulkanData.device);
+    createFramebuffers(engine->renderData, &engine->renderData.swapchainResources);
 
     createCommandBuffers(engine->vulkanData.device, engine->renderData.commandResources, engine->MAX_FRAMES_IN_FLIGHT);
     createSyncObjects(engine->renderData.syncResources, engine->vulkanData.device, engine->MAX_FRAMES_IN_FLIGHT);
