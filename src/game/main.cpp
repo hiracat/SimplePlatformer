@@ -1,4 +1,3 @@
-#include <cstddef>
 #include <glm/fwd.hpp>
 #include <thread>
 #include <vector>
@@ -56,14 +55,7 @@ int main() {
     debugnote("created index and vertex buffers");
     EngineData engineData{};
     initEngine(&engineData);
-    for (size_t i = 0; i < models.size(); i++) {
-        createModel(engineData, &models[i]);
-    }
-    createUniformBuffers(engineData.vulkanData, models.size(), &engineData.renderData.transformResources.uniformBuffers);
-
-    createDescriptorPool(engineData.vulkanData, &engineData.renderData.descriptorResources.pool);
-
-    createDescriptorSets(engineData.renderData, &engineData.renderData.descriptorResources.sets);
+    createModels(&engineData, &models);
 
     double yvelocity    = 0;
     bool   keyuppressed = false;

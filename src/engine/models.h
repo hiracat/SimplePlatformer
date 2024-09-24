@@ -2,4 +2,4 @@
 #include "engine.h"
 #include <vulkan/vulkan_core.h>
 
-void createModel(const EngineData& engineData, Model* model);
+void createModels(EngineData* engineData, std::vector<Model>* models);
