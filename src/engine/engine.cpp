@@ -36,7 +36,7 @@ void initEngine(EngineData* engine) {
     createDevice(engine->vulkanData, &engine->vulkanData.device, &engine->vulkanData.queues);
     debugnote("created device");
 
-    createSwapChain(engine->vulkanData, &engine->renderData.swapchain, &engine->renderData.swapchainResources);
+    createSwapChain(engine->renderData, &engine->renderData.swapchain, &engine->renderData.swapchainResources);
 
     createRenderPass(engine->renderData, &engine->renderData.pipelineResources.renderPass);
 
@@ -46,19 +46,13 @@ void initEngine(EngineData* engine) {
         engine->renderData, &engine->renderData.pipelineResources, &engine->renderData.transformResources.descriptorSetLayout);
     debugnote("created graphics pipeline");
 
-    createCommandPool(engine->vulkanData.physicalDevice,
-                      engine->vulkanData.queueFamilyIndices.graphics.value(),
-                      engine->vulkanData.device,
-                      engine->windowData.surface,
-                      engine->renderData.commandResources.pool);
+    createCommandPool(
+        engine->vulkanData, engine->vulkanData.queueFamilyIndices.graphics.value(), &engine->renderData.commandResources.pool);
     if (engine->vulkanData.queueFamilyIndices.graphics.value() != engine->vulkanData.queueFamilyIndices.present.value()) {
-        createCommandPool(engine->vulkanData.physicalDevice,
-                          engine->vulkanData.queueFamilyIndices.present.value(),
-                          engine->vulkanData.device,
-                          engine->windowData.surface,
-                          engine->renderData.commandResources.pool);
+        createCommandPool(
+            engine->vulkanData, engine->vulkanData.queueFamilyIndices.graphics.value(), &engine->renderData.commandResources.pool);
     }
-    createImageViews(engine->renderData.swapchainResources, engine->renderData.swapchain.format, engine->vulkanData.device);
+    createImageViews(engine->renderData, &engine->renderData.swapchainResources);
     createFramebuffers(engine->renderData.swapchainResources,
                        engine->renderData.pipelineResources.renderPass,
                        engine->renderData.swapchain.extent,

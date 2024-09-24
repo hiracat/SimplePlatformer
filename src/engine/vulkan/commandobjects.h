@@ -5,11 +5,7 @@
 
 void createCommandBuffers(const VkDevice& device, CommandResources& resources, const uint32_t maxFramesInFlight);
 
-void createCommandPool(const VkPhysicalDevice& physicalDevice,
-                       const uint32_t          queueFamilyIndex,
-                       const VkDevice&         device,
-                       const VkSurfaceKHR&     surface,
-                       VkCommandPool&          commandPool);
+void createCommandPool(const VulkanData& vulkanData, const uint32_t queueFamilyIndex, VkCommandPool* commandPool);
 
 void beginDrawing(VkCommandBuffer&    commandBuffer,
                   const VkExtent2D&   swapChainExtent,
