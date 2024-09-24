@@ -12,7 +12,7 @@
 #include "swapchain.h"
 #include "syncronization.h"
 
-void drawFrame(EngineData& data, const std::vector<Model>& models, std::chrono::high_resolution_clock::time_point startTime) {
+void drawFrame(EngineData& data, const std::vector<Model>& models) {
 
     vkWaitForFences(data.vulkanData.device, 1, &data.renderData.syncResources.inFlight[data.currentFrame], VK_TRUE, UINT64_MAX);
 
@@ -50,13 +50,13 @@ void drawFrame(EngineData& data, const std::vector<Model>& models, std::chrono::
                  data.renderData.pipelineResources.graphicsPipeline);
 
     updateUniformBuffers(data.currentFrame,
-                         startTime,
+                         data.startTime,
                          data.renderData.swapchain.extent,
                          data.renderData.transformResources.uniformBuffers,
                          models[0].position,
                          0);
     updateUniformBuffers(data.currentFrame,
-                         startTime,
+                         data.startTime,
                          data.renderData.swapchain.extent,
                          data.renderData.transformResources.uniformBuffers,
                          models[1].position,

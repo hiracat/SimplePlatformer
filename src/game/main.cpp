@@ -36,7 +36,6 @@ int main() {
     auto endTime           = std::chrono::high_resolution_clock::now();
     auto targetTime        = std::chrono::milliseconds(10);
     auto renderTime        = endTime - frameStartTime;
-    auto startTime         = std::chrono::high_resolution_clock::now();
 
     Model player = {.vertices = {{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
                                  {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
@@ -108,7 +107,7 @@ int main() {
         debugdata("model position: " << models[0].position.y);
         debugdata("yvelocity: " << yvelocity);
         debugdata("============================" << yvelocity);
-        drawFrame(engineData, models, startTime);
+        drawFrame(engineData, models);
 
         endTime    = std::chrono::high_resolution_clock::now();
         renderTime = endTime - frameStartTime;

@@ -1,6 +1,7 @@
 #pragma once
 #include "vertex.h"
 #include <GLFW/glfw3.h>
+#include <chrono>
 #include <glm/matrix.hpp>
 #include <optional>
 #include <vulkan/vulkan_core.h>
@@ -141,8 +142,10 @@ struct RendererData {
 };
 
 struct EngineData {
-    uint32_t       currentFrame         = 0;
-    const uint32_t MAX_FRAMES_IN_FLIGHT = 2;
+    uint32_t                                             currentFrame         = 0;
+    const uint32_t                                       MAX_FRAMES_IN_FLIGHT = 2;
+    const std::chrono::high_resolution_clock::time_point startTime            = std::chrono::high_resolution_clock::now();
+    std::chrono::high_resolution_clock::time_point       deltaTime{};
 
     WindowData   windowData{};
     VulkanData   vulkanData{windowData.surface, MAX_FRAMES_IN_FLIGHT, windowData};
