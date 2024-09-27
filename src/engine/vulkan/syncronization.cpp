@@ -8,10 +8,10 @@
 #include "../engine.h"
 #include "syncronization.h"
 
-void createSyncObjects(SyncResources& resources, const VkDevice& device, const uint32_t maxFramesInFlight) {
-    resources.imageAvailable.resize(maxFramesInFlight);
-    resources.renderFinished.resize(maxFramesInFlight);
-    resources.inFlight.resize(maxFramesInFlight);
+void createSyncObjects(const VkDevice& device, SyncResources* resources, const uint32_t maxFramesInFlight) {
+    resources->imageAvailable.resize(maxFramesInFlight);
+    resources->renderFinished.resize(maxFramesInFlight);
+    resources->inFlight.resize(maxFramesInFlight);
     VkSemaphoreCreateInfo semaphoreInfo{};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
 
@@ -21,9 +21,9 @@ void createSyncObjects(SyncResources& resources, const VkDevice& device, const u
 
     for (size_t i = 0; i < maxFramesInFlight; i++) {
 
-        if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &resources.imageAvailable[i]) != VK_SUCCESS ||
-            vkCreateSemaphore(device, &semaphoreInfo, nullptr, &resources.renderFinished[i]) != VK_SUCCESS ||
-            vkCreateFence(device, &fenceInfo, nullptr, &resources.inFlight[i]) != VK_SUCCESS) {
+        if (vkCreateSemaphore(device, &semaphoreInfo, nullptr, &resources->imageAvailable[i]) != VK_SUCCESS ||
+            vkCreateSemaphore(device, &semaphoreInfo, nullptr, &resources->renderFinished[i]) != VK_SUCCESS ||
+            vkCreateFence(device, &fenceInfo, nullptr, &resources->inFlight[i]) != VK_SUCCESS) {
             debugerror("failed to create sync objects");
         }
     }

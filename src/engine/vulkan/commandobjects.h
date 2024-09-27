@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <vulkan/vulkan.h>
 
-void createCommandBuffers(const VkDevice& device, CommandResources& resources, const uint32_t maxFramesInFlight);
+void createCommandBuffers(const VkDevice& device, CommandResources* resources, const uint32_t maxFramesInFlight);
 
 void createCommandPool(const VulkanData& vulkanData, const uint32_t queueFamilyIndex, VkCommandPool* commandPool);
 

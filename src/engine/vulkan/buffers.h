@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "../engine.h"
-#include "../vertex.h"
 #include <chrono>
 
 void createVertexBuffer(const std::vector<Vertex>& vertices,

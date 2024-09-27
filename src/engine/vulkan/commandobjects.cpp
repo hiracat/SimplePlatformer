@@ -64,16 +64,16 @@ void endDrawing(VkCommandBuffer commandBuffer) {
     }
 }
 
-void createCommandBuffers(const VkDevice& device, CommandResources& resources, const uint32_t maxFramesInFlight) {
+void createCommandBuffers(const VkDevice& device, CommandResources* resources, const uint32_t maxFramesInFlight) {
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.commandPool        = resources.pool;
+    allocInfo.commandPool        = resources->pool;
     allocInfo.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     allocInfo.commandBufferCount = maxFramesInFlight;
 
-    resources.buffers.resize(maxFramesInFlight);
+    resources->buffers.resize(maxFramesInFlight);
 
-    if (vkAllocateCommandBuffers(device, &allocInfo, resources.buffers.data())) {
+    if (vkAllocateCommandBuffers(device, &allocInfo, resources->buffers.data())) {
         debugerror("failed to allocate command buffers");
     }
 }

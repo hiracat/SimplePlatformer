@@ -6,7 +6,7 @@
 #include "../../utils/debugprint.h"
 #include "../../utils/fileio.h"
 #include "../engine.h"
-#include "../vertex.h"
+#include "array"
 #include "shaders.h"
 
 void createGraphicsPipeline(const RendererData& renderData, PipelineResources* resources, VkDescriptorSetLayout* descriptorSetLayout) {

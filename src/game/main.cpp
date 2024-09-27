@@ -7,12 +7,9 @@
 
 #include <chrono>
 
-#include "../engine/cleanupengine.h"
 #include "../engine/engine.h"
-#include "../engine/initengine.h"
 #include "../engine/models.h"
 #include "../engine/vulkan/buffers.h"
-#include "../engine/vulkan/rendering.h"
 #include "../engine/vulkan/ubo.h"
 #include "../utils/debugprint.h"
 
@@ -99,7 +96,7 @@ int main() {
         /*debugdata("model position: " << models[0].position.y);*/
         /*debugdata("yvelocity: " << yvelocity);*/
         /*debugdata("============================" << yvelocity);*/
-        drawFrame(engineData, models);
+        drawFrame(&engineData, models);
 
         endTime    = std::chrono::high_resolution_clock::now();
         renderTime = endTime - frameStartTime;

@@ -7,8 +7,7 @@
 #include "../../compilesettings.h"
 #include "../../utils/debugprint.h"
 #include "../engine.h"
-#include "extensions.h"
-#include "validationlayers.h"
+#include "../vulkan/device.h"
 
 bool checkValidationLayerSupported(const std::vector<const char*>& validationLayers) {
     uint32_t layerCount;
@@ -72,7 +71,7 @@ void createInstance(const VulkanData& vulkanData, VkInstance* instance) {
     };
 
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
-    PopulateDebugMessengerCreateInfo(debugCreateInfo);
+    populateDebugMessengerCreateInfo(&debugCreateInfo);
 
     createInfo.enabledLayerCount   = static_cast<uint32_t>(vulkanData.validationLayers.size());
     createInfo.ppEnabledLayerNames = vulkanData.validationLayers.data();

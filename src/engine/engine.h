@@ -1,5 +1,4 @@
 #pragma once
-#include "vertex.h"
 #include <GLFW/glfw3.h>
 #include <chrono>
 #include <glm/matrix.hpp>
@@ -14,6 +13,13 @@ struct Swapchain {
     VkSwapchainKHR oldSwapChain{};
     VkFormat       format;
     VkExtent2D     extent;
+};
+struct Vertex {
+    glm::vec2 pos;
+    glm::vec3 color;
+
+    static VkVertexInputBindingDescription                  getBindingDescription();
+    static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions();
 };
 
 struct QueueFamilyIndices {
@@ -158,3 +164,7 @@ struct EngineData {
     VulkanData   vulkanData{windowData.surface, MAX_FRAMES_IN_FLIGHT, windowData};
     RendererData renderData{vulkanData.device, vulkanData.physicalDevice, MAX_FRAMES_IN_FLIGHT, windowData, vulkanData.queueFamilyIndices};
 };
+
+void drawFrame(EngineData* data, const std::vector<Model>& models);
+void initEngine(EngineData* enginedata);
+void cleanupEngine(EngineData* data, std::vector<Model>* models);

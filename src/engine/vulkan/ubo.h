@@ -4,3 +4,4 @@
 
 void createDescriptorPool(const VulkanData& vulkanData, VkDescriptorPool* descriptorPool);
 void createDescriptorSets(const RendererData& renderData, std::vector<VkDescriptorSet>* descriptorSets);
+void createDescriptorSetLayout(const VkDevice device, VkDescriptorSetLayout* layout);

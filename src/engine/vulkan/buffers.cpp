@@ -14,7 +14,6 @@
 #include <vulkan/vulkan_core.h>
 
 #include "../../utils/debugprint.h"
-#include "../vertex.h"
 #include "physicaldevice.h"
 #include "utils.h"
 

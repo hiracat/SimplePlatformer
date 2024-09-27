@@ -1,13 +1,12 @@
 #include "engine.h"
 #include "../compilesettings.h"
 #include "../engine/vulkan/commandobjects.h"
-#include "../engine/vulkan/descriptorsets.h"
 #include "../engine/vulkan/device.h"
 #include "../engine/vulkan/graphicspipeline.h"
 #include "../engine/vulkan/instance.h"
 #include "../engine/vulkan/physicaldevice.h"
 #include "../engine/vulkan/renderpass.h"
-#include "../engine/vulkan/validationlayers.h"
+#include "../engine/vulkan/ubo.h"
 #include "../engine/window.h"
 #include "../utils/debugprint.h"
 #include "engine.h"
@@ -16,8 +15,37 @@
 #include "vulkan/syncronization.h"
 #include "window.h"
 #include <GLFW/glfw3.h>
+#include <array>
+#include <glm/glm.hpp>
+#include <vulkan/vulkan.h>
 #include <vulkan/vulkan_core.h>
 
+VkVertexInputBindingDescription Vertex::getBindingDescription() {
+    VkVertexInputBindingDescription bindingDescription{};
+
+    bindingDescription.binding   = 0;
+    bindingDescription.stride    = sizeof(Vertex);
+    bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+    return bindingDescription;
+}
+std::array<VkVertexInputAttributeDescription, 2> Vertex::getAttributeDescriptions() {
+
+    // two attribe discriptiors for each of the data types stored in the vertex
+    std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+
+    attributeDescriptions[0].binding  = 0;
+    attributeDescriptions[0].location = 0;
+    attributeDescriptions[0].format   = VK_FORMAT_R32G32_SFLOAT;
+    attributeDescriptions[0].offset   = offsetof(Vertex, pos);
+
+    attributeDescriptions[1].binding  = 0;
+    attributeDescriptions[1].location = 1;
+    attributeDescriptions[1].format   = VK_FORMAT_R32G32B32_SFLOAT;
+    attributeDescriptions[1].offset   = offsetof(Vertex, color);
+
+    return attributeDescriptions;
+}
 void initEngine(EngineData* engine) {
     glfwInit(); // needs to be called here because we use a function in vkcreateinstance to get the extensions needed for glfw to work
 
@@ -55,6 +83,6 @@ void initEngine(EngineData* engine) {
     createImageViews(engine->renderData, &engine->renderData.swapchainResources);
     createFramebuffers(engine->renderData, &engine->renderData.swapchainResources);
 
-    createCommandBuffers(engine->vulkanData.device, engine->renderData.commandResources, engine->MAX_FRAMES_IN_FLIGHT);
-    createSyncObjects(engine->renderData.syncResources, engine->vulkanData.device, engine->MAX_FRAMES_IN_FLIGHT);
+    createCommandBuffers(engine->vulkanData.device, &engine->renderData.commandResources, engine->MAX_FRAMES_IN_FLIGHT);
+    createSyncObjects(engine->vulkanData.device, &engine->renderData.syncResources, engine->MAX_FRAMES_IN_FLIGHT);
 }

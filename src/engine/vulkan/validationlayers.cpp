@@ -2,14 +2,12 @@
 
 #include "../engine.h"
 #include <cstring>
-#include <stdexcept>
-#include <vector>
 #include <vulkan/vulkan_core.h>
 
 #include "../../utils/debugprint.h"
 
 // this function is not automatically loaded so it needs to be manually loaded
-VkResult CreateDebugUtilsMessengerEXT(VkInstance                                instance,
+VkResult createDebugUtilsMessengerEXT(const VkInstance                          instance,
                                       const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
                                       const VkAllocationCallbacks*              pAllocator,
                                       VkDebugUtilsMessengerEXT*                 pMessenger) {
@@ -29,32 +27,31 @@ VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBits
     return VK_FALSE;
 }
 
-void PopulateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
-    createInfo = {.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
-                  .pNext = nullptr,
-                  .flags = 0,
+void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT* createInfo) {
+    *createInfo = {.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT,
+                   .pNext = nullptr,
+                   .flags = 0,
 
-                  .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
-                                     VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT,
+                   .messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT |
+                                      VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT,
 
-                  .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
-                                 VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
+                   .messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT |
+                                  VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT,
 
-                  .pfnUserCallback = debugCallback,
+                   .pfnUserCallback = debugCallback,
 
-                  .pUserData = nullptr};
+                   .pUserData = nullptr};
 }
 
 void setupDebugMessanger(const VulkanData& vulkanData, VkDebugUtilsMessengerEXT* debugMessenger) {
 
     VkDebugUtilsMessengerCreateInfoEXT createInfo;
-    PopulateDebugMessengerCreateInfo(createInfo);
+    populateDebugMessengerCreateInfo(&createInfo);
 
     VkResult result;
 
-    result = CreateDebugUtilsMessengerEXT(vulkanData.instance, &createInfo, nullptr, debugMessenger);
+    result = createDebugUtilsMessengerEXT(vulkanData.instance, &createInfo, nullptr, debugMessenger);
     if (result != VK_SUCCESS) {
         debugerror("failed to create debug messenger");
     }
 }
-
