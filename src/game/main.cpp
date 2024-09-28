@@ -1,3 +1,4 @@
+#include <cmath>
 #include <glm/fwd.hpp>
 #include <thread>
 #include <vector>
@@ -33,21 +34,21 @@ int main() {
     auto targetTime        = std::chrono::milliseconds(10);
     auto renderTime        = endTime - frameStartTime;
 
-    Model player = {.vertices = {{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-                                 {{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-                                 {{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-                                 {{-0.5f, 0.5f}, {1.0f, 1.0f, 0.0f}}},
+    Model player = {.vertices = {{{-0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}},
+                                 {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}},
+                                 {{0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}},
+                                 {{-0.5f, -0.5f}, {1.0f, 1.0f, 0.0f}}},
                     .indices  = {0, 1, 2, 2, 3, 0}};
 
-    Model floor = {.vertices = {{{-1.0f, -1.5f}, {1.0f, 1.0f, 1.0f}},
-                                {{1.0f, -1.5f}, {1.0f, 1.0f, 1.0f}},
-                                {{1.9f, -0.5f}, {1.0f, 1.0f, 0.0f}},
-                                {{-1.9f, -0.5f}, {1.0f, 1.0f, 0.0f}}},
+    Model floor = {.vertices = {{{-15.0f, 15.0f}, {0.2f, 0.2f, 0.2f}},
+                                {{15.0f, 15.0f}, {0.2f, 0.2f, 0.2f}},
+                                {{15.0f, -15.0f}, {0.2f, 0.2f, 0.2f}},
+                                {{-15.0f, -15.0f}, {0.2f, 0.2f, 0.2f}}},
                    .indices  = {0, 1, 2, 2, 3, 0}};
 
     std::vector<Model> models{};
-    models.push_back(player);
     models.push_back(floor);
+    models.push_back(player);
 
     debugnote("created index and vertex buffers");
     EngineData engineData{};
@@ -63,39 +64,35 @@ int main() {
         frameStartTime        = std::chrono::high_resolution_clock::now();
         std::vector<int> keys = getPressedKeys(engineData.windowData.window);
 
+        float     maxSpeed = .04;
+        glm::vec2 velocity{};
         for (auto key : keys) {
             if (key == GLFW_KEY_RIGHT) {
-                models[0].position.x += .02;
-            } else if (key == GLFW_KEY_LEFT) {
-                models[0].position.x -= .02;
-            } else if (key == GLFW_KEY_UP) {
-                keyuppressed = true;
-            } else if (key == GLFW_KEY_W) {
-                models[0].position.z += .02;
-            } else if (key == GLFW_KEY_S) {
-                models[0].position.z -= .02;
+                velocity.x += .04;
+            }
+            if (key == GLFW_KEY_LEFT) {
+                velocity.x -= .04;
+            }
+            if (key == GLFW_KEY_UP) {
+                velocity.y += .04;
+            }
+            if (key == GLFW_KEY_DOWN) {
+                velocity.y -= .04;
             }
         }
 
-        if (keyuppressed && (models[0].position.y < .0001f)) {
-            yvelocity += .05;
-            keyuppressed = false;
-        }
-        if (models[0].position.y > 0) {
-            yvelocity -= .002; // gravity
-        }
-        models[0].position.y += yvelocity;
+        double magnatude = sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+        if (magnatude > 0) {
+            velocity.x /= magnatude;
+            velocity.y /= magnatude;
 
-        /*debugdata("model position: " << models[0].position.y);*/
-        /*debugdata("yvelocity: " << yvelocity);*/
-
-        if (models[0].position.y < 0) {
-            models[0].position.y = 0;
+            velocity.x *= maxSpeed;
+            velocity.y *= maxSpeed;
         }
 
-        /*debugdata("model position: " << models[0].position.y);*/
-        /*debugdata("yvelocity: " << yvelocity);*/
-        /*debugdata("============================" << yvelocity);*/
+        models[1].position.x += velocity.x;
+        models[1].position.y += velocity.y;
+
         drawFrame(&engineData, models);
 
         endTime    = std::chrono::high_resolution_clock::now();

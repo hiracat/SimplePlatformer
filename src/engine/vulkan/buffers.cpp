@@ -130,8 +130,8 @@ void updateUniformBuffers(uint32_t                                       current
     MVPMatricies matricies{};
     matricies.model = glm::translate(glm::mat4(1.0f), offset);
     /*matricies.model      = glm::rotate(matricies.model, time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));*/
-    matricies.view       = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-    matricies.projection = glm::perspective(glm::radians(45.0f), swapchainExtent.width / (float)swapchainExtent.height, 0.1f, 10.0f);
+    matricies.view       = glm::lookAt(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    matricies.projection = glm::perspective(glm::radians(90.0f), swapchainExtent.width / (float)swapchainExtent.height, 0.1f, 10.0f);
 
     memcpy(reinterpret_cast<uint8_t*>(buffers[currentImage].mappedMemory) + dynamicOffset * sizeof(MVPMatricies),
            &matricies,
