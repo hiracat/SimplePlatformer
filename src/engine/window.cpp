@@ -13,10 +13,8 @@ void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
 }
 
 void initWindow(const VulkanData& vulkanData, WindowData* windowData) {
-    int reply = glfwInit();
-    debugnote("reply: " << reply);
-    // disables the automatic opengl context creation
 
+    // disables the automatic opengl context creation
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     windowData->window = glfwCreateWindow(windowData->WIDTH, windowData->HEIGHT, windowData->name, nullptr, nullptr);
     if (windowData->window == nullptr) {

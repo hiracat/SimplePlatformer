@@ -28,8 +28,9 @@
           cloc
         ];
         VK_LAYER_PATH = "${pkgs.vulkan-validation-layers}/share/vulkan/explicit_layer.d";
-        shellHook = "zsh";
-
+        shellHook = "
+        export LD_LIBRARY_PATH=${pkgs.wayland}/lib:$LD_LIBRARY_PATH
+        zsh";
       };
     };
 }

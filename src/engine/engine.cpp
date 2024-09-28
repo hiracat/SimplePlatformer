@@ -47,7 +47,9 @@ std::array<VkVertexInputAttributeDescription, 2> Vertex::getAttributeDescription
     return attributeDescriptions;
 }
 void initEngine(EngineData* engine) {
-    glfwInit(); // needs to be called here because we use a function in vkcreateinstance to get the extensions needed for glfw to work
+    // needs to be called here because we use a function in vkcreateinstance to get the extensions needed for glfw to work
+    int reply = glfwInit();
+    debugnote("reply: " << reply);
 
     createInstance(engine->vulkanData, &engine->vulkanData.instance);
     initWindow(engine->vulkanData, &engine->windowData);
