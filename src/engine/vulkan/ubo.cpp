@@ -39,7 +39,7 @@ void createDescriptorSets(const RendererData& renderData, std::vector<VkDescript
         VkDescriptorBufferInfo bufferInfo{};
         bufferInfo.buffer = renderData.transformResources.uniformBuffers[i].buffer.buffer;
         bufferInfo.offset = 0;
-        bufferInfo.range  = sizeof(MVPMatricies);
+        bufferInfo.range  = sizeof(MVPMatrix);
 
         VkWriteDescriptorSet descriptorWrite{};
         descriptorWrite.sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;

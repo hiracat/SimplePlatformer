@@ -76,7 +76,7 @@ struct UniformBuffer {
 };
 
 // TODO: this is technical debt and must be replaced with dynamic allignment at some point
-struct alignas(4) MVPMatricies {
+struct alignas(4) MVPMatrix {
     glm::mat4 model; // glm is compatable with shader format so memcpy works just fine to transfer
     glm::mat4 view;
     glm::mat4 projection;
@@ -91,7 +91,6 @@ struct Model {
     Buffer indexBuffer{};
 };
 struct TransformResources {
-    MVPMatricies               matricies{};
     VkDescriptorSetLayout      descriptorSetLayout{};
     std::vector<UniformBuffer> uniformBuffers{};
 };
@@ -156,7 +155,7 @@ struct RendererData {
 
 struct EngineData {
     uint32_t                                             currentFrame         = 0;
-    const uint32_t                                       MAX_FRAMES_IN_FLIGHT = 2;
+    const uint32_t                                       MAX_FRAMES_IN_FLIGHT = 3;
     const std::chrono::high_resolution_clock::time_point startTime            = std::chrono::high_resolution_clock::now();
     std::chrono::high_resolution_clock::time_point       deltaTime{};
 

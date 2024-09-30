@@ -86,31 +86,31 @@ void copyBuffer(VkBuffer&           srcBuffer,
     vkFreeCommandBuffers(device, commandPool, 1, &commandBuffer);
 }
 
-void createUniformBuffers(const VulkanData& data, const uint32_t numModels, std::vector<UniformBuffer>* buffers) {
-    VkDeviceSize bufferSize = sizeof(MVPMatricies) * 2;
+void createUniformBuffers(const VulkanData& vulkanData, const uint32_t numModels, std::vector<UniformBuffer>* uniformBuffers) {
+    VkDeviceSize bufferSize = sizeof(MVPMatrix) * 1000;
 
-    buffers->resize(data.MAX_FRAMES_IN_FLIGHT);
+    uniformBuffers->resize(vulkanData.MAX_FRAMES_IN_FLIGHT);
 
     VkSharingMode sharingMode;
     { // set sharing mode
-        if (data.queueFamilyIndices.isSame()) {
+        if (vulkanData.queueFamilyIndices.isSame()) {
             sharingMode = VK_SHARING_MODE_EXCLUSIVE;
         } else {
             sharingMode = VK_SHARING_MODE_EXCLUSIVE;
         }
     }
 
-    for (size_t i = 0; i < data.MAX_FRAMES_IN_FLIGHT; i++) {
-        createBuffer(data.device,
-                     data.physicalDevice,
+    for (size_t i = 0; i < vulkanData.MAX_FRAMES_IN_FLIGHT; i++) {
+        createBuffer(vulkanData.device,
+                     vulkanData.physicalDevice,
                      bufferSize,
                      VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
                      sharingMode,
-                     (*buffers)[i].buffer.buffer,
+                     (*uniformBuffers)[i].buffer.buffer,
                      VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-                     (*buffers)[i].buffer.memory);
+                     (*uniformBuffers)[i].buffer.memory);
 
-        vkMapMemory(data.device, (*buffers)[i].buffer.memory, 0, bufferSize, 0, &(*buffers)[i].mappedMemory);
+        vkMapMemory(vulkanData.device, (*uniformBuffers)[i].buffer.memory, 0, bufferSize, 0, &(*uniformBuffers)[i].mappedMemory);
         // directly map memory since its not worth it to have a staging buffer and maybe even be slower because its changed every frame
     }
 }
@@ -127,15 +127,14 @@ void updateUniformBuffers(uint32_t                                       current
     auto  currentTime = std::chrono::high_resolution_clock::now();
     float time        = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
-    MVPMatricies matricies{};
+    MVPMatrix matricies{};
     matricies.model = glm::translate(glm::mat4(1.0f), offset);
     /*matricies.model      = glm::rotate(matricies.model, time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));*/
     matricies.view       = glm::lookAt(glm::vec3(0.0f, 0.0f, 10.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
     matricies.projection = glm::perspective(glm::radians(90.0f), swapchainExtent.width / (float)swapchainExtent.height, 0.1f, 10.0f);
 
-    memcpy(reinterpret_cast<uint8_t*>(buffers[currentImage].mappedMemory) + dynamicOffset * sizeof(MVPMatricies),
-           &matricies,
-           sizeof(matricies));
+    memcpy(
+        reinterpret_cast<uint8_t*>(buffers[currentImage].mappedMemory) + dynamicOffset * sizeof(MVPMatrix), &matricies, sizeof(matricies));
 }
 
 void createIndexBuffer(const std::vector<uint32_t>& indices,

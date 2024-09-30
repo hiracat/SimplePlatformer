@@ -48,22 +48,19 @@ void drawFrame(EngineData* data, const std::vector<Model>& models) {
                  data->renderData.swapchainResources.framebuffers[currentImageIndex],
                  data->renderData.pipelineResources.graphicsPipeline);
 
-    updateUniformBuffers(data->currentFrame,
-                         data->startTime,
-                         data->renderData.swapchain.extent,
-                         data->renderData.transformResources.uniformBuffers,
-                         models[0].position,
-                         0);
-    updateUniformBuffers(data->currentFrame,
-                         data->startTime,
-                         data->renderData.swapchain.extent,
-                         data->renderData.transformResources.uniformBuffers,
-                         models[1].position,
-                         1);
+    for (int i = 0; i < models.size(); i++) {
+
+        updateUniformBuffers(data->currentFrame,
+                             data->startTime,
+                             data->renderData.swapchain.extent,
+                             data->renderData.transformResources.uniformBuffers,
+                             models[i].position,
+                             i);
+    }
 
     for (uint32_t i = 0; i < models.size(); i++) {
         VkDeviceSize offsets[]     = {0};
-        uint32_t     dynamicOffset = i * sizeof(MVPMatricies);
+        uint32_t     dynamicOffset = i * sizeof(MVPMatrix);
 
         vkCmdBindDescriptorSets(data->renderData.commandResources.buffers[data->currentFrame],
                                 VK_PIPELINE_BIND_POINT_GRAPHICS,

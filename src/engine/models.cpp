@@ -30,3 +30,22 @@ void createModels(EngineData* engineData, std::vector<Model>* models) {
 
     createDescriptorSets(engineData->renderData, &engineData->renderData.descriptorResources.sets);
 }
+
+void addModel(EngineData* engineData, Model* model) {
+
+    createVertexBuffer(model->vertices,
+                       engineData->vulkanData.device,
+                       engineData->vulkanData.physicalDevice,
+                       model->vertexBuffer,
+                       engineData->renderData.commandResources.pool,
+                       engineData->vulkanData.queues.transfer,
+                       engineData->vulkanData.queueFamilyIndices);
+
+    createIndexBuffer(model->indices,
+                      engineData->vulkanData.device,
+                      engineData->vulkanData.physicalDevice,
+                      model->indexBuffer,
+                      engineData->renderData.commandResources.pool,
+                      engineData->vulkanData.queues.transfer,
+                      engineData->vulkanData.queueFamilyIndices);
+}
