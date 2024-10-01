@@ -88,10 +88,13 @@ int main() {
     initEngine(&engineData);
     createModels(&engineData, &models);
 
-    double yvelocity    = 0;
-    bool   keyuppressed = false;
-    int    key;
-    int    modelLoaded = 5;
+    double       yvelocity    = 0;
+    bool         keyuppressed = false;
+    int          key;
+    const int    bulletTimeout      = 5;
+    const double playerSpeed        = .1;
+    const float  bulletSpeed        = .5;
+    int          bulletReadyCounter = bulletTimeout;
 
     std::vector<int> keys    = getPressedKeys(engineData.windowData.window);
     std::vector<int> buttons = getMouseButton(engineData.windowData.window);
@@ -136,31 +139,30 @@ int main() {
                                                      << ")");
         }
 
-        float     maxSpeed = .04;
         glm::vec2 velocity{};
         for (auto key : keys) {
             if (key == GLFW_KEY_RIGHT) {
-                velocity.x += .04;
+                velocity.x += playerSpeed;
             }
             if (key == GLFW_KEY_LEFT) {
-                velocity.x -= .04;
+                velocity.x -= playerSpeed;
             }
             if (key == GLFW_KEY_UP) {
-                velocity.y += .04;
+                velocity.y += playerSpeed;
             }
             if (key == GLFW_KEY_DOWN) {
-                velocity.y -= .04;
+                velocity.y -= playerSpeed;
             }
         }
 
         for (auto button : buttons) {
-            if (button == GLFW_MOUSE_BUTTON_LEFT && modelLoaded == 0) {
+            if (button == GLFW_MOUSE_BUTTON_LEFT && bulletReadyCounter == 0) {
 
                 models.push_back(bullet);
 
                 addModel(&engineData, &models.back());
                 models.back().position = models[1].position;
-                modelLoaded            = 5;
+                bulletReadyCounter     = bulletTimeout;
                 bulletTarget.push_back(glm::normalize(intersectionPoint - models.back().position));
             }
             if (button == GLFW_MOUSE_BUTTON_RIGHT) {
@@ -171,15 +173,14 @@ int main() {
                 }
             }
         }
-        modelLoaded--;
+        bulletReadyCounter--;
 
         if (buttons.size() == 0) {
-            modelLoaded = 5;
+            bulletReadyCounter = bulletTimeout;
         }
 
-        float speed = .2;
         for (int i = 2; i < models.size(); i++) {
-            models[i].position += bulletTarget[i - 2] * speed;
+            models[i].position += bulletTarget[i - 2] * bulletSpeed;
         }
 
         double magnatude = sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
@@ -187,8 +188,8 @@ int main() {
             velocity.x /= magnatude;
             velocity.y /= magnatude;
 
-            velocity.x *= maxSpeed;
-            velocity.y *= maxSpeed;
+            velocity.x *= playerSpeed;
+            velocity.y *= playerSpeed;
         }
 
         models[1].position.x += velocity.x;

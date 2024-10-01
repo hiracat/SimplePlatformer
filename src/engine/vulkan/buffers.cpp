@@ -87,7 +87,7 @@ void copyBuffer(VkBuffer&           srcBuffer,
 }
 
 void createUniformBuffers(const VulkanData& vulkanData, const uint32_t numModels, std::vector<UniformBuffer>* uniformBuffers) {
-    VkDeviceSize bufferSize = sizeof(MVPMatrix) * 1000;
+    VkDeviceSize bufferSize = sizeof(MVPMatrix) * 10000;
 
     uniformBuffers->resize(vulkanData.MAX_FRAMES_IN_FLIGHT);
 
